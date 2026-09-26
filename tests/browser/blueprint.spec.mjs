@@ -5170,6 +5170,7 @@ test('tank swap visibly hands boss focus to a second defender before the repeat'
   await expect(page.locator('.game-example')).toHaveCount(3);
   await expect(page.locator('.lens-chip')).toHaveCount(5);
   await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
+  await expect(widget).toHaveAttribute('data-blueprint-screen-height', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-playing', 'false');
   await expect(widget.locator('[data-blueprint-ally]')).toHaveCount(1);
   await seek(2300);
@@ -5191,6 +5192,9 @@ test('tank swap visibly hands boss focus to a second defender before the repeat'
   await expect(widget).toHaveAttribute('data-blueprint-tank-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-tank-health', '100,100');
   await page.setViewportSize({ width: 375, height: 812 });
+  expect(
+    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
+  ).toBeGreaterThanOrEqual(812);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
