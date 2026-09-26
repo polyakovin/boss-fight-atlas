@@ -10540,76 +10540,69 @@ function primitivesFor(spec, frame) {
     const visible = frame.gazeVisible;
     const pulse = frame.gazeHitActive;
     const hit = frame.gazeFailure;
-    const safe = pulse && !frame.gazeLooking;
-    const tone = hit ? 'signal' : safe ? 'safe' : 'accent';
-    const angle = (frame.playerFacing * Math.PI) / 180;
-    const x = frame.player.x + Math.cos(angle) * 70;
-    const y = frame.player.y + Math.sin(angle) * 70;
+    const tone = hit ? 'signal' : pulse ? 'safe' : 'accent';
+    const sourceX = spec.boss[0];
+    const sourceY = spec.boss[1] - 42;
+    const targetX = frame.player.x;
+    const targetY = frame.player.y - 42;
     return [
-      rect(55, 245, 450, 650, 0.58, 'muted', 0.025),
-      path('M 75 805 L 190 785 L 280 810 L 370 785 L 485 805', 0.5, 'muted', 4),
-      rect(200, 126, 160, 22, 0.8, 'muted', 0.08),
-      rect(200, 126, frame.gazeHealth * 1.6, 22, 0.95, hit ? 'signal' : 'safe', 0.55),
       path(
-        'M 220 410 Q 280 355 340 410 Q 280 465 220 410 Z',
-        visible ? 0.95 : 0.14,
+        'M 70 103 H 490 V 149 H 70 Z M 84 149 H 120 V 819 H 84 Z M 440 149 H 476 V 819 H 440 Z',
+        0.52,
+        'muted',
+        0,
+        0.61,
+      ),
+      path(
+        'M 100 784 L 280 748 L 460 784 V 816 L 280 780 L 100 816 Z M 84 875 L 280 835 L 476 875 V 903 L 280 863 L 84 903 Z',
+        0.52,
+        'muted',
+        0,
+        0.61,
+      ),
+      path(
+        'M 200 349 H 360 L 374 378 H 186 Z M 214 378 H 346 V 415 H 214 Z',
+        0.64,
+        'muted',
+        0,
+        0.62,
+      ),
+      path('M 200 117 H 360 V 151 L 280 169 L 200 151 Z', 0.7, 'muted', 0, 0.67),
+      path(
+        `M 210 126 H ${210 + frame.gazeHealth * 1.4} V 145 H 210 Z`,
+        0.92,
+        hit ? 'signal' : 'safe',
+        0,
+        0.77,
+      ),
+      path(
+        `M ${sourceX - 33} ${sourceY - 9} L ${sourceX} ${sourceY - 24} L ${sourceX + 33} ${sourceY - 9} L ${sourceX} ${sourceY + 8} Z`,
+        visible ? 0.9 : 0.24,
         'accent',
-        6,
-        0.08,
-      ),
-      circle(280, 410, 21, visible ? 0.96 : 0.18, 'accent', 5, 0.22),
-      line(
-        280,
-        435,
-        frame.player.x,
-        frame.player.y - 45,
-        visible ? (pulse ? 0.95 : 0.38) : 0,
-        tone,
-        pulse ? 11 : 4,
-        pulse ? '' : '14 12',
-      ),
-      circle(
-        frame.player.x,
-        frame.player.y - 20,
-        56,
-        visible ? (pulse ? 0.87 : 0.28) : 0,
-        tone,
-        pulse ? 8 : 3,
-      ),
-      line(
-        frame.player.x,
-        frame.player.y,
-        x,
-        y,
-        visible ? 0.96 : 0.2,
-        frame.gazeLooking ? 'signal' : 'safe',
-        8,
+        0,
+        0.64,
       ),
       path(
-        `M ${x} ${y} L ${x - Math.cos(angle - 0.52) * 20} ${y - Math.sin(angle - 0.52) * 20} M ${x} ${y} L ${x - Math.cos(angle + 0.52) * 20} ${y - Math.sin(angle + 0.52) * 20}`,
-        visible ? 0.96 : 0.2,
-        frame.gazeLooking ? 'signal' : 'safe',
-        7,
-      ),
-      path(
-        `M ${frame.player.x - 20} ${frame.player.y - 120} L ${frame.player.x - 5} ${frame.player.y - 105} L ${frame.player.x + 25} ${frame.player.y - 143}`,
-        safe ? 0.95 : 0,
+        `M ${sourceX - 14} ${sourceY - 10} H ${sourceX + 14} V ${sourceY + 2} H ${sourceX - 14} Z`,
+        visible ? 0.96 : 0.18,
         'safe',
-        8,
+        0,
+        0.8,
       ),
       path(
-        `M ${frame.player.x - 18} ${frame.player.y - 138} L ${frame.player.x + 18} ${frame.player.y - 102} M ${frame.player.x + 18} ${frame.player.y - 138} L ${frame.player.x - 18} ${frame.player.y - 102}`,
-        hit ? 0.95 : 0,
-        'signal',
-        8,
+        `M ${sourceX - 13} ${sourceY + 6} L ${targetX - 68} ${targetY + 19} L ${targetX + 68} ${targetY + 19} L ${sourceX + 13} ${sourceY + 6} Z`,
+        visible ? (pulse ? 0.42 : 0.18) : 0,
+        tone,
+        0,
+        0.45,
       ),
-      circle(
-        spec.player[0],
-        spec.player[1],
-        78 * smooth((frame.time - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.gazeRetry ? 0.75 : 0,
-        'accent',
-        7,
+      line(sourceX, sourceY + 3, targetX, targetY, pulse ? 0.7 : 0, tone, 10),
+      path(
+        `M ${targetX - 64} ${targetY + 44} L ${targetX - 23} ${targetY + 6} L ${targetX + 9} ${targetY + 32} L ${targetX + 42} ${targetY + 3} L ${targetX + 70} ${targetY + 43} Z`,
+        hit ? 0.86 : 0,
+        'signal',
+        0,
+        0.68,
       ),
     ];
   }
