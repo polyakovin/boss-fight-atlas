@@ -2038,9 +2038,9 @@ const SPECS = {
       [395, 625],
     ],
     receivingSpots: [
-      [100, 625],
+      [140, 625],
       [280, 700],
-      [460, 625],
+      [420, 625],
     ],
     assignments: [1, 2, 3],
     revealAt: 0.7,
@@ -10844,52 +10844,67 @@ function primitivesFor(spec, frame) {
     const t = frame.time;
     const visible = t >= spec.revealAt && t < spec.resetAt;
     return [
-      rect(55, 245, 450, 650, 0.58, 'muted', 0.025),
-      path('M 75 805 L 190 785 L 280 810 L 370 785 L 485 805', 0.5, 'muted', 4),
-      ...frame.orderedTargetPositions.flatMap((target, index) => {
+      path(
+        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
+        0.5,
+        'muted',
+        0,
+        0.6,
+      ),
+      path(
+        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
+      ...spec.receivingSpots.flatMap(([x, y], index) => {
         const number = index + 1;
         const hitAt = spec.hits[index];
         const pulse = strikePulse(t, hitAt, spec.hitDuration);
         const pending = visible && frame.orderedTargetNext === number;
         const complete = visible && frame.orderedTargetNext > number;
+        const spearY = y - (pulse > 0 ? 142 - 55 * pulse : 185);
+        const spearOpacity = pulse > 0 ? 0.95 : pending ? 0.48 : 0;
         return [
-          circle(
-            target.x,
-            target.y - 76,
-            36,
-            visible ? (pending ? 0.95 : 0.45) : 0,
+          path(
+            `M ${x - 54} ${y + 20} L ${x} ${y - 12} L ${x + 54} ${y + 20} L ${x + 42} ${y + 52} L ${x} ${y + 74} L ${x - 42} ${y + 52} Z`,
+            visible ? (pending ? 0.86 : 0.54) : 0.33,
             pending ? 'signal' : 'muted',
-            5,
+            0,
+            0.36,
           ),
-          circle(
-            target.x,
-            target.y,
-            spec.radius,
-            pending ? 0.48 : pulse * 0.95,
-            pending ? 'signal' : 'danger',
-            5,
+          path(
+            `M ${x - 6} ${spearY - 126} H ${x + 6} V ${spearY - 32} H ${x - 6} Z M ${x - 18} ${spearY - 44} H ${x + 18} V ${spearY - 32} H ${x - 18} Z`,
+            spearOpacity,
+            'muted',
+            0,
+            0.82,
           ),
-          circle(target.x, target.y, spec.radius + 16 * pulse, pulse * 0.8, 'danger', 7),
-          line(
-            spec.boss[0],
-            spec.boss[1] + 50,
-            target.x,
-            target.y - 75,
-            pending ? 0.48 : pulse * 0.85,
-            pending ? 'signal' : 'danger',
-            4,
+          path(
+            `M ${x - 22} ${spearY - 32} L ${x - 13} ${spearY - 43} L ${x + 13} ${spearY - 43} L ${x + 22} ${spearY - 32} L ${x} ${spearY + 39} Z`,
+            spearOpacity,
+            'signal',
+            0,
+            0.76,
           ),
-          circle(target.x, target.y - 76, 24, complete ? 0.8 : 0, 'safe', 4),
+          path(
+            `M ${x - 40} ${y + 22} L ${x - 15} ${y - 4} L ${x} ${y + 15} L ${x + 20} ${y - 4} L ${x + 42} ${y + 25} L ${x + 13} ${y + 47} H ${x - 13} Z`,
+            pulse * 0.8,
+            'signal',
+            0,
+            0.7,
+          ),
+          path(
+            `M ${x - 26} ${y + 57} L ${x - 11} ${y + 36} L ${x + 1} ${y + 48} L ${x + 18} ${y + 32} L ${x + 32} ${y + 52} L ${x + 6} ${y + 66} Z`,
+            complete ? 0.7 : 0,
+            'safe',
+            0,
+            0.44,
+          ),
         ];
       }),
-      circle(
-        280,
-        625,
-        175 * smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.orderedTargetRetry ? 0.7 : 0,
-        'accent',
-        7,
-      ),
     ];
   }
   if (mode === 'pairing-polarity') {
