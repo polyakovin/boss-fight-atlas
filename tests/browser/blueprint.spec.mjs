@@ -4844,6 +4844,7 @@ test('coordinated duo attack overlaps one target and cancels the second follow-u
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('en/mechanics/coordinated-duo-attack/');
   const widget = page.locator('[data-blueprint-demo]');
+  await expect(widget).toHaveAttribute('data-blueprint-screen-height', 'true');
   const timeline = widget.locator('[data-blueprint-timeline]');
   const seek = (milliseconds) =>
     timeline.evaluate((element, value) => {
@@ -4881,6 +4882,9 @@ test('coordinated duo attack overlaps one target and cancels the second follow-u
   await expect(widget).toHaveAttribute('data-blueprint-coordinated-duo-attack-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-coordinated-duo-attack-followup-count', '0');
   await page.setViewportSize({ width: 375, height: 812 });
+  expect(
+    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
+  ).toBeGreaterThanOrEqual(812);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
