@@ -1,4 +1,12 @@
-import { patternFrame, patternDuration, slamWavePath } from './pattern-model.mjs';
+import {
+  patternFrame,
+  patternDuration,
+  slamWavePath,
+  slamStonePath,
+  slamStoneChipPath,
+  slamStoneFacetPath,
+  slamStoneSeamPath,
+} from './pattern-model.mjs';
 import { createCharacterAnimator } from './character-motion.mjs';
 import { createEncounterEffects } from './encounter-effects.mjs';
 import { createSweepWeaponAnimator } from './sweep-weapon-player.mjs';
@@ -28,6 +36,11 @@ export function initializePattern(widget) {
   const sweep = find('[data-pattern-sweep]');
   const slam = find('[data-pattern-slam]');
   const slamRing = find('[data-pattern-slam-ring]');
+  const slamShadow = find('[data-pattern-slam-shadow]');
+  const slamChips = find('[data-pattern-slam-chips]');
+  const slamStones = find('[data-pattern-slam-stones]');
+  const slamFacets = find('[data-pattern-slam-facets]');
+  const slamSeams = find('[data-pattern-slam-seams]');
   const summon = find('[data-pattern-summon]');
   const minions = [...widget.querySelectorAll('[data-pattern-minion]')];
   const animateMinions = minions.map((minion) => createCharacterAnimator(minion, 'kern'));
@@ -63,7 +76,15 @@ export function initializePattern(widget) {
     sweep.setAttribute('opacity', String(frame.sweepOpacity));
     sweep.setAttribute('transform', `translate(280 275) rotate(${frame.sweepRotation})`);
     slam.setAttribute('opacity', String(frame.slamOpacity));
-    if (kind === 'ground-slam') slamRing.setAttribute('d', slamWavePath(frame.slamRadius));
+    if (kind === 'ground-slam') {
+      slamRing.setAttribute('d', slamWavePath(frame.slamRadius));
+      const stones = slamStonePath(frame.slamRadius);
+      slamShadow.setAttribute('d', stones);
+      slamChips.setAttribute('d', slamStoneChipPath(frame.slamRadius));
+      slamStones.setAttribute('d', stones);
+      slamFacets.setAttribute('d', slamStoneFacetPath(frame.slamRadius));
+      slamSeams.setAttribute('d', slamStoneSeamPath(frame.slamRadius));
+    }
     summon.setAttribute('opacity', String(frame.summonOpacity));
     const starts = [
       [135, 465],

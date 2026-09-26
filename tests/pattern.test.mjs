@@ -6,6 +6,8 @@ import {
   patternDuration,
   patternPhaseAt,
   PATTERN_DURATION,
+  slamStoneChipPath,
+  slamStonePath,
 } from '../src/pattern-model.mjs';
 import { renderPattern, renderPatternThumbnail } from '../lib/pattern-view.mjs';
 
@@ -50,6 +52,34 @@ test('ground slam starts at floor contact and leaves the full player beyond the 
     assert.ok(playerDistance - 24 > frame.slamRadius + 19);
     assert.equal(frame.clear, true);
   }
+});
+
+test('ground slam front stays within the danger width while small debris trails behind', () => {
+  for (const radius of [58, 112, 300, 470]) {
+    const points = [...slamStonePath(radius).matchAll(/[ML] (-?\d+\.\d) (-?\d+\.\d)/g)];
+    const chips = [...slamStoneChipPath(radius).matchAll(/[ML] (-?\d+\.\d) (-?\d+\.\d)/g)];
+    assert.equal(points.length, 40 * 7);
+    assert.equal(chips.length, 24 * 5);
+    for (const [, x, y] of points) {
+      const distance = Math.hypot(Number(x) - 280, Number(y) - 310);
+      assert.ok(distance >= radius - 14 && distance <= radius + 19);
+    }
+    for (const [, x, y] of chips) {
+      const distance = Math.hypot(Number(x) - 280, Number(y) - 310);
+      assert.ok(distance >= radius - 43 && distance <= radius + 19);
+    }
+  }
+  const angles = [...slamStonePath(300).matchAll(/M (-?\d+\.\d) (-?\d+\.\d)/g)]
+    .map(([, x, y]) => (Math.atan2(Number(y) - 310, Number(x) - 280) + 2 * Math.PI) % (2 * Math.PI))
+    .sort((a, b) => a - b);
+  const gaps = angles.map(
+    (angle, index) => (angles[(index + 1) % angles.length] - angle + 2 * Math.PI) % (2 * Math.PI),
+  );
+  assert.ok(Math.max(...gaps) > (2 * Math.PI * 2) / angles.length);
+  const preview = renderPatternThumbnail('ground-slam', 'ground-slam-preview');
+  assert.match(preview, /data-slam-gauntlet/);
+  assert.match(preview, /data-pattern-slam-stones/);
+  assert.match(preview, /data-pattern-slam-chips/);
 });
 
 test('player and threat return smoothly before the loop repeats', () => {

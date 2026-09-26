@@ -33,19 +33,84 @@ const turn = (from, to, amount) => from + (((((to - from) % 360) + 540) % 360) -
 const SLAM_CENTER = Object.freeze({ x: 280, y: 310 });
 const SLAM_WAVE_HALF_WIDTH = 14;
 const SLAM_PLAYER_RADIUS = 24;
-
-/** A single uneven ridge expands from the boss's ground contact. */
-export function slamWavePath(radius) {
-  const vertices = 32;
-  const pointAt = (index, inner) => {
-    const angle = (index * Math.PI * 2) / vertices;
-    const chip = (index % 5 === 0 ? 5 : index % 3 === 0 ? -3 : 1) * (inner ? 0.5 : 1);
-    const reach = radius + (inner ? -SLAM_WAVE_HALF_WIDTH : SLAM_WAVE_HALF_WIDTH) + chip;
-    return `${(SLAM_CENTER.x + Math.cos(angle) * reach).toFixed(1)} ${(SLAM_CENTER.y + Math.sin(angle) * reach).toFixed(1)}`;
+const SLAM_STONE_COUNT = 32;
+const slamStonePoint = (angle, radius) =>
+  `${(SLAM_CENTER.x + Math.cos(angle) * radius).toFixed(1)} ${(SLAM_CENTER.y + Math.sin(angle) * radius).toFixed(1)}`;
+const slamNoise = (index, salt) => {
+  const value = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453;
+  return value - Math.floor(value);
+};
+const makeSlamFragment = (index, count, small) => {
+  const angle =
+    ((index + (slamNoise(index, small ? 9 : 1) - 0.5) * (small ? 2.8 : 2.1)) * Math.PI * 2) / count;
+  const tilt = angle + (slamNoise(index, small ? 10 : 2) - 0.5) * (small ? 0.7 : 0.4);
+  return {
+    angle,
+    offset: small ? -8 - slamNoise(index, 11) * 27 : (slamNoise(index, 3) - 0.5) * 12,
+    depth: (small ? 3 : 5) + slamNoise(index, small ? 12 : 4) * (small ? 2 : 3),
+    width: (small ? 4 : 8) + slamNoise(index, small ? 13 : 5) * (small ? 3 : 10),
+    forwardX: Math.cos(tilt),
+    forwardY: Math.sin(tilt),
+    sideX: -Math.sin(tilt),
+    sideY: Math.cos(tilt),
   };
-  const outer = Array.from({ length: vertices }, (_, index) => pointAt(index, false));
-  const inner = Array.from({ length: vertices }, (_, index) => pointAt(vertices - index - 1, true));
-  return `M ${outer.join(' L ')} Z M ${inner.join(' L ')} Z`;
+};
+const SLAM_FRAGMENTS = Array.from({ length: 40 }, (_, index) => makeSlamFragment(index, 40, false));
+const SLAM_CHIPS = Array.from({ length: 24 }, (_, index) => makeSlamFragment(index, 24, true));
+const slamFragmentPoint = (fragment, radius, forward, side) => {
+  const reach = radius + fragment.offset;
+  const x =
+    SLAM_CENTER.x +
+    Math.cos(fragment.angle) * reach +
+    fragment.forwardX * forward * fragment.depth +
+    fragment.sideX * side * fragment.width;
+  const y =
+    SLAM_CENTER.y +
+    Math.sin(fragment.angle) * reach +
+    fragment.forwardY * forward * fragment.depth +
+    fragment.sideY * side * fragment.width;
+  return `${x.toFixed(1)} ${y.toFixed(1)}`;
+};
+
+/** A thin fracture shows the continuous shockwave beneath the scattered rock. */
+export function slamWavePath(radius) {
+  const points = Array.from({ length: SLAM_STONE_COUNT }, (_, index) => {
+    const angle = (index * Math.PI * 2) / SLAM_STONE_COUNT;
+    const chip = index % 5 === 0 ? 5 : index % 3 === 0 ? -3 : 1;
+    return slamStonePoint(angle, radius + chip);
+  });
+  return `M ${points.join(' L ')} Z`;
+}
+
+/** Uneven flying fragments stay inside the wave's existing damage width. */
+export function slamStonePath(radius) {
+  return SLAM_FRAGMENTS.map((fragment) => {
+    const point = (forward, side) => slamFragmentPoint(fragment, radius, forward, side);
+    return `M ${point(-0.75, -0.72)} L ${point(-1, -0.08)} L ${point(-0.5, 0.88)} L ${point(0.2, 1)} L ${point(1, 0.3)} L ${point(0.72, -0.62)} L ${point(0.02, -1)} Z`;
+  }).join(' ');
+}
+
+export function slamStoneChipPath(radius) {
+  return SLAM_CHIPS.map((fragment) => {
+    const point = (forward, side) => slamFragmentPoint(fragment, radius, forward, side);
+    return `M ${point(-0.85, -0.45)} L ${point(-0.45, 0.85)} L ${point(0.6, 0.7)} L ${point(1, -0.18)} L ${point(0.1, -1)} Z`;
+  }).join(' ');
+}
+
+export function slamStoneFacetPath(radius) {
+  return SLAM_FRAGMENTS.map((fragment) => {
+    const point = (forward, side) => slamFragmentPoint(fragment, radius, forward, side);
+    return `M ${point(-0.65, -0.55)} L ${point(-0.5, 0.6)} L ${point(0.35, 0.25)} Z`;
+  }).join(' ');
+}
+
+export function slamStoneSeamPath(radius) {
+  return SLAM_FRAGMENTS.filter((_, index) => index % 5 === 0)
+    .map((fragment) => {
+      const point = (forward, side) => slamFragmentPoint(fragment, radius, forward, side);
+      return `M ${point(-0.75, -0.12)} L ${point(-0.1, 0.12)} L ${point(0.55, -0.18)}`;
+    })
+    .join(' ');
 }
 const localTime = (time) => {
   const remainder = (Number.isFinite(time) ? time : 0) % PATTERN_DURATION;
@@ -82,7 +147,8 @@ export function patternFrame(kind, time) {
   const recover = smooth((t - PATTERN_PHASE_ENDS[1]) / (PATTERN_DURATION - PATTERN_PHASE_ENDS[1]));
   const visibility = phase === 2 ? 1 - recover : phase === 0 ? prepare : 1;
   const boss = {
-    x: 280,
+    // The ground-slam gauntlet lands at the fixed wave origin (280, 310).
+    x: kind === 'ground-slam' ? 245 : 280,
     y:
       kind === 'gap-volley'
         ? 175
@@ -92,7 +158,9 @@ export function patternFrame(kind, time) {
             ? 235
             : kind === 'sweep'
               ? 385
-              : 275,
+              : kind === 'ground-slam'
+                ? 255
+                : 275,
   };
   const playerStart =
     volley?.playerStart ??
