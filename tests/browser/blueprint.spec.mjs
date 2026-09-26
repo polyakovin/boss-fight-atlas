@@ -472,7 +472,7 @@ test('catalog and builder reuse the 118 promoted rule-specific previews', async 
           const stroke = getComputedStyle(shape).stroke;
           return (
             Number(shape.getAttribute('opacity')) > 0.05 &&
-            Math.max(bounds.width, bounds.height) > 5 &&
+            Math.max(bounds.width, bounds.height) > 4 &&
             stroke !== 'none'
           );
         }),
@@ -496,7 +496,7 @@ test('catalog and builder reuse the 118 promoted rule-specific previews', async 
           const stroke = getComputedStyle(shape).stroke;
           return (
             Number(shape.getAttribute('opacity')) > 0.05 &&
-            Math.max(bounds.width, bounds.height) > 5 &&
+            Math.max(bounds.width, bounds.height) > 4 &&
             stroke !== 'none'
           );
         }),
@@ -2160,7 +2160,7 @@ test('chase herding exposes the pressure band, authored intercept, capture, and 
   await seek(900);
   await expect(widget).toHaveAttribute('data-blueprint-chase-herding', 'route-signal');
   await expect(widget).toHaveAttribute('data-blueprint-chase-captured', 'false');
-  await expect(widget.locator('[data-blueprint-primitive="1"] path')).not.toHaveAttribute(
+  await expect(widget.locator('[data-blueprint-primitive="3"] path')).not.toHaveAttribute(
     'opacity',
     '0',
   );

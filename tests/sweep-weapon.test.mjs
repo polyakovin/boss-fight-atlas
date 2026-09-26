@@ -89,7 +89,7 @@ test('the weapon remains present when its trail fades and reverse seeking reprod
   assert.deepEqual(sweepWeaponPose(118, { lean: 0.2, crouch: 0.1 }), pose);
 });
 
-test('the sweep scene and its static preview share weapon artwork without arming other patterns', () => {
+test('the sweep scene and its static preview share weapon artwork without decorative scene overlays', () => {
   const activeFrame = patternFrame('sweep', 3);
   assert.equal(activeFrame.boss.y, 385);
   assert.equal(activeFrame.player.y, 770);
@@ -112,10 +112,11 @@ test('the sweep scene and its static preview share weapon artwork without arming
       if (kind === 'sweep') {
         assert.match(markup, weaponMarker);
         assert.ok(markup.includes(SWEEP_WEAPON_ART));
-        if (markup === scene) assert.match(markup, /data-pattern-sweep-scene/);
+        if (markup === scene) assert.match(markup, /data-pattern-sweep/);
       } else {
         assert.doesNotMatch(markup, weaponMarker);
       }
+      assert.doesNotMatch(markup, /data-pattern-(?:sweep|slam|projectile-fan)-scene/);
     }
   }
 });

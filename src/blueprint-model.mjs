@@ -5284,6 +5284,67 @@ const projectileLines = (boss, count, spread, length, opacity, offset = 0) =>
     return line(boss.x, boss.y, end.x, end.y, opacity, 'signal', 7);
   });
 
+// Preserve primitive indices used by the player while hiding legacy room trim.
+// Threats, response paths, source markers, walls, and platforms remain visible.
+const DECORATIVE_PRIMITIVE_INDICES = Object.freeze({
+  'interruptible-wind-up': [0, 1],
+  'loadout-adaptation': [0, 1, 2],
+  'wind-up': [0, 1],
+  'active-phase': [0, 1, 2],
+  recovery: [0, 1, 2],
+  'survival-phase': [0, 1],
+  teleport: [0, 1],
+  'forced-scrolling': [0, 1, 2],
+  'chase-herding': [0, 1],
+  'escape-phase': [0, 1],
+  'relocated-arena': [0, 3, 4, 5, 14],
+  'control-mode-shift': [0, 1, 2, 3],
+  'boss-as-terrain': [0, 1],
+  'forced-inertia': [0, 1, 2, 3],
+  'wraparound-projectile': [0],
+  'beat-synced-attack': [0],
+  'secondary-cues-invisibility': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  'sound-detection': [0, 2, 3, 4, 5],
+  'objective-linked-invulnerability': [0],
+  'wave-clear-objective': [2],
+  'environmental-weapon': [2],
+  'encounter-specific-tool': [2],
+  'player-controlled-boss': [2, 3],
+  'on-hit-healing': [0],
+  'self-heal-cast': [0],
+  'external-healing-source': [0],
+  'damage-rate-cap': [0],
+  'loadout-mirror': [0],
+  'moveset-shapeshifting': [0, 1],
+  'ally-theft': [0],
+  'false-death': [0],
+  'action-reactive-punish': [0],
+  'run-history-manifestation': [0],
+  'real-time-progression': [0],
+  'interface-interaction': [0],
+  'world-state-variant': [0],
+  'party-size-scaling': [0],
+  'kill-order-inheritance': [0, 3],
+  'shared-group-health': [0, 4, 5, 6],
+  'coordinated-duo-attack': [0, 2],
+  'stack-damage': [0, 1, 2],
+  'personal-spread': [0, 1, 2],
+  'tower-soak': [0, 1, 2],
+  'entity-tether': [0, 1, 2],
+  'gaze-check': [0],
+  'proximity-damage': [4, 5, 6],
+  'tank-swap': [0],
+  'debuff-handoff': [0],
+  'ordered-targets': [0],
+  'pairing-polarity': [0],
+  'party-split': [0],
+  'partner-revival': [0, 2, 4, 5],
+  'weak-point': [0, 1, 2],
+  telegraph: [0, 1],
+  'fight-phase': [0, 1, 2],
+  enrage: [0, 1],
+});
+
 function primitivesFor(spec, frame) {
   const { mode } = spec;
   const { boss, player, prepare, action, recover, phase } = frame;
@@ -19117,7 +19178,10 @@ export function blueprintFrame(id, time) {
           : mix(WIDE_SWING_TO, WIDE_SWING_FROM, recover);
     frame.wideSwingWeapon = sweepWeaponPose((angle * 180) / Math.PI, frame.bossMotion);
   }
-  frame.primitives = primitivesFor(spec, frame);
+  const decorativeIndices = DECORATIVE_PRIMITIVE_INDICES[id] ?? [];
+  frame.primitives = primitivesFor(spec, frame).map((primitive, index) =>
+    decorativeIndices.includes(index) ? { ...primitive, opacity: 0 } : primitive,
+  );
   frame.playerSafe = pointClearsThreat(spec, frame, player);
   frame.bossLabel = {
     x: boss.x,

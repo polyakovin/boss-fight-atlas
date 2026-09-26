@@ -1416,7 +1416,9 @@ export function initializeBlueprint(widget) {
     }
     playerLabel.setAttribute('x', frame.playerLabel.x);
     playerLabel.setAttribute('y', frame.playerLabel.y);
-    primitives.forEach((primitive, index) => updatePrimitive(primitive, frame.primitives[index]));
+    primitives.forEach((primitive) =>
+      updatePrimitive(primitive, frame.primitives[Number(primitive.dataset.blueprintPrimitive)]),
+    );
     phaseName.textContent = config.phaseNames[frame.phase];
     phaseTooltip.textContent = config.phaseDescriptions[frame.phase];
     if (announcedPhase !== frame.phase) {
