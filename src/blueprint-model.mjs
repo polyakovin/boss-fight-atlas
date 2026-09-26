@@ -1924,8 +1924,8 @@ const SPECS = {
     ally: [300, 760],
     togetherPlayer: [285, 690],
     togetherAlly: [400, 760],
-    apartPlayer: [100, 690],
-    apartAlly: [400, 760],
+    apartPlayer: [130, 690],
+    apartAlly: [430, 760],
     maxLength: 150,
     breakDamage: 90,
     linkAt: 0.7,
@@ -10452,78 +10452,87 @@ function primitivesFor(spec, frame) {
     ];
   }
   if (mode === 'entity-tether') {
-    const t = frame.time;
     const ally = frame.entityTetherAlly;
     const player = frame.player;
     const visible = frame.entityTetherVisible;
     const broken = frame.entityTetherBroken;
-    const held = frame.entityTetherHeld;
-    const tone = broken ? 'signal' : held ? 'safe' : 'accent';
-    const midX = (player.x + ally.x) / 2;
-    const midY = (player.y + ally.y) / 2;
-    const breakGap = 22;
+    const tone = broken ? 'signal' : frame.entityTetherHeld ? 'safe' : 'accent';
     const dx = ally.x - player.x;
     const dy = ally.y - player.y;
     const length = Math.hypot(dx, dy) || 1;
-    const nearX = midX - (dx / length) * breakGap;
-    const nearY = midY - (dy / length) * breakGap;
-    const farX = midX + (dx / length) * breakGap;
-    const farY = midY + (dy / length) * breakGap;
+    const midX = (player.x + ally.x) / 2;
+    const midY = (player.y + ally.y) / 2 - 55;
+    const nearX = midX - (dx / length) * 22;
+    const nearY = midY - (dy / length) * 22;
+    const farX = midX + (dx / length) * 22;
+    const farY = midY + (dy / length) * 22;
     return [
-      rect(...spec.arena, 0.58, 'muted', 0.025),
       path(
-        'M 65 795 L 175 760 L 280 800 L 390 760 L 495 795 V 825 L 390 792 L 280 836 L 175 792 L 65 825 Z',
-        0.54,
+        'M 70 105 H 490 V 147 H 70 Z M 82 147 H 117 V 818 H 82 Z M 443 147 H 478 V 818 H 443 Z',
+        0.52,
         'muted',
         0,
-        0.05,
+        0.61,
       ),
-      ...frame.entityTetherHealth.flatMap((health, index) => [
-        rect(145 + index * 170, 125, 100, 20, 0.78, 'muted', 0.09),
-        rect(145 + index * 170, 125, health, 20, 0.9, health < 100 ? 'signal' : 'safe', 0.55),
-      ]),
-      circle(ally.x, ally.y, spec.maxLength, visible ? 0.4 : 0, 'accent', 3),
+      path(
+        'M 99 790 L 280 750 L 461 790 V 821 L 280 781 L 99 821 Z M 84 877 L 280 836 L 476 877 V 905 L 280 865 L 84 905 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path(
+        'M 210 352 H 350 L 365 379 H 195 Z M 224 379 H 336 V 414 H 224 Z',
+        0.58,
+        'muted',
+        0,
+        0.6,
+      ),
+      circle(280, 344, 34, 0.52, 'accent', 0, 0.58),
+      path('M 272 326 H 288 V 362 H 272 Z M 262 336 H 298 V 352 H 262 Z', 0.7, 'muted', 0, 0.76),
+      ...frame.entityTetherHealth.flatMap((health, index) => {
+        const x = 145 + index * 170;
+        return [
+          path(`M ${x} 118 H ${x + 100} V 151 L ${x + 50} 164 L ${x} 151 Z`, 0.7, 'muted', 0, 0.67),
+          path(
+            `M ${x + 7} 126 H ${x + 7 + health * 0.86} V 147 H ${x + 7} Z`,
+            0.92,
+            health < 100 ? 'signal' : 'safe',
+            0,
+            0.75,
+          ),
+        ];
+      }),
       line(
         player.x,
-        player.y,
+        player.y - 55,
         broken ? nearX : ally.x,
-        broken ? nearY : ally.y,
+        broken ? nearY : ally.y - 55,
         visible ? 0.92 : 0,
         tone,
         9,
       ),
-      line(farX, farY, ally.x, ally.y, broken ? 0.92 : 0, 'signal', 9),
-      circle(player.x, player.y, 11, visible ? 0.9 : 0, tone, 4, 0.18),
-      circle(ally.x, ally.y, 11, visible ? 0.9 : 0, tone, 4, 0.18),
-      circle(
-        midX,
-        midY,
-        20,
-        visible && held && frame.entityTetherHitActive ? 0.95 : 0,
-        'safe',
-        5,
-        0.15,
-      ),
+      line(farX, farY, ally.x, ally.y - 55, broken ? 0.92 : 0, 'signal', 9),
+      ...Array.from({ length: 5 }, (_, index) => {
+        const u = (index + 1) / 6;
+        const x = mix(player.x, ally.x, u);
+        const y = mix(player.y - 55, ally.y - 55, u);
+        return path(
+          `M ${x - 8} ${y} L ${x} ${y - 9} L ${x + 8} ${y} L ${x} ${y + 9} Z`,
+          visible && (!broken || u < 0.4 || u > 0.6) ? 0.78 : 0,
+          tone,
+          0,
+          0.66,
+        );
+      }),
+      circle(player.x, player.y - 55, 13, visible ? 0.89 : 0, tone, 0, 0.7),
+      circle(ally.x, ally.y - 55, 13, visible ? 0.89 : 0, tone, 0, 0.7),
       path(
-        `M ${midX - 12} ${midY} L ${midX - 2} ${midY + 10} L ${midX + 15} ${midY - 12}`,
-        visible && held && frame.entityTetherHitActive ? 0.95 : 0,
-        'safe',
-        6,
-      ),
-      circle(midX, midY, 28, broken ? 0.9 : 0, 'signal', 7, 0.08),
-      path(
-        `M ${midX - 12} ${midY - 12} L ${midX + 12} ${midY + 12} M ${midX + 12} ${midY - 12} L ${midX - 12} ${midY + 12}`,
+        `M ${nearX - 9} ${nearY - 15} L ${nearX + 9} ${nearY + 2} L ${nearX - 3} ${nearY + 10} Z M ${farX + 8} ${farY - 14} L ${farX - 7} ${farY + 2} L ${farX + 5} ${farY + 11} Z`,
         broken ? 0.95 : 0,
         'signal',
-        7,
-      ),
-      circle(
-        spec.player[0],
-        spec.player[1],
-        78 * smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.entityTetherRetry ? 0.75 : 0,
-        'accent',
-        7,
+        0,
+        0.8,
       ),
     ];
   }
