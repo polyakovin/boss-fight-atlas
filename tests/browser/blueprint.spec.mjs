@@ -5055,6 +5055,14 @@ test('entity tether keeps a coordinated pair and breaks when the distance limit 
   await expect(widget).toHaveAttribute('data-blueprint-entity-tether-application-count', '1');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'danger');
   await expect(widget.locator('[data-blueprint-tether-readout]')).toContainText('308 / 150');
+  await page.setViewportSize({ width: 375, height: 812 });
+  for (const time of [4450, 5200]) {
+    await seek(time);
+    const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
+    const player = await widget.locator('[data-blueprint-player]').boundingBox();
+    expect(player.x).toBeGreaterThanOrEqual(canvas.x);
+    expect(player.x + player.width).toBeLessThanOrEqual(canvas.x + canvas.width);
+  }
   await seek(5500);
   await expect(widget).toHaveAttribute('data-blueprint-entity-tether-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-entity-tether-health', '100/100');
