@@ -2083,6 +2083,38 @@ const SPECS = {
     resetAt: 5.5,
     encounterId: 'kern-pairing-polarity-1',
   },
+  'party-split': {
+    mode: 'party-split',
+    boss: [280, 265],
+    player: [145, 615],
+    target: [145, 615],
+    allies: [
+      [215, 615],
+      [345, 615],
+      [415, 615],
+    ],
+    workSpots: [
+      [130, 705],
+      [205, 705],
+      [355, 705],
+      [430, 705],
+    ],
+    reunionSpots: [
+      [210, 845],
+      [260, 845],
+      [310, 845],
+      [360, 845],
+    ],
+    dividerX: 280,
+    revealAt: 0.65,
+    move: [0.95, 1.7],
+    taskCompleteAt: [2.6, 3.25],
+    gateOpenAt: 3.45,
+    deadline: 3.6,
+    reunite: [3.75, 4.85],
+    resetAt: 5.5,
+    encounterId: 'kern-party-split-1',
+  },
   'wide-swing': { mode: 'arc', boss: [225, 340], player: [380, 500], target: [420, 780] },
   lunge: {
     mode: 'lunge',
@@ -5050,6 +5082,103 @@ export function pairingPolarityResolve({
     pairs,
     failedPlayerIds: success ? [] : players.map((player) => player.id),
     applicationCount: 1,
+  });
+}
+
+export function partySplitState(time) {
+  const spec = SPECS['party-split'];
+  const t = localTime(time);
+  if (t < spec.revealAt) return 'together';
+  if (t < spec.move[1]) return 'divide';
+  if (t < spec.gateOpenAt) return 'work';
+  if (t < spec.reunite[0]) return 'gate-open';
+  if (t < spec.resetAt) return 'reunite';
+  return 'reset';
+}
+
+export function partySplitResolve({
+  encounterId = 'kern-party-split-1',
+  eventId = 'gate-1',
+  players = [
+    { id: 'player-1', side: 'left', x: 130, y: 705, alive: true },
+    { id: 'player-2', side: 'left', x: 205, y: 705, alive: true },
+    { id: 'player-3', side: 'right', x: 355, y: 705, alive: true },
+    { id: 'player-4', side: 'right', x: 430, y: 705, alive: true },
+  ],
+  tasks = { left: { completedAt: 2.6 }, right: { completedAt: 3.25 } },
+  now = 3.45,
+  openAt = 3.45,
+  deadline = 3.6,
+  dividerX = 280,
+  bodyRadius = BLUEPRINT_PLAYER_RADIUS,
+  alreadyResolved = false,
+} = {}) {
+  const valid =
+    typeof encounterId === 'string' &&
+    encounterId.length > 0 &&
+    typeof eventId === 'string' &&
+    eventId.length > 0 &&
+    Array.isArray(players) &&
+    players.length === 4 &&
+    new Set(players.map((player) => player?.id)).size === 4 &&
+    players.every(
+      (player) =>
+        typeof player?.id === 'string' &&
+        player.id.length > 0 &&
+        player.alive === true &&
+        ['left', 'right'].includes(player.side) &&
+        Number.isFinite(player.x) &&
+        Number.isFinite(player.y),
+    ) &&
+    Number.isFinite(now) &&
+    Number.isFinite(openAt) &&
+    openAt >= 0 &&
+    openAt <= deadline &&
+    Number.isFinite(deadline) &&
+    deadline > 0 &&
+    Number.isFinite(dividerX) &&
+    Number.isFinite(bodyRadius) &&
+    bodyRadius >= 0 &&
+    tasks &&
+    typeof tasks === 'object' &&
+    ['left', 'right'].every(
+      (side) =>
+        tasks[side] &&
+        (tasks[side].completedAt === null || Number.isFinite(tasks[side].completedAt)),
+    );
+  if (!valid || alreadyResolved)
+    return Object.freeze({
+      encounterId,
+      eventId,
+      resolution: valid ? 'duplicate' : 'invalid',
+      sideCounts: { left: 0, right: 0 },
+      completedSides: [],
+      gateOpen: false,
+      applicationCount: 0,
+    });
+  const sideCounts = {
+    left: players.filter((player) => player.side === 'left' && player.x + bodyRadius < dividerX)
+      .length,
+    right: players.filter((player) => player.side === 'right' && player.x - bodyRadius > dividerX)
+      .length,
+  };
+  const assignmentsValid = sideCounts.left === 2 && sideCounts.right === 2;
+  const completedSides = ['left', 'right'].filter(
+    (side) =>
+      tasks[side].completedAt !== null &&
+      tasks[side].completedAt >= 0 &&
+      tasks[side].completedAt <= now &&
+      tasks[side].completedAt <= deadline,
+  );
+  const gateOpen = assignmentsValid && completedSides.length === 2 && now >= openAt;
+  return Object.freeze({
+    encounterId,
+    eventId,
+    sideCounts,
+    completedSides,
+    gateOpen,
+    resolution: gateOpen ? 'opened' : now >= deadline ? 'failed' : 'pending',
+    applicationCount: gateOpen || now >= deadline ? 1 : 0,
   });
 }
 
@@ -10701,6 +10830,53 @@ function primitivesFor(spec, frame) {
       ),
     ];
   }
+  if (mode === 'party-split') {
+    const visible = frame.time >= spec.revealAt && frame.time < spec.resetAt;
+    const leftDone = frame.partySplitCompletedSides.includes('left');
+    const rightDone = frame.partySplitCompletedSides.includes('right');
+    const gateOpen = frame.partySplitGateOpen;
+    return [
+      rect(58, 530, 182, 256, visible ? 0.72 : 0.24, leftDone ? 'safe' : 'signal', 0.07),
+      rect(320, 530, 182, 256, visible ? 0.72 : 0.24, rightDone ? 'safe' : 'accent', 0.07),
+      line(280, 510, 280, 780, visible ? 0.73 : 0.22, 'muted', 9, '12 9'),
+      line(86, 548, 86, 771, visible ? 0.9 : 0, 'signal', 7),
+      line(474, 548, 474, 771, visible ? 0.9 : 0, 'accent', 7),
+      path(
+        'M 160 541 L 186 575 L 160 609 L 134 575 Z M 160 541 L 160 609 M 134 575 L 186 575',
+        visible ? 0.95 : 0.2,
+        leftDone ? 'safe' : 'signal',
+        6,
+      ),
+      line(376, 601, 424, 601, visible ? 0.95 : 0.2, rightDone ? 'safe' : 'accent', 6),
+      line(
+        400,
+        600,
+        rightDone ? 386 : 414,
+        552,
+        visible ? 0.95 : 0.2,
+        rightDone ? 'safe' : 'accent',
+        7,
+      ),
+      circle(rightDone ? 386 : 414, 552, 9, visible ? 0.95 : 0.2, rightDone ? 'safe' : 'accent', 5),
+      line(116, 635, 204, 635, visible ? 0.7 : 0, 'signal', 6),
+      line(116, 635, 116 + 88 * frame.partySplitProgress[0], 635, visible ? 1 : 0, 'safe', 9),
+      line(356, 635, 444, 635, visible ? 0.7 : 0, 'accent', 6),
+      line(356, 635, 356 + 88 * frame.partySplitProgress[1], 635, visible ? 1 : 0, 'safe', 9),
+      line(
+        219,
+        806,
+        341,
+        806,
+        visible ? (gateOpen ? 0.85 : 1) : 0.16,
+        gateOpen ? 'safe' : 'danger',
+        gateOpen ? 5 : 12,
+        gateOpen ? '14 8' : '',
+      ),
+      circle(280, 806, 33, gateOpen && visible ? 0.85 : 0, 'safe', 5),
+      line(spec.boss[0] - 30, spec.boss[1] + 60, 160, 545, visible ? 0.22 : 0, 'signal', 3),
+      line(spec.boss[0] + 30, spec.boss[1] + 60, 400, 545, visible ? 0.22 : 0, 'accent', 3),
+    ];
+  }
   if (mode === 'coordinated-duo-attack') {
     const t = frame.time;
     const leader = frame.decoy;
@@ -13234,6 +13410,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     return Math.hypot(value.x - target.x, value.y - target.y) > spec.radius + radius;
   }
   if (mode === 'pairing-polarity') return frame.pairingPolaritySuccess;
+  if (mode === 'party-split') return !frame.dangerActive || frame.partySplitGateOpen;
   if (mode === 'coordinated-duo-attack') {
     const target = frame.coordinatedDuoAttackTarget;
     return (
@@ -15525,6 +15702,23 @@ export function blueprintFrame(id, time) {
       y: mix(spec.player[1], spec.receivingSpots[0][1], progress),
     };
     stride = Math.max(pulse(moveOut), pulse(moveBack));
+  }
+  if (spec.mode === 'party-split') {
+    const work = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
+    const reunite = smooth((t - spec.reunite[0]) / (spec.reunite[1] - spec.reunite[0]));
+    const reset = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
+    const x = mix(
+      mix(mix(spec.player[0], spec.workSpots[0][0], work), spec.reunionSpots[0][0], reunite),
+      spec.player[0],
+      reset,
+    );
+    const y = mix(
+      mix(mix(spec.player[1], spec.workSpots[0][1], work), spec.reunionSpots[0][1], reunite),
+      spec.player[1],
+      reset,
+    );
+    player = { x, y };
+    stride = Math.max(pulse(work), pulse(reunite), pulse(reset));
   }
   const bossVisible =
     spec.mode === 'secondary-cues-invisibility'
@@ -18468,6 +18662,46 @@ export function blueprintFrame(id, time) {
     frame.bossMotion.attack = strikePulse(t, spec.resolveAt, 0.52);
     frame.dangerActive = t >= spec.resolveAt && t < spec.resolveAt + spec.hitDuration;
   }
+  if (spec.mode === 'party-split') {
+    const work = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
+    const reunite = smooth((t - spec.reunite[0]) / (spec.reunite[1] - spec.reunite[0]));
+    const reset = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
+    const allies = spec.allies.map(([x, y], index) => ({
+      x: mix(
+        mix(mix(x, spec.workSpots[index + 1][0], work), spec.reunionSpots[index + 1][0], reunite),
+        x,
+        reset,
+      ),
+      y: mix(
+        mix(mix(y, spec.workSpots[index + 1][1], work), spec.reunionSpots[index + 1][1], reunite),
+        y,
+        reset,
+      ),
+    }));
+    const result = partySplitResolve({
+      encounterId: spec.encounterId,
+      now: t,
+      deadline: spec.deadline,
+      tasks: {
+        left: { completedAt: spec.taskCompleteAt[0] },
+        right: { completedAt: spec.taskCompleteAt[1] },
+      },
+    });
+    frame.partySplitState = partySplitState(t);
+    frame.partySplitAllies = allies;
+    frame.partySplitPositions = [player, ...allies];
+    frame.partySplitCompletedSides = t < spec.resetAt ? result.completedSides : [];
+    frame.partySplitProgress = spec.taskCompleteAt.map((doneAt) =>
+      t >= spec.resetAt ? 0 : smooth((t - spec.move[1]) / (doneAt - spec.move[1])),
+    );
+    frame.partySplitGateOpen = t >= spec.gateOpenAt && t < spec.resetAt && result.gateOpen;
+    frame.partySplitReunited = t >= spec.reunite[1] && t < spec.resetAt;
+    frame.partySplitRetry = t >= spec.resetAt;
+    frame.partySplitAlliesMotion = motion({ stride });
+    frame.playerMotion.stride = stride;
+    frame.bossMotion.attack = strikePulse(t, spec.gateOpenAt, 0.5);
+    frame.dangerActive = t >= spec.gateOpenAt && t < spec.reunite[0];
+  }
   if (spec.mode === 'real-time-progression') {
     frame.realTimeProgressionState = realTimeProgressionState(t);
     frame.realTimeProgressionCheckpointId = spec.checkpointId;
@@ -18871,7 +19105,8 @@ export function blueprintFrame(id, time) {
                 spec.mode === 'gaze-check' ||
                 spec.mode === 'debuff-handoff' ||
                 spec.mode === 'ordered-targets' ||
-                spec.mode === 'pairing-polarity'
+                spec.mode === 'pairing-polarity' ||
+                spec.mode === 'party-split'
               ? 92
               : -62),
   };

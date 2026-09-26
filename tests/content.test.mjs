@@ -7,8 +7,8 @@ const source = await loadContent();
 test('all published mechanics have complete content in eight languages', async () => {
   await validateContent(source);
   const published = source.mechanics.filter(({ meta }) => meta.published);
-  assert.equal(source.mechanics.length, 123);
-  assert.equal(published.length, 123);
+  assert.equal(source.mechanics.length, 124);
+  assert.equal(published.length, 124);
   assert.ok(published.every((mechanic) => Object.keys(mechanic.translations).length === 8));
   assert.equal(source.lenses.length, 15);
   assert.ok(source.lenses.every((lens) => Object.keys(lens.translations).length === 8));
@@ -31,7 +31,7 @@ test('the public index contains 124 unique builder-ready mechanics', async () =>
   assert.ok(source.mechanics.every(({ meta }) => indexedIds.has(meta.id)));
   assert.equal(
     indexed.filter(({ id }) => !source.mechanics.some(({ meta }) => meta.id === id)).length,
-    1,
+    0,
   );
 
   const duplicate = structuredClone(source);

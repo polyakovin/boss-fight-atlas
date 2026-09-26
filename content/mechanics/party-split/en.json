@@ -1,0 +1,130 @@
+{
+  "title": "Party split",
+  "subtitle": "Give separated teams independent jobs and one shared reunion gate",
+  "variant": "Four players · two lanes · two tasks · one gate",
+  "summary": "The boss divides the group; both teams must finish their own task before everyone can reunite.",
+  "overview": "A party split turns one boss arena into parallel spaces. Here four living players divide 2+2, complete different left and right objectives, and reopen a shared gate only after both tasks finish. The mechanic is not merely standing far apart: each side has independent progress and the slower side controls the whole group's release.",
+  "learning": "Define assignment, full-body divider clearance, two independent completion events, a shared deadline, gate logic, reunion, and reset.",
+  "category": "Cooperative coordination",
+  "readTime": "10 min",
+  "demo": {
+    "title": "Split Kern's arena, finish both tasks, reunite",
+    "timeline": "Party split timeline",
+    "step": "Both sides must finish before the central gate opens",
+    "phaseNames": ["Reveal and divide", "Complete both tasks", "Reunite and reset"],
+    "phaseDescriptions": [
+      "At 0.65 seconds Kern marks two distinct lanes. Four players travel in assigned pairs, with their whole bodies clear of the central divider by 1.70 seconds.",
+      "The left pair completes a crystal at 2.60 seconds; the right pair finishes a lever at 3.25 seconds. These are separate events, not a shared progress bar. Both must be complete before the 3.60-second deadline. The gate opens once, at 3.45 seconds, only because both tasks succeeded.",
+      "The pairs move around the divider to reunite by 4.85 seconds. The gate and task progress remain visible briefly, then clear at 5.50 seconds before the next cycle."
+    ],
+    "boss": "Boss",
+    "player": "Player",
+    "danger": "Missing side or unfinished task at the deadline: gate stays shut",
+    "locked": "Two players per lane and two independent task events",
+    "safe": "Both tasks complete before the deadline; the group reunites",
+    "reducedMotion": "Reduced motion disables autoplay. Scrub to 0.65, 1.70, 2.60, 3.25, 3.45, and 4.85 seconds.",
+    "diagramDescription": "Kern separates four players into two lanes with a central divider. The left pair completes a crystal first; the right pair completes a lever later. Each side has its own progress bar. Only after both complete does the shared gate open, and the players reunite below the divider."
+  },
+  "steps": [
+    {
+      "title": "What counts as a valid split?",
+      "body": "Snapshot four distinct living players and assign exactly two to each side. At separation, include each player's 24-unit body radius when checking the central divider; a center on the correct side is insufficient. Lock the roster through the task window so a disconnect or duplicate ID does not silently satisfy both sides."
+    },
+    {
+      "title": "What must each side do?",
+      "body": "Give the left and right sides separate objectives and completion events. In the demo, left finishes at 2.60 seconds and right at 3.25. Keep both progress signals visible; do not substitute one aggregate bar, because players must know which side is holding the gate. Test both completion orders and a side that never finishes."
+    },
+    {
+      "title": "When does the gate open?",
+      "body": "Open the shared gate exactly once after both valid sides finish before 3.60 seconds. A missing player, divider overlap, late task, or duplicate callback must not produce a second opening. Reserve a separate reunion route and log assignments, each task event, gate event ID, deadline result, and reset."
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "Calling a spread a split",
+      "body": "Distance alone does not create parallel work. Both sides need distinct, visible tasks whose completion affects the same gate."
+    },
+    {
+      "title": "Hiding the slower team's progress",
+      "body": "If the faster side finishes and sees only a locked gate, waiting feels arbitrary. Show each side's completion state and the remaining deadline."
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "Make lanes readable without color",
+      "body": "Use a physical divider, separate objective shapes, Roman I and II labels, and two progress bars. Hue reinforces the split but cannot be its sole signal."
+    },
+    {
+      "title": "Budget the slowest route",
+      "body": "Measure travel to both lanes, objective interaction, and movement back to the gate at ordinary speed. A group should fail because a task was missed, not because the path is geometrically impossible."
+    },
+    {
+      "title": "Keep completion atomic",
+      "body": "Record an encounter ID and per-side completion times. Resolve the shared gate once after checking both, then reject duplicate callbacks and clear only encounter-local state on retry."
+    }
+  ],
+  "story": {
+    "title": "Two runes, one sealed passage",
+    "body": "Kern raises a stone wall through the arena. One pair charges a crystal, the other pulls a rune lever; the lower gate lifts only when both circuits answer."
+  },
+  "adaptation": {
+    "title": "Vary tasks without losing the dependency",
+    "body": "The sides may defeat different enemies, hold switches, or solve asymmetric hazards. You can add a third room, but then recalculate roster size, independent progress, and reunion timing. Preserve the common dependency: no side alone can release the whole group."
+  },
+  "distinction": {
+    "title": "Parallel objectives, not pair composition",
+    "body": "Pairing polarity checks who shares a receiving zone at one pulse. Party split checks whether separated teams complete distinct objectives before a shared release. Stack damage asks several players to overlap; here the two teams cannot occupy the same lane while working."
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "The divider, two objective shapes, and separate progress bars explain the division before it becomes urgent."
+    },
+    {
+      "id": "counterplay",
+      "body": "Players can assign two people to each side, complete their local task, and return through the opened gate."
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "Split, parallel work, shared gate, reunion, and reset form distinct beats; the later task controls the wait."
+    },
+    {
+      "id": "progress-clarity",
+      "body": "Independent left and right completion signals show which side is done and why the common gate remains closed."
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Kaling",
+      "screenshot": "https://i.ytimg.com/vi/vP9bXXbrmEU/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=vP9bXXbrmEU",
+      "video": "https://www.youtube.com/watch?v=vP9bXXbrmEU&t=12s",
+      "videoDurationSeconds": 459,
+      "body": "Kaling's first phase separates the party among three Peril rooms, with a small team handling each room. The guide's first-room footage begins here; the two-lane demo deliberately simplifies the three-room version while retaining separate progress before the group proceeds."
+    },
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Will",
+      "screenshot": "https://i.ytimg.com/vi/JFoZ7zpPyIM/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=JFoZ7zpPyIM",
+      "video": "https://www.youtube.com/watch?v=JFoZ7zpPyIM&t=122s",
+      "videoDurationSeconds": 472,
+      "body": "Will's first phase divides players between the real and mirror dimensions, each with its own health bar. A team that finishes its side may need to switch or wait for the other side before the phase advances; the clip starts at the phase-one guide chapter."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Brionac and 4th Legion Helldiver",
+      "screenshot": "https://i.ytimg.com/vi/hNlJ8YgSN20/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=hNlJ8YgSN20",
+      "video": "https://www.youtube.com/watch?v=hNlJ8YgSN20&t=55s",
+      "videoDurationSeconds": 1199,
+      "body": "At Castrum Lacus Litore, the raid splits between upper and lower routes to fight different bosses. Both groups must complete their encounters close together or the delayed side faces an enrage; the guide introduces the first split at this timestamp."
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

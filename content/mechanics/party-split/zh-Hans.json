@@ -1,0 +1,130 @@
+{
+  "title": "队伍分路",
+  "subtitle": "分队完成独立任务，再通过同一出口会合",
+  "variant": "四名玩家 · 两条路线 · 两项任务 · 一道门",
+  "summary": "首领将队伍分开；两侧完成各自任务后才能会合。",
+  "overview": "队伍分路把一块战斗场地变成并行区域。四名存活玩家按二加二分组，分别完成左右不同目标；只有两边都完成，共用的门才打开。这不只是相互远离：两侧独立推进，较慢的一侧决定全队何时能离开。",
+  "learning": "定义分组、完整身体与隔墙的间距、两个独立完成事件、共同期限、开门规则、会合与重置。",
+  "category": "团队协作",
+  "readTime": "10 分钟",
+  "demo": {
+    "title": "分开完成克恩的两项任务，再一起会合",
+    "timeline": "队伍分路时间线",
+    "step": "两侧都完成，中央门才开启",
+    "phaseNames": ["预告并分路", "完成两侧任务", "会合并重置"],
+    "phaseDescriptions": [
+      "0.65 秒时克恩标出两条路线。四人按指定的两人小组移动；到 1.70 秒时，所有人的身体都完全位于隔墙的正确一侧。",
+      "左侧于 2.60 秒完成水晶，右侧于 3.25 秒完成机关。两者是独立事件，不是一条共用进度。必须在 3.60 秒期限前全部完成；因此门在 3.45 秒只开启一次。",
+      "两组绕过隔墙，于 4.85 秒前会合。门与进度短暂保留，5.50 秒清除，进入下一轮。"
+    ],
+    "boss": "首领",
+    "player": "玩家",
+    "danger": "缺人或超时未完成：门保持关闭",
+    "locked": "每侧两人、两个独立任务事件",
+    "safe": "两项任务按时完成，队伍会合",
+    "reducedMotion": "减少动态效果会关闭自动播放。可拖到 0.65、1.70、2.60、3.25、3.45 和 4.85 秒。",
+    "diagramDescription": "克恩用隔墙把四名玩家分到两侧。左侧二人先启动水晶，右侧二人随后拉动机关。两侧各有进度条。只有双方完成，共用门才开启，玩家绕过隔墙会合。"
+  },
+  "steps": [
+    {
+      "title": "怎样才算正确分组？",
+      "body": "记录四名不同且存活的玩家，每侧恰好两人。检查隔墙时要计入玩家 24 单位的身体半径；只有中心点越过还不够。任务期间锁定名单，避免掉线或重复 ID 让两边被错误满足。"
+    },
+    {
+      "title": "每侧要做什么？",
+      "body": "为左右设计不同目标和独立完成事件。示例中左侧 2.60 秒完成，右侧 3.25 秒完成。分别显示进度；总进度条无法说明是谁让门继续关闭。测试完成顺序颠倒和一侧始终未完成。"
+    },
+    {
+      "title": "门何时开启？",
+      "body": "双方都是有效小组、且都在 3.60 秒前完成时，门仅开启一次。缺人、身体压在隔墙上、超时任务或重复回调都不能再次开门。安排独立的会合路线，并记录分组、任务事件、门事件 ID、期限结果与重置。"
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "把分散站位当作分路",
+      "body": "只有距离不算并行任务。两侧需要不同、可见且共同影响一道门的目标。"
+    },
+    {
+      "title": "隐藏较慢一侧的进度",
+      "body": "快的一侧做完后若只看到关门，等待会显得毫无原因。显示双方完成状态与剩余时间。"
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "不用颜色也能辨别路线",
+      "body": "使用实体隔墙、不同目标形状、罗马数字 I 和 II，以及两条进度条；颜色仅作辅助。"
+    },
+    {
+      "title": "估算最慢路线",
+      "body": "以正常速度测量去往两侧、执行任务与返回门口的时间。失败应来自漏做任务，而不是几何上不可能的路程。"
+    },
+    {
+      "title": "让完成事件保持原子性",
+      "body": "保存战斗 ID 和各侧完成时间。检查两侧后仅开门一次，拒绝重复回调，并在重试时只清除本场战斗的状态。"
+    }
+  ],
+  "story": {
+    "title": "两枚符文，一道封门",
+    "body": "克恩在场地中央升起石墙。一组给水晶充能，另一组拉动符文机关；只有两条回路都回应，下方石门才升起。"
+  },
+  "adaptation": {
+    "title": "可以换任务，但保留共同依赖",
+    "body": "两侧可以击败不同敌人、守住开关或应对不对称危险。增加第三间房时，必须重新计算人数、独立进度与会合时间。核心是任何一侧都不能单独放出全队。"
+  },
+  "distinction": {
+    "title": "并行目标，而非配对构成",
+    "body": "极性配对在同一脉冲检查接收区里是谁；队伍分路检查分开的队伍是否在共同出口前完成各自目标。分摊伤害要求聚在一起，而这里工作时两队不能站在同一侧。"
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "隔墙、两种目标与独立进度条在紧迫时刻前说明分工。"
+    },
+    {
+      "id": "counterplay",
+      "body": "玩家可按每侧两人分组，完成本地任务，再从打开的门返回。"
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "分路、并行工作、共用门、会合与重置形成不同节奏；后完成的任务决定等待时长。"
+    },
+    {
+      "id": "progress-clarity",
+      "body": "左右独立的完成信号说明哪侧已完成，以及门为何仍然关闭。"
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Kaling",
+      "screenshot": "https://i.ytimg.com/vi/vP9bXXbrmEU/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=vP9bXXbrmEU",
+      "video": "https://www.youtube.com/watch?v=vP9bXXbrmEU&t=12s",
+      "videoDurationSeconds": 459,
+      "body": "卡林第一阶段将队伍分进三间祸乱房间，各由小队应对。视频从其中一间房的画面开始；本演示把三间简化为两间，但保留独立进度。"
+    },
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Will",
+      "screenshot": "https://i.ytimg.com/vi/JFoZ7zpPyIM/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=JFoZ7zpPyIM",
+      "video": "https://www.youtube.com/watch?v=JFoZ7zpPyIM&t=122s",
+      "videoDurationSeconds": 472,
+      "body": "威尔第一阶段把玩家分入现实和镜像维度，两边各有生命条。一边完成后可能需要切换或等待另一边；链接从第一阶段讲解开始。"
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Brionac and 4th Legion Helldiver",
+      "screenshot": "https://i.ytimg.com/vi/hNlJ8YgSN20/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=hNlJ8YgSN20",
+      "video": "https://www.youtube.com/watch?v=hNlJ8YgSN20&t=55s",
+      "videoDurationSeconds": 1199,
+      "body": "在 Castrum Lacus Litore，团队分上、下两路迎战不同首领。两队需要接近同时结束，否则滞后的一侧会遭遇狂暴；视频在这里介绍首次分路。"
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

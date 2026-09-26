@@ -104,6 +104,8 @@ import {
   orderedTargetsResolve,
   pairingPolarityState,
   pairingPolarityResolve,
+  partySplitState,
+  partySplitResolve,
   counterStanceOutcome,
   counterStanceState,
   blueprintFrame,
@@ -131,8 +133,8 @@ import {
   renderBlueprintThumbnail,
 } from '../lib/blueprint-view.mjs';
 
-test('all 117 promoted lesson animations have distinct rule modes and complete moving frames', () => {
-  assert.equal(BLUEPRINT_MECHANIC_IDS.length, 117);
+test('all 118 promoted lesson animations have distinct rule modes and complete moving frames', () => {
+  assert.equal(BLUEPRINT_MECHANIC_IDS.length, 118);
   const modes = new Set();
   for (const id of BLUEPRINT_MECHANIC_IDS) {
     for (let time = 0; time <= BLUEPRINT_DURATION; time += 0.1) {
@@ -153,7 +155,7 @@ test('all 117 promoted lesson animations have distinct rule modes and complete m
           assert.ok(Number.isFinite(value), `${id} has an invalid ${primitive.type}`);
     }
   }
-  assert.equal(modes.size, 117);
+  assert.equal(modes.size, 118);
 });
 
 test('every blueprint exposes signal, committed action, and recovery without player teleports', () => {
@@ -219,7 +221,8 @@ test('every blueprint exposes signal, committed action, and recovery without pla
       id !== 'tank-swap' &&
       id !== 'debuff-handoff' &&
       id !== 'ordered-targets' &&
-      id !== 'pairing-polarity'
+      id !== 'pairing-polarity' &&
+      id !== 'party-split'
     )
       assert.equal(blueprintFrame(id, 3).dangerActive, true, id);
     assert.equal(blueprintFrame(id, 3).playerSafe, true, id);
@@ -335,6 +338,7 @@ test('every damaging promoted animation derives safety from its own active geome
       id !== 'debuff-handoff' &&
       id !== 'ordered-targets' &&
       id !== 'pairing-polarity' &&
+      id !== 'party-split' &&
       id !== 'part-break' &&
       id !== 'counter-stance' &&
       id !== 'absorption-power-up' &&
@@ -5629,5 +5633,72 @@ test('pairing polarity requires exactly two opposite complete bodies in each cir
   }
   const preview = renderBlueprintThumbnail(id, 'test-pairing-polarity');
   assert.match(preview, /data-blueprint-preview="pairing-polarity"/);
+  assert.match(preview, /data-character-art-preview="tavi-ally-2"/);
+});
+
+test('party split requires two valid sides, independent tasks, one gate event and reunion', () => {
+  const id = 'party-split';
+  assert.deepEqual([0, 1, 2, 3.5, 4.2, 5.6].map(partySplitState), [
+    'together',
+    'divide',
+    'work',
+    'gate-open',
+    'reunite',
+    'reset',
+  ]);
+  const opened = partySplitResolve();
+  assert.equal(opened.resolution, 'opened');
+  assert.deepEqual(opened.sideCounts, { left: 2, right: 2 });
+  assert.deepEqual(opened.completedSides, ['left', 'right']);
+  assert.equal(opened.applicationCount, 1);
+  assert.equal(partySplitResolve({ alreadyResolved: true }).resolution, 'duplicate');
+  assert.equal(partySplitResolve({ alreadyResolved: true }).applicationCount, 0);
+  assert.equal(partySplitResolve({ players: [] }).resolution, 'invalid');
+  assert.equal(partySplitResolve({ players: [null, null, null, null] }).resolution, 'invalid');
+  assert.equal(partySplitResolve({ now: 2.8 }).resolution, 'pending');
+  assert.equal(partySplitResolve({ now: 3.3 }).resolution, 'pending');
+  assert.deepEqual(partySplitResolve({ now: 2.8 }).completedSides, ['left']);
+  assert.equal(
+    partySplitResolve({
+      now: 3.7,
+      tasks: { left: { completedAt: 2.6 }, right: { completedAt: null } },
+    }).resolution,
+    'failed',
+  );
+  assert.equal(
+    partySplitResolve({
+      tasks: { left: { completedAt: 2.6 }, right: { completedAt: 3.7 } },
+      now: 3.8,
+    }).resolution,
+    'failed',
+  );
+  assert.equal(
+    partySplitResolve({
+      players: [
+        { id: 'player-1', side: 'left', x: 130, y: 705, alive: true },
+        { id: 'player-2', side: 'left', x: 270, y: 705, alive: true },
+        { id: 'player-3', side: 'right', x: 355, y: 705, alive: true },
+        { id: 'player-4', side: 'right', x: 430, y: 705, alive: true },
+      ],
+    }).gateOpen,
+    false,
+    'the complete body must clear the divider',
+  );
+  assert.deepEqual(blueprintFrame(id, 2.7).partySplitCompletedSides, ['left']);
+  assert.equal(blueprintFrame(id, 3.3).partySplitGateOpen, false);
+  assert.equal(blueprintFrame(id, 3.5).partySplitGateOpen, true);
+  assert.equal(blueprintFrame(id, 4.9).partySplitReunited, true);
+  assert.equal(blueprintFrame(id, 5.6).partySplitRetry, true);
+  for (let t = 0.02; t < BLUEPRINT_DURATION; t += 0.02) {
+    const a = blueprintFrame(id, t - 0.02).partySplitPositions;
+    const z = blueprintFrame(id, t).partySplitPositions;
+    for (let index = 0; index < 4; index += 1)
+      assert.ok(
+        Math.hypot(z[index].x - a[index].x, z[index].y - a[index].y) < 18,
+        'player teleports',
+      );
+  }
+  const preview = renderBlueprintThumbnail(id, 'test-party-split');
+  assert.match(preview, /data-blueprint-preview="party-split"/);
   assert.match(preview, /data-character-art-preview="tavi-ally-2"/);
 });

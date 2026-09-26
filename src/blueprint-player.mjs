@@ -71,6 +71,7 @@ export function initializeBlueprint(widget) {
   const orderNext = find('[data-blueprint-order-next]');
   const orderMarks = [...widget.querySelectorAll('[data-blueprint-order-mark]')];
   const polarityMarks = [...widget.querySelectorAll('[data-blueprint-polarity-mark]')];
+  const splitGate = find('[data-blueprint-split-gate]');
   const partnerLabel = find('[data-blueprint-partner-label]');
   const playerLabel = find('[data-blueprint-player-label]');
   const primitives = [...widget.querySelectorAll('[data-blueprint-primitive]')];
@@ -1339,6 +1340,19 @@ export function initializeBlueprint(widget) {
         mark.setAttribute('opacity', frame.pairingPolarityVisible ? '1' : '0');
       }
     }
+    if (mechanicId === 'party-split') {
+      widget.dataset.blueprintSplitState = frame.partySplitState;
+      widget.dataset.blueprintSplitCompleted = frame.partySplitCompletedSides.join(',');
+      widget.dataset.blueprintSplitGateOpen = String(frame.partySplitGateOpen);
+      widget.dataset.blueprintSplitReunited = String(frame.partySplitReunited);
+      widget.dataset.blueprintSplitRetry = String(frame.partySplitRetry);
+      if (splitGate)
+        splitGate.textContent = frame.partySplitRetry
+          ? ''
+          : frame.partySplitGateOpen
+            ? '✓'
+            : `${frame.partySplitCompletedSides.length} / 2`;
+    }
     boss.setAttribute(
       'transform',
       `translate(${frame.boss.x} ${frame.boss.y})${frame.bossRotation ? ` rotate(${frame.bossRotation})` : ''} scale(${frame.bossScale})`,
@@ -1363,7 +1377,8 @@ export function initializeBlueprint(widget) {
       const position = (frame.stackDamageAllies ??
         frame.personalSpreadPositions?.slice(1) ??
         frame.orderedTargetAllies ??
-        frame.pairingPolarityAllies ?? [
+        frame.pairingPolarityAllies ??
+        frame.partySplitAllies ?? [
           frame.towerSoakAlly ??
             frame.entityTetherAlly ??
             frame.tankSwapAlly ??
@@ -1378,7 +1393,8 @@ export function initializeBlueprint(widget) {
           frame.tankSwapAllyMotion ??
           frame.debuffHandoffAllyMotion ??
           frame.orderedTargetAlliesMotion ??
-          frame.pairingPolarityAlliesMotion,
+          frame.pairingPolarityAlliesMotion ??
+          frame.partySplitAlliesMotion,
         frame.playerFacing,
       );
     }

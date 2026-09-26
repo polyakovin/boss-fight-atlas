@@ -447,9 +447,9 @@ test('volley releases three parallel bolts on one beat and clears its outside ro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('catalog and builder reuse the 117 promoted rule-specific previews', async ({ page }) => {
+test('catalog and builder reuse the 118 promoted rule-specific previews', async ({ page }) => {
   await page.goto('en/');
-  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(117);
+  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(118);
   const catalogLayouts = await page.locator('[data-blueprint-preview]').evaluateAll((previews) =>
     previews.map((preview) => {
       const boss = preview.querySelector('[data-character-art-preview="kern"]');
@@ -473,7 +473,7 @@ test('catalog and builder reuse the 117 promoted rule-specific previews', async 
   expect(new Set(catalogLayouts.map(({ layout }) => layout)).size).toBeGreaterThanOrEqual(18);
 
   await page.goto('en/builder/');
-  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(117);
+  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(118);
   const builderLayouts = await page.locator('[data-blueprint-preview]').evaluateAll((previews) =>
     previews.map((preview) => {
       const boss = preview.querySelector('[data-character-art-preview="kern"]');
@@ -5281,6 +5281,43 @@ test('pairing polarity shows four signs, two opposite pairs and a single reset',
   await expect(widget).toHaveAttribute('data-blueprint-polarity-retry', 'true');
 
   await page.goto('ar/mechanics/pairing-polarity/');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('party split shows independent side progress, a shared gate and reunion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('en/mechanics/party-split/');
+  const widget = page.locator('[data-blueprint-demo]');
+  const timeline = widget.locator('[data-blueprint-timeline]');
+  const seek = (milliseconds) =>
+    timeline.evaluate((element, value) => {
+      element.value = String(value);
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+    }, milliseconds);
+
+  await expect(page.locator('.lesson-title-line h1')).toHaveText('Party split');
+  await expect(page.locator('.wip-badge, .draft-profile')).toHaveCount(0);
+  await expect(page.locator('.game-example')).toHaveCount(3);
+  await expect(page.locator('.lens-chip')).toHaveCount(4);
+  await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
+  await expect(widget).toHaveAttribute('data-blueprint-playing', 'false');
+  await expect(widget.locator('[data-blueprint-ally]')).toHaveCount(3);
+  await seek(2700);
+  await expect(widget).toHaveAttribute('data-blueprint-split-completed', 'left');
+  await expect(widget).toHaveAttribute('data-blueprint-split-gate-open', 'false');
+  await expect(widget.locator('[data-blueprint-split-gate]')).toHaveText('1 / 2');
+  await seek(3500);
+  await expect(widget).toHaveAttribute('data-blueprint-split-completed', 'left,right');
+  await expect(widget).toHaveAttribute('data-blueprint-split-gate-open', 'true');
+  await expect(widget.locator('[data-blueprint-split-gate]')).toHaveText('✓');
+  await seek(4900);
+  await expect(widget).toHaveAttribute('data-blueprint-split-reunited', 'true');
+  await seek(5600);
+  await expect(widget).toHaveAttribute('data-blueprint-split-retry', 'true');
+
+  await page.goto('ar/mechanics/party-split/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

@@ -1,0 +1,24 @@
+{
+  "id": "party-split",
+  "number": 124,
+  "published": true,
+  "sourceLocale": "en",
+  "contentVersion": 1,
+  "animation": "party-split",
+  "lenses": ["telegraphing", "counterplay", "difficulty-rhythm", "progress-clarity"],
+  "related": ["tower-soak", "stack-damage", "pairing-polarity", "coordinated-duo-attack"],
+  "sources": [
+    {
+      "title": "Kaling phase-one room split — MapleTools guide",
+      "url": "https://mapletools.app/bosses/kaling/guide"
+    },
+    {
+      "title": "Will phase-one party split and dual health bars — MapleStory guide",
+      "url": "https://gamerstips.com/maplestory-commander-will-guide/"
+    },
+    {
+      "title": "Castrum Lacus Litore upper and lower encounters — Final Fantasy XIV Community Wiki",
+      "url": "https://ffxiv.consolegameswiki.com/wiki/Castrum_Lacus_Litore"
+    }
+  ]
+}

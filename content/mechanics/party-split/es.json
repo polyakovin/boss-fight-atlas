@@ -1,0 +1,130 @@
+{
+  "title": "División del grupo",
+  "subtitle": "Equipos separados, tareas independientes y una puerta común",
+  "variant": "Cuatro jugadores · dos zonas · dos tareas · una puerta",
+  "summary": "El jefe divide al grupo; ambos equipos deben terminar sus tareas antes de reunirse.",
+  "overview": "La división del grupo convierte la arena en espacios paralelos. Cuatro jugadores vivos se separan 2+2, completan objetivos distintos a izquierda y derecha y abren la puerta común solo al terminar ambos. No basta con alejarse: cada lado progresa por separado y el más lento retrasa a todos.",
+  "learning": "Define asignaciones, separación del cuerpo completo, dos eventos independientes, plazo común, apertura, reunión y reinicio.",
+  "category": "Coordinación cooperativa",
+  "readTime": "10 min",
+  "demo": {
+    "title": "Divide la arena de Kern, cumple ambas tareas y reúne al grupo",
+    "timeline": "Cronología de la división",
+    "step": "La puerta se abre solo cuando ambos lados terminan",
+    "phaseNames": ["Señal y división", "Completar ambas tareas", "Reunión y reinicio"],
+    "phaseDescriptions": [
+      "A los 0,65 segundos Kern marca dos zonas. Cuatro jugadores avanzan en parejas asignadas; a los 1,70 segundos el cuerpo entero de cada uno está a su lado del muro.",
+      "La pareja izquierda termina el cristal a los 2,60 segundos y la derecha la palanca a los 3,25. Son eventos distintos, no una barra compartida. Ambos deben completarse antes de los 3,60 segundos; la puerta se abre una vez a los 3,45.",
+      "Las parejas rodean el muro y se reúnen a los 4,85 segundos. La puerta y el progreso siguen visibles un instante y se reinician a los 5,50."
+    ],
+    "boss": "Jefe",
+    "player": "Jugador",
+    "danger": "Falta un lado o una tarea al vencer el plazo: puerta cerrada",
+    "locked": "Dos jugadores por lado y dos eventos independientes",
+    "safe": "Ambas tareas terminan a tiempo; el grupo se reúne",
+    "reducedMotion": "El movimiento reducido desactiva la reproducción automática. Sitúa el control en 0,65; 1,70; 2,60; 3,25; 3,45 y 4,85 segundos.",
+    "diagramDescription": "Kern separa a cuatro jugadores en dos zonas mediante un muro. La pareja izquierda activa primero un cristal; la derecha acciona después una palanca. Cada lado tiene su barra. La puerta común se abre solo al terminar ambas tareas y el grupo se reúne más allá del muro."
+  },
+  "steps": [
+    {
+      "title": "¿Qué es una división válida?",
+      "body": "Registra cuatro jugadores vivos y distintos y asigna exactamente dos a cada lado. Al comprobar el muro, incluye el radio corporal de 24 unidades: no basta con que el centro haya cruzado. Mantén fija la lista para que una desconexión o un ID duplicado no satisfagan dos lados."
+    },
+    {
+      "title": "¿Qué hace cada equipo?",
+      "body": "Da a cada lado un objetivo y evento de finalización propios. En la demostración, la izquierda termina a los 2,60 segundos y la derecha a los 3,25. Muestra ambas señales de progreso; una sola barra oculta quién retiene la puerta. Prueba el orden inverso y una tarea sin terminar."
+    },
+    {
+      "title": "¿Cuándo se abre la puerta?",
+      "body": "Ábrela exactamente una vez después de que ambos equipos válidos terminen antes de los 3,60 segundos. Un jugador ausente, un cuerpo sobre el muro, una tarea tardía o una llamada duplicada no deben abrirla otra vez. Reserva una ruta de reunión y registra asignaciones, eventos, ID, plazo y reinicio."
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "Confundir dispersión con división",
+      "body": "La distancia no crea trabajo paralelo. Cada lado necesita una tarea visible y distinta que afecte a la misma puerta."
+    },
+    {
+      "title": "Ocultar el progreso del lado lento",
+      "body": "Si un equipo acaba y solo ve una puerta cerrada, la espera parece arbitraria. Muestra el estado de ambas tareas y el tiempo restante."
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "Distingue los lados sin color",
+      "body": "Usa un muro físico, formas de objetivo distintas, etiquetas I y II y dos barras. El color solo refuerza la señal."
+    },
+    {
+      "title": "Calcula la ruta más lenta",
+      "body": "Mide el desplazamiento a cada lado, la interacción y el regreso a velocidad normal. Se debe fallar por perder una tarea, no por un recorrido imposible."
+    },
+    {
+      "title": "Haz atómica la finalización",
+      "body": "Guarda el ID del encuentro y los tiempos de cada lado. Comprueba ambos antes de abrir una vez, rechaza duplicados y reinicia solo el estado de este encuentro."
+    }
+  ],
+  "story": {
+    "title": "Dos runas, un paso sellado",
+    "body": "Kern levanta un muro de piedra. Una pareja carga un cristal y la otra tira de una palanca rúnica; la puerta inferior se alza cuando responden ambos circuitos."
+  },
+  "adaptation": {
+    "title": "Cambia las tareas, conserva la dependencia",
+    "body": "Los equipos pueden vencer enemigos distintos, sostener interruptores o resolver peligros asimétricos. Una tercera sala exige recalcular el grupo, el progreso y la reunión. Ningún lado debe liberar por sí solo a todos."
+  },
+  "distinction": {
+    "title": "Objetivos paralelos, no composición de pareja",
+    "body": "La polaridad de parejas comprueba quién comparte una zona en un instante. Aquí se comprueba si equipos separados completan objetivos distintos antes de una salida común. Acumular daño reúne cuerpos; esta mecánica los mantiene separados durante el trabajo."
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "El muro, dos objetivos y barras separadas explican la división antes de la urgencia."
+    },
+    {
+      "id": "counterplay",
+      "body": "Los jugadores asignan dos personas por lado, cumplen la tarea local y vuelven por la puerta abierta."
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "División, trabajo paralelo, puerta común, reunión y reinicio forman momentos distinguibles; la tarea tardía determina la espera."
+    },
+    {
+      "id": "progress-clarity",
+      "body": "Las señales independientes muestran qué lado terminó y por qué la puerta aún está cerrada."
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Kaling",
+      "screenshot": "https://i.ytimg.com/vi/vP9bXXbrmEU/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=vP9bXXbrmEU",
+      "video": "https://www.youtube.com/watch?v=vP9bXXbrmEU&t=12s",
+      "videoDurationSeconds": 459,
+      "body": "La primera fase de Kaling reparte al grupo entre tres salas de Peril, cada una con un equipo pequeño. El vídeo empieza mostrando una sala; la demostración reduce tres salas a dos sin perder el progreso independiente."
+    },
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Will",
+      "screenshot": "https://i.ytimg.com/vi/JFoZ7zpPyIM/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=JFoZ7zpPyIM",
+      "video": "https://www.youtube.com/watch?v=JFoZ7zpPyIM&t=122s",
+      "videoDurationSeconds": 472,
+      "body": "La primera fase de Will divide jugadores entre las dimensiones real y espejo, cada una con su propia barra de vida. Un equipo que acaba puede cambiar de lado o esperar; el enlace comienza en el capítulo de la fase uno."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Brionac and 4th Legion Helldiver",
+      "screenshot": "https://i.ytimg.com/vi/hNlJ8YgSN20/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=hNlJ8YgSN20",
+      "video": "https://www.youtube.com/watch?v=hNlJ8YgSN20&t=55s",
+      "videoDurationSeconds": 1199,
+      "body": "En Castrum Lacus Litore, el grupo se divide entre rutas superior e inferior para combatir jefes distintos. Ambos equipos deben acabar casi al mismo tiempo o el retrasado sufrirá la furia del encuentro; la guía presenta aquí la división."
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

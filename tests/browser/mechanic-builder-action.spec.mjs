@@ -40,8 +40,8 @@ test('mechanic pages add to the current boss draft', async ({ page }) => {
   ).not.toContainEqual(expect.objectContaining({ mechanicId: 'charge' }));
 });
 
-test('WIP mechanic pages expose the same current-boss control', async ({ page }) => {
-  await page.goto('en/mechanics/boundary-attack/');
+test('the final published mechanic can be added to the current boss', async ({ page }) => {
+  await page.goto('en/mechanics/party-split/');
   const action = page.locator('[data-mechanic-builder-action]');
   await expect(action).toContainText('Use for current boss');
   await action.locator('[data-mechanic-builder-toggle]').check();
@@ -50,7 +50,7 @@ test('WIP mechanic pages expose the same current-boss control', async ({ page })
       () => JSON.parse(localStorage.getItem('boss-fight-atlas-boss-builder')).assignments,
     ),
   ).toContainEqual({
-    mechanicId: 'boundary-attack',
+    mechanicId: 'party-split',
     phaseId: 'phase-1',
     combo: 'solo',
     implementation: '',

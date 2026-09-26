@@ -690,7 +690,13 @@ const PROFILE_OVERRIDES = {
       'progress-clarity',
     ],
   },
-  'party-split': { geometry: ['arena'], response: ['coordinate', 'reposition', 'manage'] },
+  'party-split': {
+    geometry: ['arena', 'zone'],
+    signal: ['marker'],
+    response: ['coordinate', 'reposition', 'manage'],
+    dimensions: ['2d', '3d'],
+    lenses: ['telegraphing', 'counterplay', 'difficulty-rhythm', 'progress-clarity'],
+  },
 };
 
 const pairKey = (left, right) => [left, right].sort().join('|');
