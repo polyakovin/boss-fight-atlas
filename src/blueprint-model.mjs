@@ -1837,12 +1837,12 @@ const SPECS = {
     target: [280, 710],
     arena: [55, 245, 450, 650],
     allies: [
-      [100, 710],
-      [460, 710],
+      [150, 710],
+      [410, 710],
     ],
     stackPoints: [
-      [200, 710],
-      [360, 710],
+      [225, 710],
+      [335, 710],
     ],
     markerRadius: 115,
     totalDamage: 90,
@@ -10173,83 +10173,97 @@ function primitivesFor(spec, frame) {
   if (mode === 'stack-damage') {
     const t = frame.time;
     const target = point(spec.target);
-    const first = t >= spec.firstSignal[0] && t < spec.firstHit[1];
-    const second = t >= spec.secondSignal[0] && t < spec.secondHit[1];
-    const marked = first || second;
+    const marked =
+      (t >= spec.firstSignal[0] && t < spec.firstHit[1]) ||
+      (t >= spec.secondSignal[0] && t < spec.secondHit[1]);
     const hit = frame.stackDamageHitActive;
     const count = frame.stackDamageParticipantCount;
-    const health = frame.stackDamageHealth;
     return [
-      rect(...spec.arena, 0.58, 'muted', 0.025),
       path(
-        'M 64 762 L 166 734 L 280 760 L 394 734 L 496 762 V 800 L 394 770 L 280 808 L 166 770 L 64 800 Z M 70 850 L 280 808 L 490 850',
+        'M 68 104 H 492 V 145 H 68 Z M 80 145 H 113 V 813 H 80 Z M 447 145 H 480 V 813 H 447 Z',
         0.5,
         'muted',
         0,
-        0.45,
+        0.58,
+      ),
+      path(
+        'M 99 784 L 280 748 L 461 784 V 816 L 280 779 L 99 816 Z M 84 874 L 280 834 L 476 874 V 903 L 280 864 L 84 903 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path(
+        'M 210 365 L 350 365 L 365 390 L 195 390 Z M 219 390 H 341 V 419 H 219 Z',
+        0.6,
+        'muted',
+        0,
+        0.55,
       ),
       ...[0, 1, 2].flatMap((index) => {
         const x = [230, 95, 365][index];
-        const current = health[index];
+        const current = frame.stackDamageHealth[index];
         return [
-          rect(x, 125, 100, 20, 0.76, 'muted', 0.09),
-          rect(x, 125, current, 20, 0.9, current === 0 ? 'signal' : 'safe', 0.55),
+          path(`M ${x} 117 H ${x + 100} V 150 L ${x + 50} 163 L ${x} 150 Z`, 0.68, 'muted', 0, 0.7),
+          path(
+            `M ${x + 7} 125 H ${x + 7 + current * 0.86} V 146 H ${x + 7} Z`,
+            0.92,
+            current === 0 ? 'signal' : 'safe',
+            0,
+            0.75,
+          ),
         ];
       }),
       circle(
         target.x,
         target.y,
         spec.markerRadius,
-        marked ? 0.82 : 0.2,
+        marked ? 0.76 : 0.16,
         hit ? 'signal' : 'accent',
-        hit ? 11 : 7,
-        marked ? 0.065 : 0.015,
-      ),
-      line(
-        spec.boss[0],
-        spec.boss[1] + 40,
-        target.x,
-        target.y - 45,
-        marked ? 0.72 : 0,
-        'signal',
-        8,
-        hit ? '' : '13 10',
+        5,
+        marked ? 0.08 : 0.01,
       ),
       path(
-        `M ${target.x} ${target.y - 42} L ${target.x + 24} ${target.y - 18} L ${target.x} ${target.y + 6} L ${target.x - 24} ${target.y - 18} Z`,
-        marked ? 0.96 : 0.1,
-        'signal',
-        7,
-        0.035,
+        `M ${target.x - 9} ${spec.boss[1] + 20} H ${target.x + 9} V ${target.y - 165} H ${target.x - 9} Z`,
+        marked ? 0.7 : 0,
+        'muted',
+        0,
+        0.78,
       ),
-      circle(target.x, target.y, spec.markerRadius + 22, hit ? 0.9 : 0, 'signal', 13),
-      circle(target.x, target.y, 50, hit && count === 1 ? 0.86 : 0, 'signal', 11, 0.04),
-      circle(target.x, target.y, 38, hit && count === 3 ? 0.8 : 0, 'safe', 8),
-      line(
-        target.x - 30,
-        target.y - 25,
-        target.x + 30,
-        target.y + 25,
-        frame.stackDamageSoloFailure ? 0.9 : 0,
+      path(
+        `M ${target.x - 48} ${target.y - 180} H ${target.x + 48} V ${target.y - 112} L ${target.x + 32} ${target.y - 100} H ${target.x - 32} L ${target.x - 48} ${target.y - 112} Z`,
+        marked ? 0.84 : 0,
         'signal',
-        10,
+        0,
+        0.72,
       ),
-      line(
-        target.x + 30,
-        target.y - 25,
-        target.x - 30,
-        target.y + 25,
-        frame.stackDamageSoloFailure ? 0.9 : 0,
-        'signal',
-        10,
+      path(
+        `M ${target.x - 32} ${target.y - 164} H ${target.x - 20} V ${target.y - 127} H ${target.x - 32} Z M ${target.x + 20} ${target.y - 164} H ${target.x + 32} V ${target.y - 127} H ${target.x + 20} Z`,
+        marked ? 0.78 : 0,
+        'muted',
+        0,
+        0.76,
       ),
-      circle(
-        target.x,
-        target.y,
-        75 * smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.stackDamageRetry ? 0.75 : 0,
-        'accent',
-        7,
+      path(
+        `M ${target.x - 103} ${target.y + 22} L ${target.x - 38} ${target.y - 8} L ${target.x} ${target.y + 14} L ${target.x + 41} ${target.y - 10} L ${target.x + 108} ${target.y + 19} L ${target.x + 43} ${target.y + 41} L ${target.x - 34} ${target.y + 42} Z`,
+        hit ? 0.64 : 0,
+        count === 1 ? 'signal' : 'safe',
+        0,
+        0.56,
+      ),
+      path(
+        `M ${target.x - 31} ${target.y - 82} L ${target.x - 12} ${target.y - 112} L ${target.x} ${target.y - 75} Z M ${target.x + 15} ${target.y - 80} L ${target.x + 37} ${target.y - 114} L ${target.x + 42} ${target.y - 73} Z`,
+        hit ? 0.82 : 0,
+        count === 1 ? 'signal' : 'safe',
+        0,
+        0.8,
+      ),
+      path(
+        `M ${target.x - 77} ${target.y - 51} L ${target.x - 58} ${target.y - 88} L ${target.x - 43} ${target.y - 47} Z M ${target.x + 44} ${target.y - 51} L ${target.x + 62} ${target.y - 87} L ${target.x + 79} ${target.y - 47} Z`,
+        hit && count === 3 ? 0.88 : 0,
+        'safe',
+        0,
+        0.72,
       ),
     ];
   }
