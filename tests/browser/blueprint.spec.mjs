@@ -5116,6 +5116,7 @@ test('proximity damage keeps the rune fixed and makes distance change a nonzero 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('en/mechanics/proximity-damage/');
   const widget = page.locator('[data-blueprint-demo]');
+  await expect(widget).toHaveAttribute('data-blueprint-screen-height', 'true');
   const timeline = widget.locator('[data-blueprint-timeline]');
   const seek = (milliseconds) =>
     timeline.evaluate((element, value) => {
@@ -5146,6 +5147,9 @@ test('proximity damage keeps the rune fixed and makes distance change a nonzero 
   await expect(widget).toHaveAttribute('data-blueprint-proximity-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-proximity-health', '100');
   await page.setViewportSize({ width: 375, height: 812 });
+  expect(
+    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
+  ).toBeGreaterThanOrEqual(812);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
