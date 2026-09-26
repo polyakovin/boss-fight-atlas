@@ -10350,67 +10350,104 @@ function primitivesFor(spec, frame) {
     const t = frame.time;
     const center = frame.towerSoakCenter;
     const visible = frame.towerSoakFirstVisible || frame.towerSoakSecondVisible;
-    const resolved = t >= spec.firstHit[0] && t < spec.secondSignal[0];
     const failure = frame.towerSoakFailure;
+    const resolved = t >= spec.firstHit[0] && t < spec.secondSignal[0];
     const tone = failure ? 'signal' : resolved ? 'safe' : 'accent';
-    const strength = visible ? 0.9 : 0.14;
     return [
-      rect(...spec.arena, 0.58, 'muted', 0.025),
       path(
-        'M 65 786 L 170 750 L 280 790 L 390 750 L 495 786 V 813 L 390 782 L 280 826 L 170 782 L 65 813 Z',
-        0.54,
+        'M 70 103 H 490 V 145 H 70 Z M 83 145 H 118 V 820 H 83 Z M 442 145 H 477 V 820 H 442 Z',
+        0.52,
         'muted',
         0,
-        0.05,
+        0.61,
       ),
-      ...frame.towerSoakHealth.flatMap((health, index) => [
-        rect(145 + index * 170, 125, 100, 20, 0.78, 'muted', 0.09),
-        rect(145 + index * 170, 125, health, 20, 0.9, health === 0 ? 'signal' : 'safe', 0.55),
-      ]),
-      circle(center.x, center.y, spec.towerRadius + 8, strength * 0.65, tone, 7, 0.022),
-      circle(center.x, center.y, spec.towerRadius, strength, tone, failure ? 12 : 8, 0.07),
+      path(
+        'M 100 790 L 280 748 L 460 790 V 819 L 280 779 L 100 819 Z M 85 878 L 280 836 L 475 878 V 905 L 280 865 L 85 905 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path(
+        'M 205 352 L 355 352 L 370 380 L 190 380 Z M 215 380 H 345 V 415 H 215 Z',
+        0.62,
+        'muted',
+        0,
+        0.58,
+      ),
+      ...frame.towerSoakHealth.flatMap((health, index) => {
+        const x = 145 + index * 170;
+        return [
+          path(`M ${x} 118 H ${x + 100} V 151 L ${x + 50} 164 L ${x} 151 Z`, 0.7, 'muted', 0, 0.67),
+          path(
+            `M ${x + 7} 126 H ${x + 7 + health * 0.86} V 147 H ${x + 7} Z`,
+            0.92,
+            health === 0 ? 'signal' : 'safe',
+            0,
+            0.75,
+          ),
+        ];
+      }),
+      ...[spec.firstTower, spec.secondTower].flatMap(([x, y]) => {
+        const active = visible && center.x === x;
+        return [
+          path(
+            `M ${x - 48} ${y - 9} H ${x + 48} V ${y + 21} H ${x - 48} Z M ${x - 29} ${y - 100} H ${x + 29} V ${y - 9} H ${x - 29} Z`,
+            active ? 0.88 : 0.43,
+            'muted',
+            0,
+            0.7,
+          ),
+          path(
+            `M ${x - 30} ${y - 100} L ${x} ${y - 145} L ${x + 30} ${y - 100} Z`,
+            active ? 0.92 : 0.5,
+            active ? tone : 'accent',
+            0,
+            0.74,
+          ),
+          path(
+            `M ${x - 12} ${y - 78} H ${x + 12} V ${y - 40} H ${x - 12} Z`,
+            active ? 0.82 : 0.16,
+            active ? tone : 'accent',
+            0,
+            0.7,
+          ),
+        ];
+      }),
       circle(
         center.x,
         center.y,
-        spec.towerRadius - spec.bodyRadius,
-        strength * 0.7,
-        tone,
-        3,
-        0.025,
-      ),
-      path(
-        `M ${center.x} ${center.y - 25} L ${center.x + 22} ${center.y} L ${center.x} ${center.y + 25} L ${center.x - 22} ${center.y} Z`,
-        strength,
+        spec.towerRadius,
+        visible ? 0.82 : 0.14,
         tone,
         6,
-        0.08,
+        visible ? 0.07 : 0.01,
       ),
-      ...Array.from({ length: frame.towerSoakRequiredCount }, (_, index) =>
-        circle(
-          center.x + (index - (frame.towerSoakRequiredCount - 1) / 2) * 24,
-          center.y - 98,
-          7,
-          strength,
+      ...[0, 1].map((index) =>
+        path(
+          `M ${center.x - 19 + index * 27} ${center.y - 124} H ${center.x - 3 + index * 27} V ${center.y - 108} H ${center.x - 19 + index * 27} Z`,
+          visible && index < frame.towerSoakRequiredCount ? 0.88 : 0,
           index < frame.towerSoakOccupiedCount ? 'safe' : 'signal',
-          4,
-          index < frame.towerSoakOccupiedCount ? 0.55 : 0.025,
+          0,
+          0.78,
         ),
       ),
-      line(280, 415, center.x, center.y - 100, visible ? 0.58 : 0, 'signal', 7, '10 10'),
-      circle(center.x, center.y, 95, failure ? 0.8 : 0, 'signal', 10, 0.04),
-      path(
-        `M ${center.x - 26} ${center.y - 26} L ${center.x + 26} ${center.y + 26} M ${center.x + 26} ${center.y - 26} L ${center.x - 26} ${center.y + 26}`,
-        failure ? 0.92 : 0,
+      line(
+        spec.boss[0],
+        spec.boss[1] + 39,
+        center.x,
+        center.y - 145,
+        visible ? 0.52 : 0,
         'signal',
-        10,
+        6,
+        '13 10',
       ),
-      circle(
-        spec.player[0],
-        spec.player[1],
-        78 * smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.towerSoakRetry ? 0.75 : 0,
-        'accent',
-        7,
+      path(
+        `M ${center.x - 76} ${center.y + 8} L ${center.x - 37} ${center.y - 31} L ${center.x - 12} ${center.y + 6} L ${center.x + 30} ${center.y - 35} L ${center.x + 78} ${center.y + 12} L ${center.x + 26} ${center.y + 30} H ${center.x - 30} Z`,
+        failure ? 0.86 : 0,
+        'signal',
+        0,
+        0.67,
       ),
     ];
   }
