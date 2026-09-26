@@ -5386,3 +5386,28 @@ test('party split shows independent side progress, a shared gate and reunion', a
   ).toBeGreaterThanOrEqual(812);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('recent group mechanics fill the desktop viewport height', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  for (const slug of [
+    'shared-group-health',
+    'coordinated-duo-attack',
+    'stack-damage',
+    'personal-spread',
+    'tower-soak',
+    'entity-tether',
+    'gaze-check',
+    'proximity-damage',
+    'tank-swap',
+    'debuff-handoff',
+    'ordered-targets',
+    'pairing-polarity',
+    'party-split',
+  ]) {
+    await page.goto(`en/mechanics/${slug}/`);
+    const widget = page.locator('[data-blueprint-demo]');
+    await expect(widget).toHaveAttribute('data-blueprint-screen-height', 'true');
+    const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
+    expect(canvas.height, slug).toBeGreaterThanOrEqual(720);
+  }
+});

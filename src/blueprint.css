@@ -48,6 +48,10 @@
     max-width: 560px;
     justify-self: center;
   }
+  .simulation-section:has([data-blueprint-screen-height='true']) {
+    width: min(100%, 58.333svh);
+    height: calc(100svh + 2px);
+  }
   .simulation-section [data-blueprint-full-height='true'],
   .simulation-section [data-blueprint-full-height='true'] .blueprint-demo__canvas,
   .simulation-section [data-blueprint-full-height='true'] .blueprint-demo__svg {
