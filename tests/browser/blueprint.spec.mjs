@@ -5358,6 +5358,7 @@ test('party split shows independent side progress, a shared gate and reunion', a
   await expect(page.locator('.game-example')).toHaveCount(3);
   await expect(page.locator('.lens-chip')).toHaveCount(4);
   await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
+  await expect(widget).toHaveAttribute('data-blueprint-screen-height', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-playing', 'false');
   await expect(widget.locator('[data-blueprint-ally]')).toHaveCount(3);
   await seek(2700);
@@ -5370,11 +5371,18 @@ test('party split shows independent side progress, a shared gate and reunion', a
   await expect(widget.locator('[data-blueprint-split-gate]')).toHaveText('✓');
   await seek(4900);
   await expect(widget).toHaveAttribute('data-blueprint-split-reunited', 'true');
+  await page.setViewportSize({ width: 375, height: 812 });
+  const playerLabel = await widget.locator('[data-blueprint-player-label]').boundingBox();
+  const timelineBox = await timeline.boundingBox();
+  expect(playerLabel.y + playerLabel.height).toBeLessThan(timelineBox.y);
   await seek(5600);
   await expect(widget).toHaveAttribute('data-blueprint-split-retry', 'true');
 
   await page.goto('ar/mechanics/party-split/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
+  expect(
+    (await page.locator('[data-blueprint-demo] .blueprint-demo__canvas').boundingBox()).height,
+  ).toBeGreaterThanOrEqual(812);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

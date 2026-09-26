@@ -10975,46 +10975,96 @@ function primitivesFor(spec, frame) {
     const leftDone = frame.partySplitCompletedSides.includes('left');
     const rightDone = frame.partySplitCompletedSides.includes('right');
     const gateOpen = frame.partySplitGateOpen;
+    const leftDoorEnd = gateOpen ? 193 : 280;
+    const rightDoorStart = gateOpen ? 367 : 280;
     return [
-      rect(58, 530, 182, 256, visible ? 0.72 : 0.24, leftDone ? 'safe' : 'signal', 0.07),
-      rect(320, 530, 182, 256, visible ? 0.72 : 0.24, rightDone ? 'safe' : 'accent', 0.07),
-      line(280, 510, 280, 780, visible ? 0.73 : 0.22, 'muted', 9, '12 9'),
-      line(86, 548, 86, 771, visible ? 0.9 : 0, 'signal', 7),
-      line(474, 548, 474, 771, visible ? 0.9 : 0, 'accent', 7),
       path(
-        'M 160 541 L 186 575 L 160 609 L 134 575 Z M 160 541 L 160 609 M 134 575 L 186 575',
-        visible ? 0.95 : 0.2,
+        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
+        0.5,
+        'muted',
+        0,
+        0.6,
+      ),
+      path(
+        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
+      path(
+        'M 260 401 H 300 V 773 H 260 Z M 246 401 H 314 V 428 H 246 Z M 247 746 H 313 V 773 H 247 Z',
+        visible ? 0.9 : 0.5,
+        'muted',
+        0,
+        0.7,
+      ),
+      path(
+        'M 100 745 L 170 725 L 239 745 V 778 L 170 758 L 100 778 Z M 321 745 L 390 725 L 460 745 V 778 L 390 758 L 321 778 Z',
+        0.62,
+        'muted',
+        0,
+        0.48,
+      ),
+      path(
+        'M 111 607 H 209 V 647 H 111 Z M 125 525 H 195 V 607 H 125 Z M 351 607 H 449 V 647 H 351 Z M 365 525 H 435 V 607 H 365 Z',
+        visible ? 0.88 : 0.55,
+        'muted',
+        0,
+        0.76,
+      ),
+      path(
+        'M 160 481 L 186 518 L 160 551 L 134 518 Z',
+        visible ? 0.97 : 0.36,
         leftDone ? 'safe' : 'signal',
-        6,
+        0,
+        0.75,
       ),
-      line(376, 601, 424, 601, visible ? 0.95 : 0.2, rightDone ? 'safe' : 'accent', 6),
-      line(
-        400,
-        600,
-        rightDone ? 386 : 414,
-        552,
-        visible ? 0.95 : 0.2,
+      path(
+        `M 378 570 H 422 V 586 H 378 Z M 400 573 L ${rightDone ? 386 : 418} 509 L ${rightDone ? 398 : 430} 505 L 408 573 Z`,
+        visible ? 0.96 : 0.37,
         rightDone ? 'safe' : 'accent',
-        7,
+        0,
+        0.75,
       ),
-      circle(rightDone ? 386 : 414, 552, 9, visible ? 0.95 : 0.2, rightDone ? 'safe' : 'accent', 5),
-      line(116, 635, 204, 635, visible ? 0.7 : 0, 'signal', 6),
-      line(116, 635, 116 + 88 * frame.partySplitProgress[0], 635, visible ? 1 : 0, 'safe', 9),
-      line(356, 635, 444, 635, visible ? 0.7 : 0, 'accent', 6),
-      line(356, 635, 356 + 88 * frame.partySplitProgress[1], 635, visible ? 1 : 0, 'safe', 9),
-      line(
-        219,
-        806,
-        341,
-        806,
-        visible ? (gateOpen ? 0.85 : 1) : 0.16,
-        gateOpen ? 'safe' : 'danger',
-        gateOpen ? 5 : 12,
-        gateOpen ? '14 8' : '',
+      circle(
+        rightDone ? 392 : 424,
+        507,
+        12,
+        visible ? 0.96 : 0.37,
+        rightDone ? 'safe' : 'accent',
+        0,
+        0.9,
       ),
-      circle(280, 806, 33, gateOpen && visible ? 0.85 : 0, 'safe', 5),
-      line(spec.boss[0] - 30, spec.boss[1] + 60, 160, 545, visible ? 0.22 : 0, 'signal', 3),
-      line(spec.boss[0] + 30, spec.boss[1] + 60, 400, 545, visible ? 0.22 : 0, 'accent', 3),
+      path(
+        'M 119 620 H 201 V 633 H 119 Z M 359 620 H 441 V 633 H 359 Z',
+        visible ? 0.91 : 0.4,
+        'accent',
+        0,
+        0.47,
+      ),
+      path(
+        `M 119 620 H ${119 + 82 * frame.partySplitProgress[0]} V 633 H 119 Z M 359 620 H ${359 + 82 * frame.partySplitProgress[1]} V 633 H 359 Z`,
+        visible ? 0.95 : 0,
+        'safe',
+        0,
+        0.82,
+      ),
+      path(
+        `M 109 786 H ${leftDoorEnd} V 822 H 109 Z M ${rightDoorStart} 786 H 451 V 822 H ${rightDoorStart} Z`,
+        visible ? 0.98 : 0.48,
+        gateOpen ? 'safe' : 'muted',
+        0,
+        0.8,
+      ),
+      path(
+        'M 191 828 L 280 803 L 369 828 V 853 L 280 829 L 191 853 Z',
+        gateOpen && visible ? 0.67 : 0,
+        'safe',
+        0,
+        0.41,
+      ),
     ];
   }
   if (mode === 'coordinated-duo-attack') {
@@ -19273,6 +19323,8 @@ export function blueprintFrame(id, time) {
               ? 92
               : -62),
   };
+  if (spec.mode === 'party-split' && t >= spec.reunite[0] && t < spec.resetAt)
+    frame.playerLabel.y = player.y - 95;
   return Object.freeze(frame);
 }
 
