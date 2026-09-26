@@ -150,6 +150,35 @@ test('each mechanic overview defines the rule and explains why it works', () => 
   assert.match(en.overview, /recovery/i);
 });
 
+test('Charge feel variants keep their meanings and linked mechanics across locales', async () => {
+  const charge = source.mechanics.find(({ meta }) => meta.id === 'charge');
+  const expected = [
+    ['relentless', 'attack-combination'],
+    ['weighty', 'wind-up'],
+  ];
+  for (const { code } of source.locales)
+    assert.deepEqual(
+      charge.translations[code].combatFeel.variants.map(({ id, connection }) => [
+        id,
+        connection.mechanicId,
+      ]),
+      expected,
+    );
+
+  const mismatched = structuredClone(source);
+  mismatched.mechanics[0].translations.ja.combatFeel.variants[0].id = 'other';
+  await assert.rejects(validateContent(mismatched), /combatFeel variant 1 differs from source/);
+
+  const broken = structuredClone(source);
+  broken.mechanics[0].translations.en.combatFeel.variants[0].connection.mechanicId =
+    'missing-mechanic';
+  await assert.rejects(validateContent(broken), /invalid combatFeel connection missing-mechanic/);
+
+  const duplicate = structuredClone(source);
+  duplicate.mechanics[0].translations.en.combatFeel.variants[1].id = 'relentless';
+  await assert.rejects(validateContent(duplicate), /duplicate combatFeel variant relentless/);
+});
+
 test('design lenses stay complete and linkable across translations', async () => {
   const mechanicLenses = [
     'telegraphing',

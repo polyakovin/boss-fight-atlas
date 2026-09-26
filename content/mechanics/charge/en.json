@@ -4,6 +4,30 @@
   "variant": "Locked-direction charge",
   "summary": "The boss aims, locks its direction, and charges forward. It cannot turn after the lock.",
   "overview": "Charge is a high-speed attack: the boss aims, locks its direction, and rushes forward without turning. The mechanic works well when the clear lock makes the path predictable, sideways movement provides a reachable response, and recovery creates an opening for a counterattack.",
+  "combatFeel": {
+    "title": "How a charge can feel",
+    "intro": "These are possible design intentions, not fixed traits of every charge. The diagram demonstrates one locked-direction charge; the variants below describe other ways to tune that same rule.",
+    "variants": [
+      {
+        "id": "relentless",
+        "label": "Relentless",
+        "tuning": "Keep the lock cue brief but distinct, then repeat charges with shorter gaps. The boss can feel aggressive without removing the time for ordinary sideways clearance or a useful counterattack after each pass.",
+        "connection": {
+          "mechanicId": "attack-combination",
+          "body": "The spacing between attacks creates sustained pressure; test the sequence as well as each charge."
+        }
+      },
+      {
+        "id": "weighty",
+        "label": "Weighty",
+        "tuning": "Hold the aiming pose longer, emphasize acceleration and impact, then give the boss a longer recovery. One charge can feel imposing while its direction remains fixed and its escape route stays readable.",
+        "connection": {
+          "mechanicId": "wind-up",
+          "body": "Preparation builds the expectation of force; a distinct release cue marks when danger begins."
+        }
+      }
+    ]
+  },
   "learning": "Tune tracking, the lock cue, the danger lane, and recovery.",
   "category": "Movement & space",
   "readTime": "3 min · design lesson",
@@ -171,5 +195,5 @@
     }
   ],
   "reviewStatus": "needs-review",
-  "sourceVersion": 10
+  "sourceVersion": 11
 }

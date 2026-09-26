@@ -139,6 +139,16 @@ for (const locale of registry) {
       `/gamedev-boss-fights/${locale.code}/#mechanics`,
     );
     await expect(page.locator('.mechanic-overview')).toHaveCount(1);
+    await expect(page.locator('#combat-feel .combat-feel__card')).toHaveCount(2);
+    await expect(page.locator('#combat-feel .combat-feel__tag')).toHaveCount(2);
+    await expect(page.locator('#combat-feel .combat-feel__connection a').first()).toHaveAttribute(
+      'href',
+      `/gamedev-boss-fights/${locale.code}/mechanics/attack-combination/`,
+    );
+    await expect(page.locator('#combat-feel .combat-feel__connection a').last()).toHaveAttribute(
+      'href',
+      `/gamedev-boss-fights/${locale.code}/mechanics/wind-up/`,
+    );
     await expect(
       page.locator('.hero-subtitle, .lesson-hero > .variant, .lesson-hero > .summary'),
     ).toHaveCount(0);

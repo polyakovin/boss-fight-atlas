@@ -26,6 +26,7 @@ Use `content/mechanics/charge/en.json` as a structural example and `schemas/less
 | ----------------------------- | -------------------------------------------------------------------------- |
 | `title`, `variant`, `summary` | Name the mechanic and provide compact catalog metadata                     |
 | `overview`                    | Define the rule and explain why its signal, response, and reward work      |
+| `combatFeel` (optional)       | Compare possible impressions, their tuning causes, and a related mechanic  |
 | `learning`                    | State the tuning task that introduces the implementation checklist         |
 | `demo`                        | Turn the animation into a test bench for phases, geometry, and outcomes    |
 | `steps`                       | Ask exactly three design questions in a useful order                       |
@@ -43,6 +44,8 @@ The current template requires exactly three steps, matching the localized “Thr
 Address the game designer, not a player looking for a walkthrough. Prefer concrete design variables and checks: what becomes fixed, what can still change, which signal communicates the change, and how much space the player must be able to clear. Distinguish an attack’s visual telegraph from a teaching overlay. Test optional dashes, jumps, and invulnerability states without making them silently mandatory for a basic escape.
 
 The mechanic page places `overview` directly under the title as one compact paragraph. Use its first sentence to define the behavior and the rest to explain why the signal, available response, and resulting opportunity work together. Do not repeat the subtitle, variant label, catalog summary, or checklist introduction there.
+
+The optional `combatFeel` section is a pilot on Charge. Describe two or three possible impressions of a specific implementation, not an inherent emotion assigned to a mechanic. Each variant has a stable `id`, a localized `label` and `tuning` explanation, and one `connection` to another published mechanic with a localized explanation of why it matters. State what the animation actually demonstrates and distinguish other tuning ideas from shown behavior. Keep the IDs and connection targets in the same order across translations. When shortening a cue or recovery to change the feel, preserve a readable signal, reachable response, and useful opening. Review the intended impression through playtests rather than treating the tag as a measured fact.
 
 Content review is as valuable as translation review. Check factual claims, design concepts, terminology, examples, source relevance, and whether the animation actually demonstrates the written rule. When correcting a claim, link evidence and state whether it documents a particular game, supports a general principle, or is only an illustrative design choice.
 

@@ -28,6 +28,7 @@ For animation phases, translate both the compact label and its tooltip as one pa
 - Keep a mechanic’s `overview` as one compact paragraph: define the behavior first, then explain why its signal, reachable response, and resulting opportunity work together.
 - For a lens, translate `title` and the reusable `summary` while preserving its folder ID and metadata. The summary introduces the lens page, describes games in general, and must not assume a boss fight or one specific mechanic.
 - In a mechanic’s `lensNotes`, preserve the IDs and order from `meta.lenses`. Translate each `body` as the short explanation shown in that mechanic’s tooltip.
+- In an optional `combatFeel` section, translate the title, introduction, labels, tuning explanations, and connection explanations. Preserve each variant `id`, `connection.mechanicId`, and array order. Treat the labels as possible impressions, not facts about every use of the mechanic.
 - In `examples`, preserve `dimension`, `game`, `boss`, `screenshot`, `screenshotSource`, `video`, and `videoDurationSeconds` exactly as in English. Translate only `body`.
 - Do not add HTML, Markdown formatting, invisible direction overrides, or English filler to a text field.
 - Use consistent terms for the mechanic, its phases, commitment, danger lane, and recovery. Prefer a natural explanation over an unclear borrowed term.

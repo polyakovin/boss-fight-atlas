@@ -3,7 +3,7 @@
   "number": 1,
   "published": true,
   "sourceLocale": "en",
-  "contentVersion": 10,
+  "contentVersion": 11,
   "animation": "charge",
   "lenses": [
     "telegraphing",

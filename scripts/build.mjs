@@ -415,6 +415,36 @@ function lensHistory(lensId, localeCode) {
     `content/lenses/${lensId}/${localeCode}.json`,
   ]);
 }
+function renderCombatFeel(localeCode, content) {
+  if (!content.combatFeel) return '';
+  const feel = content.combatFeel;
+  return /* HTML */ `<section
+    id="combat-feel"
+    class="content-section combat-feel"
+    aria-labelledby="combat-feel-title"
+  >
+    <h2 id="combat-feel-title">${e(feel.title)}</h2>
+    <p class="combat-feel__intro">${e(feel.intro)}</p>
+    <div class="combat-feel__grid">
+      ${feel.variants
+        .map((variant) => {
+          const target = mechanicsById.get(variant.connection.mechanicId);
+          const title = target.translations[localeCode]?.title ?? target.translations.en.title;
+          return /* HTML */ `<article class="combat-feel__card">
+            <h3><span class="combat-feel__tag">${e(variant.label)}</span></h3>
+            <p>${e(variant.tuning)}</p>
+            <p class="combat-feel__connection">
+              <a href="${link(`${localeCode}/mechanics/${target.meta.id}/`)}"
+                >${e(title)}${icon('arrow-right', { className: 'icon--directional' })}</a
+              >
+              <span>${e(variant.connection.body)}</span>
+            </p>
+          </article>`;
+        })
+        .join('')}
+    </div>
+  </section>`;
+}
 function renderLessonBody(
   locale,
   t,
@@ -489,6 +519,7 @@ function renderLessonBody(
           </div>
         </section>
       </div>
+      ${renderCombatFeel(locale.code, content)}
       <section id="examples" class="content-section examples-section">
         <h2>${e(t.examplesTitle)}</h2>
         <div class="example-grid">${exampleCards(content.examples, t)}</div>

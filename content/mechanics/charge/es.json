@@ -4,6 +4,30 @@
   "variant": "Embestida con dirección fija",
   "summary": "El jefe se lanza a gran velocidad y utiliza su cuerpo como arma. En esta variante puede apuntar antes de fijar la dirección, pero ya no puede girar una vez fijada.",
   "overview": "La embestida es un ataque veloz: el jefe apunta, fija la dirección y avanza sin poder girar. La mecánica funciona bien cuando una fijación clara vuelve predecible la trayectoria, el movimiento lateral ofrece una respuesta alcanzable y la recuperación crea una oportunidad de contraataque.",
+  "combatFeel": {
+    "title": "Qué puede transmitir una embestida",
+    "intro": "Son posibles intenciones de diseño, no rasgos fijos de toda embestida. El diagrama muestra una embestida de dirección fija; las variantes siguientes proponen otras formas de ajustar la misma regla.",
+    "variants": [
+      {
+        "id": "relentless",
+        "label": "Implacable",
+        "tuning": "Mantén breve pero clara la señal que fija la dirección y reduce las pausas entre embestidas. El jefe puede parecer agresivo sin quitar tiempo para salir de la trayectoria con movimiento lateral normal ni para contraatacar tras cada pasada.",
+        "connection": {
+          "mechanicId": "attack-combination",
+          "body": "El intervalo entre ataques crea presión sostenida; prueba la secuencia completa además de cada embestida."
+        }
+      },
+      {
+        "id": "weighty",
+        "label": "Contundente",
+        "tuning": "Prolonga la pose de apuntado, acentúa la aceleración y el impacto, y deja una recuperación más larga. Una sola embestida puede resultar intimidante sin dejar de seguir una dirección fija ni ocultar la ruta de escape.",
+        "connection": {
+          "mechanicId": "wind-up",
+          "body": "La preparación crea una expectativa de fuerza; una señal de inicio distinta marca cuándo empieza el peligro."
+        }
+      }
+    ]
+  },
   "learning": "Ajusta el seguimiento, la señal de fijación, la franja de peligro y la recuperación.",
   "category": "Movimiento y espacio",
   "readTime": "3 min · lección de diseño",
@@ -171,5 +195,5 @@
     }
   ],
   "reviewStatus": "needs-review",
-  "sourceVersion": 10
+  "sourceVersion": 11
 }
