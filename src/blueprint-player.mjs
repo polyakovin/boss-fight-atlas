@@ -68,6 +68,8 @@ export function initializeBlueprint(widget) {
   const proximityReadout = find('[data-blueprint-proximity-readout]');
   const tankHealthLabels = [...widget.querySelectorAll('[data-blueprint-tank-health]')];
   const handoffTimer = find('[data-blueprint-handoff-timer]');
+  const orderNext = find('[data-blueprint-order-next]');
+  const orderMarks = [...widget.querySelectorAll('[data-blueprint-order-mark]')];
   const partnerLabel = find('[data-blueprint-partner-label]');
   const playerLabel = find('[data-blueprint-player-label]');
   const primitives = [...widget.querySelectorAll('[data-blueprint-primitive]')];
@@ -1302,6 +1304,24 @@ export function initializeBlueprint(widget) {
           ? `${frame.debuffHandoffRemaining.toFixed(1)} s`
           : '';
     }
+    if (mechanicId === 'ordered-targets') {
+      widget.dataset.blueprintOrderState = frame.orderedTargetState;
+      widget.dataset.blueprintOrderNext = String(frame.orderedTargetNext);
+      widget.dataset.blueprintOrderResolved = String(frame.orderedTargetResolved);
+      widget.dataset.blueprintOrderHitId = frame.orderedTargetHitId;
+      widget.dataset.blueprintOrderRetry = String(frame.orderedTargetRetry);
+      if (orderNext)
+        orderNext.textContent = frame.orderedTargetNext
+          ? `${frame.orderedTargetNext > 3 ? '✓' : frame.orderedTargetNext} / 3`
+          : '';
+      for (const mark of orderMarks) {
+        const index = Number(mark.dataset.blueprintOrderMark);
+        const position = frame.orderedTargetPositions[index];
+        mark.setAttribute('x', String(position.x));
+        mark.setAttribute('y', String(position.y - 62));
+        mark.setAttribute('opacity', frame.orderedTargetNext ? '1' : '0');
+      }
+    }
     boss.setAttribute(
       'transform',
       `translate(${frame.boss.x} ${frame.boss.y})${frame.bossRotation ? ` rotate(${frame.bossRotation})` : ''} scale(${frame.bossScale})`,
@@ -1324,7 +1344,8 @@ export function initializeBlueprint(widget) {
     );
     for (const [index, ally] of allies.entries()) {
       const position = (frame.stackDamageAllies ??
-        frame.personalSpreadPositions?.slice(1) ?? [
+        frame.personalSpreadPositions?.slice(1) ??
+        frame.orderedTargetAllies ?? [
           frame.towerSoakAlly ??
             frame.entityTetherAlly ??
             frame.tankSwapAlly ??
@@ -1337,7 +1358,8 @@ export function initializeBlueprint(widget) {
           frame.towerSoakAllyMotion ??
           frame.entityTetherAllyMotion ??
           frame.tankSwapAllyMotion ??
-          frame.debuffHandoffAllyMotion,
+          frame.debuffHandoffAllyMotion ??
+          frame.orderedTargetAlliesMotion,
         frame.playerFacing,
       );
     }

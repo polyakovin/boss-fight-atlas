@@ -2028,6 +2028,31 @@ const SPECS = {
     burstDamage: 80,
     encounterId: 'kern-debuff-handoff-1',
   },
+  'ordered-targets': {
+    mode: 'ordered-targets',
+    boss: [280, 265],
+    player: [165, 625],
+    target: [165, 625],
+    allies: [
+      [280, 625],
+      [395, 625],
+    ],
+    receivingSpots: [
+      [100, 625],
+      [280, 700],
+      [460, 625],
+    ],
+    assignments: [1, 2, 3],
+    revealAt: 0.7,
+    move: [1.2, 1.8],
+    hits: [2, 3.2, 4.4],
+    hitDuration: 0.22,
+    radius: 72,
+    intendedDamage: 25,
+    overlapDamage: 80,
+    resetAt: 5.5,
+    encounterId: 'kern-ordered-targets-1',
+  },
   'wide-swing': { mode: 'arc', boss: [225, 340], player: [380, 500], target: [420, 780] },
   lunge: {
     mode: 'lunge',
@@ -4817,6 +4842,101 @@ export function debuffHandoffExpire({
         : expired
           ? 'expired'
           : 'pending',
+  });
+}
+
+export function orderedTargetsState(time) {
+  const spec = SPECS['ordered-targets'];
+  const t = localTime(time);
+  if (t < spec.revealAt) return 'assign';
+  if (t < spec.hits[0]) return 'isolate';
+  if (t < spec.hits[1]) return 'first-strike';
+  if (t < spec.hits[2]) return 'second-strike';
+  if (t < spec.resetAt) return 'third-strike';
+  return 'reset';
+}
+
+export function orderedTargetsResolve({
+  encounterId = 'kern-ordered-targets-1',
+  strikeId = 'strike-1',
+  expectedNumber = 1,
+  selectedNumber = 1,
+  assignedPlayerId = 'player-1',
+  center = { x: 100, y: 625 },
+  players = [
+    { id: 'player-1', x: 100, y: 625, alive: true },
+    { id: 'player-2', x: 280, y: 625, alive: true },
+    { id: 'player-3', x: 460, y: 625, alive: true },
+  ],
+  radius = 72,
+  bodyRadius = BLUEPRINT_PLAYER_RADIUS,
+  intendedDamage = 25,
+  overlapDamage = 80,
+  alreadyResolved = false,
+} = {}) {
+  const valid =
+    typeof encounterId === 'string' &&
+    encounterId.length > 0 &&
+    typeof strikeId === 'string' &&
+    strikeId.length > 0 &&
+    Number.isSafeInteger(expectedNumber) &&
+    expectedNumber >= 1 &&
+    Number.isSafeInteger(selectedNumber) &&
+    selectedNumber >= 1 &&
+    typeof assignedPlayerId === 'string' &&
+    assignedPlayerId.length > 0 &&
+    Number.isFinite(center?.x) &&
+    Number.isFinite(center?.y) &&
+    Array.isArray(players) &&
+    players.length > 0 &&
+    players.every(
+      (player) =>
+        typeof player?.id === 'string' &&
+        player.id.length > 0 &&
+        player.alive === true &&
+        Number.isFinite(player.x) &&
+        Number.isFinite(player.y),
+    ) &&
+    new Set(players.map((player) => player.id)).size === players.length &&
+    Number.isFinite(radius) &&
+    radius > 0 &&
+    Number.isFinite(bodyRadius) &&
+    bodyRadius >= 0 &&
+    Number.isSafeInteger(intendedDamage) &&
+    intendedDamage > 0 &&
+    Number.isSafeInteger(overlapDamage) &&
+    overlapDamage > intendedDamage;
+  const assigned = valid ? players.find((player) => player.id === assignedPlayerId) : null;
+  const resolution =
+    !valid || !assigned
+      ? 'invalid'
+      : alreadyResolved
+        ? 'duplicate'
+        : selectedNumber !== expectedNumber
+          ? 'out-of-order'
+          : 'resolved';
+  const occupants =
+    resolution === 'resolved'
+      ? players.filter(
+          (player) => Math.hypot(player.x - center.x, player.y - center.y) <= radius + bodyRadius,
+        )
+      : [];
+  return Object.freeze({
+    encounterId,
+    strikeId,
+    expectedNumber,
+    selectedNumber,
+    assignedPlayerId,
+    occupantIds: occupants.map((player) => player.id),
+    damage: occupants.map((player) =>
+      Object.freeze({
+        playerId: player.id,
+        amount: player.id === assignedPlayerId ? intendedDamage : overlapDamage,
+      }),
+    ),
+    nextNumber: expectedNumber + Number(resolution === 'resolved'),
+    applicationCount: Number(resolution === 'resolved'),
+    resolution,
   });
 }
 
@@ -10381,6 +10501,58 @@ function primitivesFor(spec, frame) {
       ),
     ];
   }
+  if (mode === 'ordered-targets') {
+    const t = frame.time;
+    const visible = t >= spec.revealAt && t < spec.resetAt;
+    return [
+      rect(55, 245, 450, 650, 0.58, 'muted', 0.025),
+      path('M 75 805 L 190 785 L 280 810 L 370 785 L 485 805', 0.5, 'muted', 4),
+      ...frame.orderedTargetPositions.flatMap((target, index) => {
+        const number = index + 1;
+        const hitAt = spec.hits[index];
+        const pulse = strikePulse(t, hitAt, spec.hitDuration);
+        const pending = visible && frame.orderedTargetNext === number;
+        const complete = visible && frame.orderedTargetNext > number;
+        return [
+          circle(
+            target.x,
+            target.y - 76,
+            36,
+            visible ? (pending ? 0.95 : 0.45) : 0,
+            pending ? 'signal' : 'muted',
+            5,
+          ),
+          circle(
+            target.x,
+            target.y,
+            spec.radius,
+            pending ? 0.48 : pulse * 0.95,
+            pending ? 'signal' : 'danger',
+            5,
+          ),
+          circle(target.x, target.y, spec.radius + 16 * pulse, pulse * 0.8, 'danger', 7),
+          line(
+            spec.boss[0],
+            spec.boss[1] + 50,
+            target.x,
+            target.y - 75,
+            pending ? 0.48 : pulse * 0.85,
+            pending ? 'signal' : 'danger',
+            4,
+          ),
+          circle(target.x, target.y - 76, 24, complete ? 0.8 : 0, 'safe', 4),
+        ];
+      }),
+      circle(
+        280,
+        625,
+        175 * smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
+        frame.orderedTargetRetry ? 0.7 : 0,
+        'accent',
+        7,
+      ),
+    ];
+  }
   if (mode === 'coordinated-duo-attack') {
     const t = frame.time;
     const leader = frame.decoy;
@@ -12905,6 +13077,14 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     return Math.hypot(value.x - target.x, value.y - target.y) > 70 + radius;
   }
   if (mode === 'debuff-handoff') return !frame.debuffHandoffBurstActive;
+  if (mode === 'ordered-targets') {
+    const activeIndex = spec.hits.findIndex(
+      (hitAt) => frame.time >= hitAt && frame.time < hitAt + spec.hitDuration,
+    );
+    if (activeIndex < 0 || activeIndex === 0) return true;
+    const target = frame.orderedTargetPositions[activeIndex];
+    return Math.hypot(value.x - target.x, value.y - target.y) > spec.radius + radius;
+  }
   if (mode === 'coordinated-duo-attack') {
     const target = frame.coordinatedDuoAttackTarget;
     return (
@@ -15176,6 +15356,16 @@ export function blueprintFrame(id, time) {
       pulse(secondApproach),
       pulse(secondRetreat),
     );
+  }
+  if (spec.mode === 'ordered-targets') {
+    const moveOut = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
+    const moveBack = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
+    const progress = moveOut * (1 - moveBack);
+    player = {
+      x: mix(spec.player[0], spec.receivingSpots[0][0], progress),
+      y: mix(spec.player[1], spec.receivingSpots[0][1], progress),
+    };
+    stride = Math.max(pulse(moveOut), pulse(moveBack));
   }
   const bossVisible =
     spec.mode === 'secondary-cues-invisibility'
@@ -18027,6 +18217,64 @@ export function blueprintFrame(id, time) {
       0.25;
     frame.debuffHandoffAllyMotion = motion({ stride, impact: frame.playerMotion.impact });
   }
+  if (spec.mode === 'ordered-targets') {
+    const moveOut = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
+    const moveBack = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
+    const progress = moveOut * (1 - moveBack);
+    const allies = spec.allies.map(([x, y], index) => ({
+      x: mix(x, spec.receivingSpots[index + 1][0], progress),
+      y: mix(y, spec.receivingSpots[index + 1][1], progress),
+    }));
+    const positions = [player, ...allies];
+    const resolutions = spec.hits.map((hitAt, index) =>
+      orderedTargetsResolve({
+        encounterId: spec.encounterId,
+        strikeId: `strike-${index + 1}`,
+        expectedNumber: index + 1,
+        selectedNumber: spec.assignments[index],
+        assignedPlayerId: `player-${index + 1}`,
+        center: positions[index],
+        players: positions.map((position, playerIndex) => ({
+          id: `player-${playerIndex + 1}`,
+          alive: true,
+          ...position,
+        })),
+        radius: spec.radius,
+        intendedDamage: spec.intendedDamage,
+        overlapDamage: spec.overlapDamage,
+      }),
+    );
+    const completed = spec.hits.filter(
+      (hitAt, index) => t >= hitAt && resolutions[index].resolution === 'resolved',
+    ).length;
+    const visible = t >= spec.revealAt && t < spec.resetAt;
+    frame.orderedTargetState = orderedTargetsState(t);
+    frame.orderedTargetPositions = positions;
+    frame.orderedTargetAllies = allies;
+    frame.orderedTargetNext = visible ? Math.min(4, completed + 1) : 0;
+    frame.orderedTargetResolved = visible ? completed : 0;
+    frame.orderedTargetHitId = completed && visible ? `strike-${completed}` : '';
+    frame.orderedTargetHealth = resolutions.map((result, index) =>
+      t >= spec.hits[index] && visible ? 100 - (result.damage[0]?.amount ?? 0) : 100,
+    );
+    frame.orderedTargetOverlapDamage =
+      orderedTargetsResolve({
+        center: positions[0],
+        players: [
+          { id: 'player-1', alive: true, ...positions[0] },
+          { id: 'player-2', alive: true, ...positions[0] },
+          { id: 'player-3', alive: true, ...positions[2] },
+        ],
+        radius: spec.radius,
+        intendedDamage: spec.intendedDamage,
+        overlapDamage: spec.overlapDamage,
+      }).damage.find((hit) => hit.playerId === 'player-2')?.amount ?? 0;
+    frame.orderedTargetRetry = t >= spec.resetAt;
+    frame.orderedTargetAlliesMotion = motion({ stride });
+    frame.playerMotion.stride = stride;
+    frame.bossMotion.attack = Math.max(...spec.hits.map((hitAt) => strikePulse(t, hitAt, 0.45)));
+    frame.dangerActive = spec.hits.some((hitAt) => t >= hitAt && t < hitAt + spec.hitDuration);
+  }
   if (spec.mode === 'real-time-progression') {
     frame.realTimeProgressionState = realTimeProgressionState(t);
     frame.realTimeProgressionCheckpointId = spec.checkpointId;
@@ -18428,7 +18676,8 @@ export function blueprintFrame(id, time) {
                 spec.mode === 'tower-soak' ||
                 spec.mode === 'entity-tether' ||
                 spec.mode === 'gaze-check' ||
-                spec.mode === 'debuff-handoff'
+                spec.mode === 'debuff-handoff' ||
+                spec.mode === 'ordered-targets'
               ? 92
               : -62),
   };

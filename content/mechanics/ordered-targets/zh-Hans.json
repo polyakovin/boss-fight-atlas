@@ -1,0 +1,119 @@
+{
+  "title": "按序锁定目标",
+  "subtitle": "把标记顺序变成清晰可读的攻击序列",
+  "variant": "三个唯一标记 · 固定顺序 · 分离受击 · 明确重置",
+  "summary": "首领标记多个目标，再按预告的固定顺序攻击。",
+  "overview": "每名玩家在即将到来的攻击队列中占据唯一位置。队伍能预先看到下一位是谁，把该次打击的范围带离其他人，并在结算后重新利用空间。这不只是首领重复出招：标记把后续攻击绑定到具体对象，公布后顺序不再暗中改变。",
+  "learning": "定义唯一分配、单一序列指针、攻击几何、分离所需的移动时间、目标缺席规则、伤害、事件去重和重置。",
+  "category": "协作配合",
+  "readTime": "10 分钟",
+  "demo": {
+    "title": "在石质场地中分开放置三次编号攻击",
+    "timeline": "目标顺序时间轴",
+    "step": "首领按 1、2、3 结算，不中途换目标",
+    "phaseNames": ["公布顺序", "结算前两个标记", "结算最后一个并重置"],
+    "phaseDescriptions": [
+      "0.70 秒时首领给三名玩家分别标上 1、2、3。任何人移动前顺序已经锁定；持续显示的下一目标提示指向 1。",
+      "每名被标记者走向独立的承受位置。2.00 秒时玩家 1 周围半径 72 单位的圆形打击结算，3.20 秒时轮到玩家 2。每次唯一打击完成后指针才前进，其他角色完整身体都留在当前圆外。",
+      "4.40 秒时玩家 3 的圆形打击结算。经过可见的收招，5.50 秒时明确清除所有标记。错误的指针、重复的命中回调或圈内多出的玩家都是可检验的失败，而不是隐藏的第四次攻击。"
+    ],
+    "boss": "首领",
+    "player": "玩家",
+    "danger": "单独承受的目标受到 25 点伤害；误入圈内的其他玩家受到额外 80 点伤害",
+    "locked": "唯一的 1–3 标记、半径 72 单位的圆，以及固定的 1 → 2 → 3 指针",
+    "safe": "每次命中范围内只有指定玩家",
+    "reducedMotion": "减少动态效果时不自动播放。可拖到 0.70、1.80、2.08、3.28、4.48 和 5.60 秒查看。",
+    "diagramDescription": "首领给三名玩家标上 1、2、3，然后按此顺序攻击。每人把自己的圆形打击带到独立位置；上一击只结算一次后下一个编号才激活。明确的重试会清除全部标记。"
+  },
+  "steps": [
+    {
+      "title": "顺序何时锁定？",
+      "body": "给每名合格玩家分配唯一编号，并在首击前展示所有标记。0.70 秒时记录队伍与顺序。不要因死亡、断线、距离或镜头变化而悄悄重新排序；为缺席的编号目标规定明确处理方式。"
+    },
+    {
+      "title": "其他人在哪里安全？",
+      "body": "此版本在命中时以指定目标为圆心产生半径 72 单位的圆。给普通步行留出足够的分离时间；检查每名玩家整个身体是否与圆相交，不能只测中心点。指定目标承受 25 点，其他入圈者承受 80 点。"
+    },
+    {
+      "title": "指针如何前进？",
+      "body": "当前编号的唯一事件 ID 结算后才推进指针。拒绝重复 ID、提前到来的未来编号和上一轮战斗的命中。测试同时回调、目标缺席、移动过晚与重置，确保拖动时间轴不会凭空增加伤害。"
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "显示编号后又换目标",
+      "body": "标记就是承诺。首领锁定后若悄悄换人，队伍无法规划分离路线。只有另外明确预告的取消行为才能修改顺序。"
+    },
+    {
+      "title": "重复回调也推进指针",
+      "body": "动画与碰撞系统可能两次发送同一事件。只接受唯一且有效的 ID，确认结算前持续显示当前编号。"
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "预留移动与交接空间",
+      "body": "按普通步速量出从分配到第一个承受点、以及后续承受点之间的距离。下一目标应能在上一击结束后进入，而不穿过残留威胁。"
+    },
+    {
+      "title": "不靠颜色也能读懂顺序",
+      "body": "数字、当前编号的光环和已完成编号的不同状态承担主要信息；颜色只是辅助。即使首领或特效挡住玩家，下一目标提示仍需可见。"
+    },
+    {
+      "title": "记录每次结算",
+      "body": "记录战斗 ID、打击 ID、期望编号、指定玩家、圆心、完整半径、实际入圈者、伤害与新指针。倒放应无副作用地重现同一记录。"
+    }
+  ],
+  "story": {
+    "title": "落击前已刻好的符文",
+    "body": "首领在队伍上方刻下三个编号符文。每个符文预示下一次石质脉冲由谁承受，让玩家把落点分散到场地各处。"
+  },
+  "adaptation": {
+    "title": "将目标分配与攻击形状分开",
+    "body": "编号可以引导圆、扇形、冲刺或光束。此演示用小圆方便测量分离；改动形状也会改变承受点和安全路线。2D 游戏中按序变化的攻击类型能说明顺序，却不等于给玩家编号。"
+  },
+  "distinction": {
+    "title": "队列不等于反复随机选人",
+    "body": "首击前目标顺序就已公开并锁定。个人散开可以让所有标记同时结算；在此机制中，为下一击腾空间的责任随着每次打击移交。"
+  },
+  "lensNotes": [
+    { "id": "telegraphing", "body": "整组编号先出现，另一提示指出当前结算的是谁。" },
+    { "id": "counterplay", "body": "每位目标都可用普通移动把自己的打击带离其他人。" },
+    { "id": "threat-geometry", "body": "完整的 72 单位圆和角色身体大小决定实际命中。" },
+    { "id": "difficulty-rhythm", "body": "后续目标接手前一击结束后的空间，不必同时处理全部警告。" },
+    { "id": "progress-clarity", "body": "只向前走的 1 → 2 → 3 指针与明确重置让进度可检查。" }
+  ],
+  "examples": [
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Pallas Athena",
+      "screenshot": "https://i.ytimg.com/vi/sjKkiFJqOT4/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=sjKkiFJqOT4",
+      "video": "https://www.youtube.com/watch?v=sjKkiFJqOT4&t=10s",
+      "videoDurationSeconds": 332,
+      "body": "在 Anabaseios: The Twelfth Circle (Savage) 中，Palladion 为玩家分配 1–8，首领按此顺序冲刺。后续位置规则远比演示的三个小圆复杂；可复用的是已锁定的受击对象队列。"
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Diamond Weapon",
+      "screenshot": "https://i.ytimg.com/vi/Nnk33iDsJ6o/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=Nnk33iDsJ6o",
+      "video": "https://www.youtube.com/watch?v=Nnk33iDsJ6o&t=449s",
+      "videoDurationSeconds": 660,
+      "body": "The Cloud Deck (Extreme) 的 Flood Ray 为每名玩家赋予 1–8 的编号，并连续发出扇形攻击。双平台、奇偶分组和易伤效果使承受位置的安排比演示更复杂。"
+    },
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "First Adversary",
+      "screenshot": "https://i.ytimg.com/vi/Zz-2VeDyNNs/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=Zz-2VeDyNNs",
+      "video": "https://www.youtube.com/watch?v=Zz-2VeDyNNs&t=527s",
+      "videoDurationSeconds": 623,
+      "body": "作为相关的 2D 顺序变体，First Adversary 依次进行红、蓝、黄属性的三次冲锋。它并未给三名玩家编号；此例展示固定出招顺序如何改变逐次应对。给玩家分配编号是本课另外加入的设计选择。"
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

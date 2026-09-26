@@ -213,6 +213,12 @@
 .blueprint-demo__entity-label--player {
   fill: var(--diagram-player-label);
 }
+.blueprint-demo__entity-label--number {
+  fill: var(--accent);
+  font-size: 42px;
+  font-weight: 800;
+  stroke-width: 7px;
+}
 .blueprint-demo__motion-note {
   margin: 0.5rem;
   padding: 0.55rem 0.7rem;
@@ -257,6 +263,9 @@
   }
   .blueprint-demo__entity-label {
     font-size: 19px;
+  }
+  .blueprint-demo__entity-label--number {
+    font-size: 42px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

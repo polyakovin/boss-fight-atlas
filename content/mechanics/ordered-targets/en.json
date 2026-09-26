@@ -1,0 +1,138 @@
+{
+  "title": "Ordered targets",
+  "subtitle": "Turn a marked order into a readable sequence of attacks",
+  "variant": "Three unique marks · fixed order · isolated hits · explicit reset",
+  "summary": "The boss marks several targets and strikes them in a visible, committed order.",
+  "overview": "Ordered targets assign each player a unique place in a forthcoming attack sequence. The group can see who is next, move that strike away from unmarked bodies, and reclaim space after it resolves. The lesson is not simply a boss repeating attacks: the marks bind later attacks to specific recipients and the order remains stable after it is revealed.",
+  "learning": "Define unique assignment, a single strike cursor, target geometry, isolation travel time, invalid or missing targets, damage, event deduplication, and reset.",
+  "category": "Cooperative coordination",
+  "readTime": "10 min",
+  "demo": {
+    "title": "Place three numbered strikes around a stone arena",
+    "timeline": "Ordered targets timeline",
+    "step": "The boss resolves marks 1, 2, then 3 without retargeting",
+    "phaseNames": [
+      "Reveal the order",
+      "Resolve the first two marks",
+      "Resolve the last mark and reset"
+    ],
+    "phaseDescriptions": [
+      "At 0.70 seconds the boss places unique marks 1, 2, and 3 over three players. The order locks before anybody moves; a persistent next-target cue points to mark 1.",
+      "Each marked player moves toward an isolated receiving spot. At 2.00 seconds the first 72-unit circle resolves around player 1; at 3.20 seconds the second resolves around player 2. The next-target cue advances only after each unique strike, while other bodies stay outside the active circle.",
+      "At 4.40 seconds the third circle resolves around player 3. The sequence ends with a visible recovery and clears all marks at 5.50 seconds. An incorrect cursor, duplicate hit callback, or extra body in the circle is a failure case, not an invisible fourth strike."
+    ],
+    "boss": "Boss",
+    "player": "Player",
+    "danger": "An isolated target receives a 25-point hit; an overlapping player takes an unintended 80-point hit",
+    "locked": "Unique 1–3 marks, 72-unit hit circles, and a fixed 1 → 2 → 3 cursor",
+    "safe": "Only the intended marked player occupies each impact circle",
+    "reducedMotion": "Reduced motion disables autoplay. Scrub to 0.70, 1.80, 2.08, 3.28, 4.48, and 5.60 seconds.",
+    "diagramDescription": "The boss marks three players 1, 2, and 3, then attacks them in that order. Each target moves to an isolated position before its own circular hit; the next number becomes active only after one unique resolution. All marks clear on an explicit retry."
+  },
+  "steps": [
+    {
+      "title": "When is the order committed?",
+      "body": "Assign one unique number to each eligible player and show all marks before the first hit. Snapshot the roster and order at 0.70 seconds. Do not silently reshuffle on death, disconnect, proximity changes, or camera motion; define an explicit fallback for a missing numbered target."
+    },
+    {
+      "title": "What is safe for everyone else?",
+      "body": "For this variant, each hit uses a 72-unit circle centered on its assigned target at impact. Give ordinary movement enough time to isolate it, and compare all player bodies with the complete circle rather than checking anchor points only. The intended target takes 25 damage; another occupant would take 80."
+    },
+    {
+      "title": "How does the cursor advance?",
+      "body": "Resolve exactly one event ID for the current number, then advance the cursor. Reject a repeated ID, a future number arriving early, or a hit from an old encounter. Test simultaneous callbacks, a missing target, late movement, and reset so seeking and retry never add phantom damage."
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "Retargeting after showing the numbers",
+      "body": "A mark is a promise. If the boss silently switches recipients after commitment, the group cannot plan its isolation route. Only an explicitly telegraphed cancellation may change the locked order."
+    },
+    {
+      "title": "Advancing on duplicate callbacks",
+      "body": "Animation and collision events can fire twice. Advance only after a unique, valid strike ID, and keep the active number visible until that resolution is committed."
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "Reserve travel and replacement space",
+      "body": "Measure the distance from assignment to the first receiving spot and between successive spots with ordinary walk speed. The next target should be able to enter after the previous hit without crossing its persistent danger."
+    },
+    {
+      "title": "Read order without color",
+      "body": "Number glyphs, an active-number halo, and a completed-state change carry the sequence; color can reinforce but must not be the only code. Keep the next cue visible when the boss or effects cover a player."
+    },
+    {
+      "title": "Log each resolution",
+      "body": "Record encounter ID, strike ID, expected number, assigned player, impact center, complete radius, actual occupants, damage, and resulting cursor. A rewind must recompute the same ledger without side effects."
+    }
+  ],
+  "story": {
+    "title": "A rune sequence carved before the blow",
+    "body": "The boss carves three numbered runes over the party. Each one foretells whose stone pulse comes next, so the players can carry their own impact to separate parts of the floor."
+  },
+  "adaptation": {
+    "title": "Keep assignment separate from attack shape",
+    "body": "Numbers can direct circles, cones, dashes, or beams. This demo uses small circles to make isolation measurable; changing geometry also changes receiving spots and safe travel. A 2D sequential attack-type pattern may teach ordering but does not itself assign numbered players."
+  },
+  "distinction": {
+    "title": "A queue is not a repeated random target",
+    "body": "The target order is visible and locked before the first hit. Personal spread can resolve all marks at once, while this sequence hands the next safe-space obligation to a different player after each strike."
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "All numbers appear before the sequence; a separate cue shows which one resolves now."
+    },
+    {
+      "id": "counterplay",
+      "body": "Each recipient can move an assigned hit away from everyone else with ordinary movement."
+    },
+    {
+      "id": "threat-geometry",
+      "body": "The full 72-unit circle and player-body extents decide who is actually hit."
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "Later targets inherit space after earlier hits rather than receiving simultaneous warnings."
+    },
+    {
+      "id": "progress-clarity",
+      "body": "A monotone 1 → 2 → 3 cursor and explicit reset make progress inspectable."
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Pallas Athena",
+      "screenshot": "https://i.ytimg.com/vi/sjKkiFJqOT4/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=sjKkiFJqOT4",
+      "video": "https://www.youtube.com/watch?v=sjKkiFJqOT4&t=10s",
+      "videoDurationSeconds": 332,
+      "body": "Palladion in Anabaseios: The Twelfth Circle (Savage) assigns players numbers 1–8 and resolves the boss's dashes in that order. Its spatial follow-ups are much more complex than the demo's three small circles; the reusable rule is the committed numbered recipient queue."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Diamond Weapon",
+      "screenshot": "https://i.ytimg.com/vi/Nnk33iDsJ6o/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=Nnk33iDsJ6o",
+      "video": "https://www.youtube.com/watch?v=Nnk33iDsJ6o&t=449s",
+      "videoDurationSeconds": 660,
+      "body": "Flood Ray in The Cloud Deck (Extreme) gives each player a number from 1 to 8 and fires conal cleaves consecutively. The two platforms, odd/even grouping, and vulnerability make the receiving-space problem sharper than the demonstration."
+    },
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "First Adversary",
+      "screenshot": "https://i.ytimg.com/vi/Zz-2VeDyNNs/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=Zz-2VeDyNNs",
+      "video": "https://www.youtube.com/watch?v=Zz-2VeDyNNs&t=527s",
+      "videoDurationSeconds": 623,
+      "body": "In a related 2D ordering variant, First Adversary charges three times with red, blue, then yellow attributes. It does not put numbered marks on three players: it demonstrates how a fixed, readable attack order can change each successive response. The player-assignment layer in this lesson is a separate design choice."
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

@@ -1,0 +1,138 @@
+{
+  "title": "Objetivos en orden",
+  "subtitle": "Convierte las marcas en una secuencia legible de ataques",
+  "variant": "Tres marcas únicas · orden fijo · golpes aislados · reinicio explícito",
+  "summary": "El jefe marca varios objetivos y los ataca en un orden visible y comprometido.",
+  "overview": "Cada jugador recibe una posición única en una secuencia futura de ataques. El grupo sabe quién sigue, aleja su zona de impacto de los demás y recupera espacio cuando se resuelve. No se trata solo de repetir ataques: las marcas vinculan los golpes futuros a destinatarios concretos y el orden no cambia tras revelarse.",
+  "learning": "Define asignación única, cursor de ataque, geometría, tiempo para aislarse, objetivos ausentes, daño, deduplicación de eventos y reinicio.",
+  "category": "Coordinación cooperativa",
+  "readTime": "10 min",
+  "demo": {
+    "title": "Distribuye tres golpes numerados por la arena de piedra",
+    "timeline": "Línea temporal de objetivos ordenados",
+    "step": "El jefe resuelve 1, 2 y 3 sin cambiar de objetivo",
+    "phaseNames": [
+      "Revelar el orden",
+      "Resolver las dos primeras marcas",
+      "Resolver la última y reiniciar"
+    ],
+    "phaseDescriptions": [
+      "A los 0,70 segundos el jefe asigna las marcas únicas 1, 2 y 3 a tres jugadores. El orden queda fijado antes de que se muevan; una señal persistente señala la marca 1.",
+      "Cada jugador marcado camina hasta un punto aislado. A los 2,00 segundos se resuelve un círculo de 72 unidades alrededor del jugador 1 y a los 3,20 otro alrededor del jugador 2. El cursor solo avanza tras un golpe único; los demás cuerpos quedan fuera del círculo activo.",
+      "A los 4,40 segundos se resuelve el tercer círculo alrededor del jugador 3. Tras una recuperación visible, a los 5,50 se borran todas las marcas. Un cursor incorrecto, una llamada duplicada o un cuerpo extra dentro del círculo son fallos comprobables, no un cuarto golpe oculto."
+    ],
+    "boss": "Jefe",
+    "player": "Jugador",
+    "danger": "El objetivo aislado recibe 25 de daño; otro jugador dentro del círculo recibe 80 no previstos",
+    "locked": "Marcas únicas 1–3, círculos de 72 unidades y cursor fijo 1 → 2 → 3",
+    "safe": "Solo el jugador asignado ocupa cada círculo de impacto",
+    "reducedMotion": "El movimiento reducido desactiva la reproducción automática. Desplaza la línea a 0,70; 1,80; 2,08; 3,28; 4,48 y 5,60 segundos.",
+    "diagramDescription": "El jefe marca a tres jugadores con 1, 2 y 3 y ataca en ese orden. Cada uno lleva su golpe circular a un punto aislado; el siguiente número se activa solo tras resolver el anterior una vez. Un reinicio explícito elimina todas las marcas."
+  },
+  "steps": [
+    {
+      "title": "¿Cuándo queda comprometido el orden?",
+      "body": "Asigna un número único a cada jugador válido y muestra todas las marcas antes del primer golpe. A los 0,70 segundos fija el grupo y su orden. No reordenes en silencio por muerte, desconexión, proximidad o cámara; define qué ocurre si falta un objetivo numerado."
+    },
+    {
+      "title": "¿Dónde están seguros los demás?",
+      "body": "Aquí cada golpe usa un círculo de 72 unidades centrado en su objetivo al impactar. Deja tiempo para caminar hasta una posición aislada y comprueba el cuerpo entero de cada jugador, no solo su punto central. El objetivo recibe 25 de daño; otro ocupante recibiría 80."
+    },
+    {
+      "title": "¿Cómo avanza el cursor?",
+      "body": "Resuelve un único ID de evento para el número actual y entonces avanza. Rechaza un ID repetido, un número futuro prematuro o un golpe de un intento anterior. Prueba llamadas simultáneas, objetivos ausentes, movimiento tardío y reinicio para que buscar un fotograma no añada daño fantasma."
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "Cambiar de objetivo tras mostrar el número",
+      "body": "La marca es una promesa. Si el jefe cambia de destinatario sin avisar, el grupo no puede planear su ruta de aislamiento. Solo una cancelación anunciada puede alterar el orden fijado."
+    },
+    {
+      "title": "Avanzar con llamadas duplicadas",
+      "body": "La animación y la colisión pueden emitir dos veces el mismo evento. Avanza solo con un ID único y válido; muestra el número activo hasta confirmar su resolución."
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "Reserva tiempo y espacio de relevo",
+      "body": "Mide a velocidad normal el recorrido desde la asignación hasta el primer punto y entre los siguientes. El próximo objetivo debe poder entrar tras el golpe anterior sin atravesar una amenaza persistente."
+    },
+    {
+      "title": "Comunica el orden sin depender del color",
+      "body": "Los números, un halo para el turno activo y otro estado para el resuelto transmiten la secuencia. El color puede reforzarla. Mantén visible la señal del siguiente turno incluso si un efecto tapa al jugador."
+    },
+    {
+      "title": "Registra cada resolución",
+      "body": "Anota ID del encuentro y del golpe, número esperado, jugador asignado, centro, radio completo, ocupantes, daño y nuevo cursor. Rebobinar debe producir el mismo registro sin efectos secundarios."
+    }
+  ],
+  "story": {
+    "title": "Runas grabadas antes del golpe",
+    "body": "El jefe graba tres runas numeradas sobre el grupo. Cada una anticipa quién recibirá el siguiente pulso de piedra, para que los jugadores distribuyan los impactos por el suelo."
+  },
+  "adaptation": {
+    "title": "Separa asignación y forma",
+    "body": "Los números pueden dirigir círculos, conos, cargas o rayos. Los círculos pequeños de esta demo permiten medir el aislamiento; cambiar la forma también cambia posiciones y rutas. Una secuencia 2D de tipos de ataque enseña el orden, pero no asigna números a jugadores."
+  },
+  "distinction": {
+    "title": "Una cola no es volver a elegir al azar",
+    "body": "El orden es visible y fijo antes del primer golpe. La separación personal puede resolver todas las marcas a la vez; aquí la obligación de liberar espacio pasa de un jugador a otro después de cada golpe."
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "Todos los números aparecen antes de la cadena y otra señal muestra el turno actual."
+    },
+    {
+      "id": "counterplay",
+      "body": "Cada destinatario puede alejar el golpe asignado de los demás caminando."
+    },
+    {
+      "id": "threat-geometry",
+      "body": "El círculo completo de 72 unidades y el tamaño de cada cuerpo determinan los impactos."
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "Los objetivos posteriores heredan el espacio tras los anteriores en vez de resolver todas las alertas juntas."
+    },
+    {
+      "id": "progress-clarity",
+      "body": "Un cursor monótono 1 → 2 → 3 y un reinicio explícito permiten inspeccionar el progreso."
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Pallas Athena",
+      "screenshot": "https://i.ytimg.com/vi/sjKkiFJqOT4/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=sjKkiFJqOT4",
+      "video": "https://www.youtube.com/watch?v=sjKkiFJqOT4&t=10s",
+      "videoDurationSeconds": 332,
+      "body": "Palladion en Anabaseios: The Twelfth Circle (Savage) asigna números 1–8 y resuelve las cargas del jefe en ese orden. Sus continuaciones espaciales son mucho más complejas que los tres círculos de la demo; la regla reutilizable es la cola comprometida de destinatarios."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Diamond Weapon",
+      "screenshot": "https://i.ytimg.com/vi/Nnk33iDsJ6o/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=Nnk33iDsJ6o",
+      "video": "https://www.youtube.com/watch?v=Nnk33iDsJ6o&t=449s",
+      "videoDurationSeconds": 660,
+      "body": "Flood Ray en The Cloud Deck (Extreme) numera a cada jugador del 1 al 8 y lanza conos consecutivos. Las dos plataformas, la separación impar/par y la vulnerabilidad complican la distribución de espacio respecto a la demo."
+    },
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "First Adversary",
+      "screenshot": "https://i.ytimg.com/vi/Zz-2VeDyNNs/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=Zz-2VeDyNNs",
+      "video": "https://www.youtube.com/watch?v=Zz-2VeDyNNs&t=527s",
+      "videoDurationSeconds": 623,
+      "body": "En una variante 2D relacionada, First Adversary carga tres veces con atributos rojo, azul y amarillo, en ese orden. No marca a tres jugadores con números: muestra cómo una secuencia fija cambia la respuesta siguiente. La asignación de jugadores de esta lección es otra decisión de diseño."
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

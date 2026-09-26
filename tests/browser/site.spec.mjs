@@ -632,21 +632,21 @@ test('boss builder persists a local draft and downloads portable JSON', async ({
   await expect(page.locator('.boss-builder-phases [data-boss-download]')).toHaveCount(1);
   await expect(page.locator('.boss-builder-form [data-boss-download]')).toHaveCount(0);
   await expect(page.locator('.boss-builder-mechanic')).toHaveCount(124);
-  await expect(page.locator('.boss-builder-mechanic--wip')).toHaveCount(3);
+  await expect(page.locator('.boss-builder-mechanic--wip')).toHaveCount(2);
   await expect(page.locator('.boss-builder-mechanic:not(.boss-builder-mechanic--wip)')).toHaveCount(
-    121,
+    122,
   );
   await expect(
     page.locator(
       '.boss-builder-mechanic:not(.boss-builder-mechanic--wip):has([data-character-art="kern"])',
     ),
-  ).toHaveCount(121);
+  ).toHaveCount(122);
   await expect(
     page.locator(
       '.boss-builder-mechanic:not(.boss-builder-mechanic--wip):has([data-character-art="tavi"])',
     ),
-  ).toHaveCount(121);
-  await expect(page.locator('.boss-builder-mechanic [data-blueprint-preview]')).toHaveCount(115);
+  ).toHaveCount(122);
+  await expect(page.locator('.boss-builder-mechanic [data-blueprint-preview]')).toHaveCount(116);
   await expect(page.locator('.boss-builder-mechanic [data-pattern-preview]')).toHaveCount(5);
   await expect(page.locator('[data-boss-filter]')).toHaveCount(5);
   await page.locator('[data-boss-filter="geometry"]').selectOption('radial');
@@ -934,7 +934,7 @@ test('lens chips show explanations and open localized lens pages', async ({ page
     /Telegraphing.*A game communicates/,
   );
   await expect(page.locator('.lens-page__hero')).not.toContainText(/boss|charge/i);
-  await expect(page.locator('.lens-mechanic-card')).toHaveCount(75);
+  await expect(page.locator('.lens-mechanic-card')).toHaveCount(76);
   await expect(page.locator('.lens-mechanic-card h2')).toHaveText([
     'Charge',
     'Arc sweep',
@@ -1011,8 +1011,9 @@ test('lens chips show explanations and open localized lens pages', async ({ page
     'Proximity damage',
     'Tankbuster and target handoff',
     'Debuff handoff',
+    'Ordered targets',
   ]);
-  await expect(page.locator('.lens-mechanic-card h2 .icon--directional')).toHaveCount(75);
+  await expect(page.locator('.lens-mechanic-card h2 .icon--directional')).toHaveCount(76);
   await page.locator('.language-menu summary').click();
   const languageLinks = await page
     .locator('.language-menu nav a')
@@ -1204,17 +1205,17 @@ test('the root defaults to English and localized catalogs point to real pages', 
   ]);
   await expect(page.locator('.catalog-part')).toHaveCount(14);
   await expect(page.locator('.catalog-lesson')).toHaveCount(124);
-  await expect(page.locator('.catalog-lesson--wip')).toHaveCount(3);
-  await expect(page.locator('.catalog-lesson:not(.catalog-lesson--wip)')).toHaveCount(121);
+  await expect(page.locator('.catalog-lesson--wip')).toHaveCount(2);
+  await expect(page.locator('.catalog-lesson:not(.catalog-lesson--wip)')).toHaveCount(122);
   await expect(page.locator('.catalog-lesson__number').first()).toHaveText('1.1');
   await expect(page.locator('.catalog-lesson__number').last()).toHaveText('14.11');
   await expect(
     page.locator('.catalog-lesson:not(.catalog-lesson--wip):has([data-character-art="kern"])'),
-  ).toHaveCount(121);
+  ).toHaveCount(122);
   await expect(
     page.locator('.catalog-lesson:not(.catalog-lesson--wip):has([data-character-art="tavi"])'),
-  ).toHaveCount(121);
-  await expect(page.locator('.catalog-lesson__preview [data-blueprint-preview]')).toHaveCount(115);
+  ).toHaveCount(122);
+  await expect(page.locator('.catalog-lesson__preview [data-blueprint-preview]')).toHaveCount(116);
   await expect(page.locator('.catalog-lesson__preview [data-pattern-preview]')).toHaveCount(5);
   const publishedPage = await request.get('en/mechanics/environmental-weapon/');
   expect(publishedPage.status()).toBe(200);

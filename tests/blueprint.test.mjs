@@ -100,6 +100,8 @@ import {
   debuffHandoffState,
   debuffHandoffResolve,
   debuffHandoffExpire,
+  orderedTargetsState,
+  orderedTargetsResolve,
   counterStanceOutcome,
   counterStanceState,
   blueprintFrame,
@@ -127,8 +129,8 @@ import {
   renderBlueprintThumbnail,
 } from '../lib/blueprint-view.mjs';
 
-test('all 115 promoted lesson animations have distinct rule modes and complete moving frames', () => {
-  assert.equal(BLUEPRINT_MECHANIC_IDS.length, 115);
+test('all 116 promoted lesson animations have distinct rule modes and complete moving frames', () => {
+  assert.equal(BLUEPRINT_MECHANIC_IDS.length, 116);
   const modes = new Set();
   for (const id of BLUEPRINT_MECHANIC_IDS) {
     for (let time = 0; time <= BLUEPRINT_DURATION; time += 0.1) {
@@ -149,7 +151,7 @@ test('all 115 promoted lesson animations have distinct rule modes and complete m
           assert.ok(Number.isFinite(value), `${id} has an invalid ${primitive.type}`);
     }
   }
-  assert.equal(modes.size, 115);
+  assert.equal(modes.size, 116);
 });
 
 test('every blueprint exposes signal, committed action, and recovery without player teleports', () => {
@@ -213,7 +215,8 @@ test('every blueprint exposes signal, committed action, and recovery without pla
       id !== 'gaze-check' &&
       id !== 'proximity-damage' &&
       id !== 'tank-swap' &&
-      id !== 'debuff-handoff'
+      id !== 'debuff-handoff' &&
+      id !== 'ordered-targets'
     )
       assert.equal(blueprintFrame(id, 3).dangerActive, true, id);
     assert.equal(blueprintFrame(id, 3).playerSafe, true, id);
@@ -327,6 +330,7 @@ test('every damaging promoted animation derives safety from its own active geome
       id !== 'proximity-damage' &&
       id !== 'tank-swap' &&
       id !== 'debuff-handoff' &&
+      id !== 'ordered-targets' &&
       id !== 'part-break' &&
       id !== 'counter-stance' &&
       id !== 'absorption-power-up' &&
@@ -5505,4 +5509,58 @@ test('debuff handoff moves one timed rune only on eligible contact', () => {
   const preview = renderBlueprintThumbnail(id, 'test-debuff-handoff');
   assert.match(preview, /data-blueprint-preview="debuff-handoff"/);
   assert.match(preview, /data-character-art-preview="tavi-ally-0"/);
+});
+
+test('ordered targets keep one committed recipient per numbered hit', () => {
+  const id = 'ordered-targets';
+  assert.deepEqual([0, 0.8, 1.7, 2.1, 3.3, 4.5, 5.6].map(orderedTargetsState), [
+    'assign',
+    'isolate',
+    'isolate',
+    'first-strike',
+    'second-strike',
+    'third-strike',
+    'reset',
+  ]);
+  const hit = orderedTargetsResolve();
+  assert.equal(hit.resolution, 'resolved');
+  assert.equal(hit.nextNumber, 2);
+  assert.deepEqual(hit.occupantIds, ['player-1']);
+  assert.deepEqual(hit.damage, [{ playerId: 'player-1', amount: 25 }]);
+  assert.equal(orderedTargetsResolve({ alreadyResolved: true }).resolution, 'duplicate');
+  assert.equal(orderedTargetsResolve({ alreadyResolved: true }).applicationCount, 0);
+  assert.equal(orderedTargetsResolve({ selectedNumber: 2 }).resolution, 'out-of-order');
+  assert.equal(orderedTargetsResolve({ players: [] }).resolution, 'invalid');
+  const crowded = orderedTargetsResolve({
+    players: [
+      { id: 'player-1', x: 100, y: 625, alive: true },
+      { id: 'player-2', x: 150, y: 625, alive: true },
+    ],
+  });
+  assert.deepEqual(crowded.damage, [
+    { playerId: 'player-1', amount: 25 },
+    { playerId: 'player-2', amount: 80 },
+  ]);
+  assert.equal(blueprintFrame(id, 1.9).orderedTargetNext, 1);
+  assert.equal(blueprintFrame(id, 2.05).orderedTargetNext, 2);
+  assert.equal(blueprintFrame(id, 3.25).orderedTargetNext, 3);
+  assert.equal(blueprintFrame(id, 4.45).orderedTargetNext, 4);
+  assert.deepEqual(blueprintFrame(id, 4.45).orderedTargetHealth, [75, 75, 75]);
+  assert.equal(blueprintFrame(id, 4.45).orderedTargetOverlapDamage, 80);
+  assert.equal(blueprintFrame(id, 5.6).orderedTargetNext, 0);
+  assert.equal(blueprintFrame(id, 5.6).orderedTargetRetry, true);
+  assert.equal(blueprintPointSafe(id, 3.21, { x: 280, y: 700 }), false);
+  for (let t = 0.02; t < BLUEPRINT_DURATION; t += 0.02) {
+    const a = blueprintFrame(id, t - 0.02);
+    const b = blueprintFrame(id, t);
+    for (let index = 0; index < 3; index += 1) {
+      const left = a.orderedTargetPositions[index];
+      const right = b.orderedTargetPositions[index];
+      assert.ok(Math.hypot(right.x - left.x, right.y - left.y) < 18, 'player teleports');
+    }
+    assert.equal(b.playerSafe, true);
+  }
+  const preview = renderBlueprintThumbnail(id, 'test-ordered-targets');
+  assert.match(preview, /data-blueprint-preview="ordered-targets"/);
+  assert.match(preview, /data-character-art-preview="tavi-ally-1"/);
 });

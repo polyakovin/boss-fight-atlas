@@ -1,0 +1,30 @@
+{
+  "id": "ordered-targets",
+  "number": 122,
+  "published": true,
+  "sourceLocale": "en",
+  "contentVersion": 1,
+  "animation": "ordered-targets",
+  "lenses": [
+    "telegraphing",
+    "counterplay",
+    "threat-geometry",
+    "difficulty-rhythm",
+    "progress-clarity"
+  ],
+  "related": ["personal-spread", "marked-area-strike", "debuff-handoff", "tank-swap"],
+  "sources": [
+    {
+      "title": "Palladion in Anabaseios: The Twelfth Circle (Savage) — Final Fantasy XIV Community Wiki",
+      "url": "https://ffxiv.consolegameswiki.com/wiki/Anabaseios:_The_Twelfth_Circle_(Savage)"
+    },
+    {
+      "title": "Flood Ray in The Cloud Deck (Extreme) — AkhMorning",
+      "url": "https://www.akhmorning.com/raids/diamond-weapon/"
+    },
+    {
+      "title": "First Adversary attack patterns — MapleStory Wiki",
+      "url": "https://maplestorywiki.net/w/First_Adversary"
+    }
+  ]
+}

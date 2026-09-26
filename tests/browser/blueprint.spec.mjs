@@ -447,9 +447,9 @@ test('volley releases three parallel bolts on one beat and clears its outside ro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('catalog and builder reuse the 115 promoted rule-specific previews', async ({ page }) => {
+test('catalog and builder reuse the 116 promoted rule-specific previews', async ({ page }) => {
   await page.goto('en/');
-  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(115);
+  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(116);
   const catalogLayouts = await page.locator('[data-blueprint-preview]').evaluateAll((previews) =>
     previews.map((preview) => {
       const boss = preview.querySelector('[data-character-art-preview="kern"]');
@@ -473,7 +473,7 @@ test('catalog and builder reuse the 115 promoted rule-specific previews', async 
   expect(new Set(catalogLayouts.map(({ layout }) => layout)).size).toBeGreaterThanOrEqual(18);
 
   await page.goto('en/builder/');
-  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(115);
+  await expect(page.locator('[data-blueprint-preview]')).toHaveCount(116);
   const builderLayouts = await page.locator('[data-blueprint-preview]').evaluateAll((previews) =>
     previews.map((preview) => {
       const boss = preview.querySelector('[data-character-art-preview="kern"]');
@@ -5197,6 +5197,49 @@ test('debuff handoff shows one rune moving between eligible carriers before each
   await expect(widget).toHaveAttribute('data-blueprint-handoff-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-handoff-transfer-count', '0');
   await page.goto('ar/mechanics/debuff-handoff/');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('ordered targets display three fixed numbered recipients and advance one strike at a time', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('en/mechanics/ordered-targets/');
+  const widget = page.locator('[data-blueprint-demo]');
+  const timeline = widget.locator('[data-blueprint-timeline]');
+  const seek = (milliseconds) =>
+    timeline.evaluate((element, value) => {
+      element.value = String(value);
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+    }, milliseconds);
+
+  await expect(page.locator('.lesson-title-line h1')).toHaveText('Ordered targets');
+  await expect(page.locator('.wip-badge, .draft-profile')).toHaveCount(0);
+  await expect(page.locator('.game-example')).toHaveCount(3);
+  await expect(page.locator('.lens-chip')).toHaveCount(5);
+  await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
+  await expect(widget).toHaveAttribute('data-blueprint-playing', 'false');
+  await expect(widget.locator('[data-blueprint-ally]')).toHaveCount(2);
+  await expect(widget.locator('[data-blueprint-order-mark]')).toHaveText(['1', '2', '3']);
+  await seek(1800);
+  await expect(widget).toHaveAttribute('data-blueprint-order-next', '1');
+  await expect(widget).toHaveAttribute('data-blueprint-order-resolved', '0');
+  await seek(2050);
+  await expect(widget).toHaveAttribute('data-blueprint-order-next', '2');
+  await expect(widget).toHaveAttribute('data-blueprint-order-hit-id', 'strike-1');
+  await seek(3250);
+  await expect(widget).toHaveAttribute('data-blueprint-order-next', '3');
+  await expect(widget).toHaveAttribute('data-blueprint-order-resolved', '2');
+  await seek(4450);
+  await expect(widget).toHaveAttribute('data-blueprint-order-next', '4');
+  await expect(widget).toHaveAttribute('data-blueprint-order-resolved', '3');
+  await seek(5600);
+  await expect(widget).toHaveAttribute('data-blueprint-order-next', '0');
+  await expect(widget).toHaveAttribute('data-blueprint-order-retry', 'true');
+
+  await page.goto('ar/mechanics/ordered-targets/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
