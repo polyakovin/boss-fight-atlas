@@ -71,21 +71,6 @@
     justify-self: center;
   }
 }
-@media (max-width: 960px) {
-  .charge-demo__canvas {
-    height: 100svh;
-    flex: none;
-  }
-  .charge-demo__svg {
-    height: 100%;
-    width: max(100%, 58.333svh);
-    max-width: none;
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-  }
-}
 .charge-demo__entity-label {
   fill: var(--diagram-boss-label);
   font-size: 16px;

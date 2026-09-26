@@ -207,20 +207,47 @@ for (const theme of ['light', 'dark']) {
   }
 }
 
-test('full-height encounter canvases stay centered in Arabic mobile layout', async ({ page }) => {
+test('short desktop scenes fit on opening while using the available height', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  for (const lesson of ['charge', 'sweep', 'ground-slam', 'wide-swing', 'self-heal-cast']) {
+    await page.goto(`en/mechanics/${lesson}/`);
+    const demo = page.locator('#simulation > *');
+    const bounds = await demo.boundingBox();
+    const header = await page.locator('.site-header').boundingBox();
+    expect(bounds.y, `${lesson}: scene starts below the header`).toBeGreaterThan(header.height);
+    expect(bounds.y + bounds.height, `${lesson}: scene fits without scrolling`).toBeLessThanOrEqual(
+      720,
+    );
+    expect(bounds.height, `${lesson}: scene uses the available height`).toBeGreaterThan(570);
+  }
+});
+
+test('mobile encounter panels fit below the header and stay centered in Arabic', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 375, height: 812 });
   for (const [lesson, family] of [
     ['charge', 'charge'],
+    ['sweep', 'pattern'],
     ['landing-jump', 'blueprint'],
     ['ground-slam', 'pattern'],
     ['lunge', 'blueprint'],
     ['wide-swing', 'blueprint'],
+    ['self-heal-cast', 'blueprint'],
   ]) {
     await page.goto(`ar/mechanics/${lesson}/`);
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await page.locator('#simulation').evaluate((element) => element.scrollIntoView());
+    const demo = await page.locator('#simulation > *').boundingBox();
+    const header = await page.locator('.site-header').boundingBox();
     const canvas = await page.locator(`.${family}-demo__canvas`).boundingBox();
     const svg = await page.locator(`.${family}-demo__svg`).boundingBox();
-    expect(canvas.height, `${lesson}: scene uses viewport height`).toBeGreaterThanOrEqual(811);
+    expect(demo.y, `${lesson}: panel clears the sticky header`).toBeGreaterThan(header.height);
+    expect(demo.y + demo.height, `${lesson}: full panel fits in the viewport`).toBeLessThanOrEqual(
+      812,
+    );
+    expect(demo.height, `${lesson}: panel uses the available height`).toBeGreaterThan(690);
+    expect(canvas.height, `${lesson}: canvas remains readable`).toBeGreaterThan(600);
     expect(
       Math.abs(svg.x + svg.width / 2 - canvas.x - canvas.width / 2),
       `${lesson}: scene stays centered in RTL`,

@@ -1,5 +1,15 @@
 import { test, expect } from '@playwright/test';
 
+async function expectMobileSceneFits(page, widget) {
+  await page.locator('#simulation').evaluate((element) => element.scrollIntoView());
+  const panel = await widget.boundingBox();
+  const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
+  const header = await page.locator('.site-header').boundingBox();
+  expect(panel.y).toBeGreaterThan(header.height);
+  expect(panel.y + panel.height).toBeLessThanOrEqual(page.viewportSize().height);
+  expect(canvas.height).toBeGreaterThan(600);
+}
+
 test('a reduced-motion blueprint stays still and remains fully seekable', async ({ page }) => {
   await page.goto('en/mechanics/target-lock/');
   const widget = page.locator('[data-blueprint-demo]');
@@ -47,7 +57,7 @@ test('wide swing keeps a held blade and both actors inside the full-height phone
   const timeline = widget.locator('[data-blueprint-timeline]');
   await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
   await expect(blade).toBeVisible();
-  expect((await canvas.boundingBox()).height).toBeGreaterThanOrEqual(811);
+  await expectMobileSceneFits(page, widget);
   const startingPose = await shaft.getAttribute('transform');
 
   for (const milliseconds of [0, 2800, 4250, 5600]) {
@@ -3793,9 +3803,7 @@ test('on-hit healing separates a blocked contact from applied damage and ignores
   await expect(widget).toHaveAttribute('data-blueprint-on-hit-healing-event-count', '1');
   await expect(widget).toHaveAttribute('data-blueprint-on-hit-healing-boss-health', '64');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   await seek(1200);
   const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
   const player = await widget.locator('[data-blueprint-player]').boundingBox();
@@ -4621,9 +4629,7 @@ test('party-size scaling applies roster changes only at safe boundaries and keep
   const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
   const player = await widget.locator('[data-blueprint-player]').boundingBox();
   const playerLabel = await widget.locator('[data-blueprint-player-label]').boundingBox();
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(player.x + player.width).toBeLessThanOrEqual(canvas.x + canvas.width);
   expect(playerLabel.x + playerLabel.width).toBeLessThanOrEqual(canvas.x + canvas.width);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -4686,7 +4692,7 @@ test('partner revival shows both bodies, interrupt, pair completion, and clean r
   const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
   const player = await widget.locator('[data-blueprint-player]').boundingBox();
   const playerLabel = await widget.locator('[data-blueprint-player-label]').boundingBox();
-  expect(canvas.height).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(player.x + player.width).toBeLessThanOrEqual(canvas.x + canvas.width);
   expect(playerLabel.x + playerLabel.width).toBeLessThanOrEqual(canvas.x + canvas.width);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -4781,7 +4787,7 @@ test('kill-order inheritance previews two distinct survivor attacks with a clean
   const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
   const player = await widget.locator('[data-blueprint-player]').boundingBox();
   const playerLabel = await widget.locator('[data-blueprint-player-label]').boundingBox();
-  expect(canvas.height).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(player.x + player.width).toBeLessThanOrEqual(canvas.x + canvas.width);
   expect(playerLabel.x + playerLabel.width).toBeLessThanOrEqual(canvas.x + canvas.width);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -4832,9 +4838,7 @@ test('shared group health preserves one bar through absence, return, completion,
   await expect(widget).toHaveAttribute('data-blueprint-shared-group-health-completion-count', '0');
   await expect(widget).toHaveAttribute('data-blueprint-shared-group-health-retry', 'true');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -4882,9 +4886,7 @@ test('coordinated duo attack overlaps one target and cancels the second follow-u
   await expect(widget).toHaveAttribute('data-blueprint-coordinated-duo-attack-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-coordinated-duo-attack-followup-count', '0');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -4929,9 +4931,7 @@ test('stack damage gathers three players for one split, then exposes the lone fa
   await expect(widget).toHaveAttribute('data-blueprint-stack-damage-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-stack-damage-health', '100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -4972,9 +4972,7 @@ test('personal spread separates marked bodies before a safe hit and counts crowd
   await expect(widget).toHaveAttribute('data-blueprint-personal-spread-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-personal-spread-health', '100/100/100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5017,9 +5015,7 @@ test('tower soak counts fixed-point occupants and distinguishes personal cost fr
   await expect(widget).toHaveAttribute('data-blueprint-tower-soak-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-tower-soak-health', '100/100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5067,9 +5063,7 @@ test('entity tether keeps a coordinated pair and breaks when the distance limit 
   await expect(widget).toHaveAttribute('data-blueprint-entity-tether-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-entity-tether-health', '100/100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5112,9 +5106,7 @@ test('gaze check reads Tavi’s visible facing at each warned pulse', async ({ p
   await expect(widget).toHaveAttribute('data-blueprint-gaze-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-gaze-health', '100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5155,9 +5147,7 @@ test('proximity damage keeps the rune fixed and makes distance change a nonzero 
   await expect(widget).toHaveAttribute('data-blueprint-proximity-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-proximity-health', '100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5200,9 +5190,7 @@ test('tank swap visibly hands boss focus to a second defender before the repeat'
   await expect(widget).toHaveAttribute('data-blueprint-tank-retry', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-tank-health', '100,100');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await widget.locator('.blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5244,9 +5232,7 @@ test('debuff handoff shows one rune moving between eligible carriers before each
   await page.goto('ar/mechanics/debuff-handoff/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await page.locator('[data-blueprint-demo] .blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5291,9 +5277,7 @@ test('ordered targets display three fixed numbered recipients and advance one st
   await page.goto('ar/mechanics/ordered-targets/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await page.locator('[data-blueprint-demo] .blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5336,9 +5320,7 @@ test('pairing polarity shows four signs, two opposite pairs and a single reset',
   await page.goto('ar/mechanics/pairing-polarity/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await page.locator('[data-blueprint-demo] .blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -5381,13 +5363,13 @@ test('party split shows independent side progress, a shared gate and reunion', a
   await page.goto('ar/mechanics/party-split/');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.setViewportSize({ width: 375, height: 812 });
-  expect(
-    (await page.locator('[data-blueprint-demo] .blueprint-demo__canvas').boundingBox()).height,
-  ).toBeGreaterThanOrEqual(812);
+  await expectMobileSceneFits(page, widget);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('recent group mechanics fill the desktop viewport height', async ({ page }) => {
+test('recent group mechanics fill the available desktop height without overflow', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   for (const slug of [
     'shared-group-health',
@@ -5407,7 +5389,11 @@ test('recent group mechanics fill the desktop viewport height', async ({ page })
     await page.goto(`en/mechanics/${slug}/`);
     const widget = page.locator('[data-blueprint-demo]');
     await expect(widget).toHaveAttribute('data-blueprint-screen-height', 'true');
+    const panel = await widget.boundingBox();
     const canvas = await widget.locator('.blueprint-demo__canvas').boundingBox();
-    expect(canvas.height, slug).toBeGreaterThanOrEqual(720);
+    const header = await page.locator('.site-header').boundingBox();
+    expect(panel.y, slug).toBeGreaterThan(header.height);
+    expect(panel.y + panel.height, slug).toBeLessThanOrEqual(720);
+    expect(canvas.height, slug).toBeGreaterThan(570);
   }
 });

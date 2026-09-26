@@ -26,6 +26,53 @@
     height: 100%;
   }
 }
+@media (max-width: 960px) {
+  .simulation-section {
+    --scene-scroll-offset: 110px;
+  }
+  .simulation-section .charge-demo,
+  .simulation-section .pattern-demo,
+  .simulation-section .blueprint-demo {
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - var(--scene-scroll-offset) - 12px);
+  }
+  .simulation-section .charge-demo__canvas,
+  .simulation-section .pattern-demo__canvas,
+  .simulation-section .blueprint-demo__canvas {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .simulation-section .charge-demo__svg,
+  .simulation-section .pattern-demo__svg,
+  .simulation-section .blueprint-demo__svg {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+  .simulation-section .charge-demo__svg,
+  .simulation-section .pattern-demo[data-pattern-kind='ground-slam'] .pattern-demo__svg,
+  .simulation-section
+    .blueprint-demo:is(
+      [data-blueprint-screen-height='true'],
+      [data-blueprint-id='landing-jump'],
+      [data-blueprint-id='lunge'],
+      [data-blueprint-id='wide-swing']
+    )
+    .blueprint-demo__svg {
+    width: max(100%, 58.333svh);
+  }
+}
+@media (max-width: 580px) {
+  .simulation-section {
+    --scene-scroll-offset: 90px;
+  }
+}
 .charge-demo__entity-label,
 .pattern-demo__entity-label {
   paint-order: stroke;

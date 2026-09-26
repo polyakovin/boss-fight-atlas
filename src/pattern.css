@@ -62,21 +62,6 @@
     height: 100%;
   }
 }
-@media (max-width: 960px) {
-  .pattern-demo[data-pattern-kind='ground-slam'] .pattern-demo__canvas {
-    height: 100svh;
-    overflow: hidden;
-  }
-  .pattern-demo[data-pattern-kind='ground-slam'] .pattern-demo__svg {
-    height: 100%;
-    width: max(100%, 58.333svh);
-    max-width: none;
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-  }
-}
 .pattern-demo__entity-label {
   fill: var(--diagram-boss-label);
   font-size: 16px;

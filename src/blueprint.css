@@ -48,41 +48,10 @@
     max-width: 560px;
     justify-self: center;
   }
-  .simulation-section:has([data-blueprint-screen-height='true']) {
-    width: min(100%, 58.333svh);
-    height: calc(100svh + 2px);
-  }
   .simulation-section [data-blueprint-full-height='true'],
   .simulation-section [data-blueprint-full-height='true'] .blueprint-demo__canvas,
   .simulation-section [data-blueprint-full-height='true'] .blueprint-demo__svg {
     height: 100%;
-  }
-}
-@media (max-width: 960px) {
-  .blueprint-demo:is(
-      [data-blueprint-screen-height='true'],
-      [data-blueprint-id='landing-jump'],
-      [data-blueprint-id='lunge'],
-      [data-blueprint-id='wide-swing']
-    )
-    .blueprint-demo__canvas {
-    height: 100svh;
-    overflow: hidden;
-  }
-  .blueprint-demo:is(
-      [data-blueprint-screen-height='true'],
-      [data-blueprint-id='landing-jump'],
-      [data-blueprint-id='lunge'],
-      [data-blueprint-id='wide-swing']
-    )
-    .blueprint-demo__svg {
-    height: 100%;
-    width: max(100%, 58.333svh);
-    max-width: none;
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
   }
 }
 .blueprint-demo__scene-timeline {
