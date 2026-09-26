@@ -2056,22 +2056,22 @@ const SPECS = {
   'pairing-polarity': {
     mode: 'pairing-polarity',
     boss: [280, 265],
-    player: [155, 620],
-    target: [155, 620],
+    player: [150, 620],
+    target: [150, 620],
     allies: [
-      [255, 620],
-      [355, 620],
-      [455, 620],
+      [235, 620],
+      [325, 620],
+      [410, 620],
     ],
     receivingSpots: [
-      [132, 680],
-      [367, 680],
-      [193, 680],
-      [428, 680],
+      [162, 680],
+      [344, 680],
+      [218, 680],
+      [396, 680],
     ],
     zones: [
-      [162.5, 680],
-      [397.5, 680],
+      [190, 680],
+      [370, 680],
     ],
     polarities: ['+', '+', '−', '−'],
     revealAt: 0.7,
@@ -10910,36 +10910,64 @@ function primitivesFor(spec, frame) {
   if (mode === 'pairing-polarity') {
     const visible = frame.time >= spec.revealAt && frame.time < spec.resetAt;
     const impact = strikePulse(frame.time, spec.resolveAt, spec.hitDuration);
+    const tone = frame.pairingPolaritySuccess ? 'safe' : 'signal';
     return [
-      rect(55, 245, 450, 650, 0.58, 'muted', 0.025),
-      ...spec.zones.flatMap(([x, y], index) => [
-        circle(
-          x,
-          y,
-          spec.radius,
-          visible ? (frame.pairingPolaritySuccess ? 0.7 : 0.53) : 0,
-          frame.pairingPolaritySuccess ? 'safe' : 'signal',
-          5,
-        ),
-        circle(
-          x,
-          y,
-          spec.radius + 14 * impact,
-          impact,
-          frame.pairingPolaritySuccess ? 'safe' : 'danger',
-          6,
-        ),
-        line(spec.boss[0], spec.boss[1] + 55, x, y - 70, visible ? 0.34 : 0, 'signal', 4),
-        circle(x, y - 110, 16, visible ? (index ? 0.7 : 1) : 0, 'accent', 4),
-      ]),
-      circle(
-        280,
-        680,
-        175 * smooth((frame.time - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.pairingPolarityRetry ? 0.7 : 0,
-        'accent',
-        7,
+      path(
+        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
+        0.5,
+        'muted',
+        0,
+        0.6,
       ),
+      path(
+        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
+      ...spec.zones.flatMap(([x, y], index) => {
+        const pair = index
+          ? [frame.pairingPolarityPositions[1], frame.pairingPolarityPositions[3]]
+          : [frame.pairingPolarityPositions[0], frame.pairingPolarityPositions[2]];
+        const bridgeY = (pair[0].y + pair[1].y) / 2 + 39;
+        return [
+          path(
+            `M ${x - 83} ${y + 24} L ${x} ${y - 16} L ${x + 83} ${y + 24} L ${x + 65} ${y + 72} L ${x} ${y + 93} L ${x - 65} ${y + 72} Z`,
+            0.72,
+            'muted',
+            0,
+            0.55,
+          ),
+          path(
+            `M ${x - 52} ${y - 205} H ${x + 52} V ${y - 177} H ${x - 52} Z M ${x - 37} ${y - 177} H ${x + 37} V ${y - 82} H ${x - 37} Z M ${x - 53} ${y - 82} H ${x + 53} V ${y - 64} H ${x - 53} Z`,
+            0.7,
+            'muted',
+            0,
+            0.67,
+          ),
+          path(
+            `M ${x} ${y - 205} L ${x + 28} ${y - 175} L ${x} ${y - 139} L ${x - 28} ${y - 175} Z`,
+            visible ? 0.97 : 0.38,
+            tone,
+            0,
+            0.75,
+          ),
+          path(
+            `M ${pair[0].x} ${bridgeY - 8} H ${pair[1].x} V ${bridgeY + 8} H ${pair[0].x} Z`,
+            visible && frame.time >= spec.move[1]
+              ? frame.pairingPolaritySuccess
+                ? 0.83
+                : 0.52
+              : 0,
+            tone,
+            0,
+            0.7,
+          ),
+          circle(x, y - 172, 20 + impact * 20, impact * 0.45, tone, 0, 0.55),
+        ];
+      }),
     ];
   }
   if (mode === 'party-split') {
