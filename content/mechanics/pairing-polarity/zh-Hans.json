@@ -1,0 +1,134 @@
+{
+  "title": "极性配对",
+  "subtitle": "让相反标记组成两对清晰可读的搭档",
+  "variant": "两个正号 · 两个负号 · 两个区域 · 一次结算",
+  "summary": "首领标记四名玩家；每个区域都必须恰好有一名正极和一名负极玩家。",
+  "overview": "极性配对把玩家之间的关系纳入碰撞判定。两人获得 +，另两人获得 −，随后出现两个分开的圆形区域。每个圆内必须恰好有两名存活且标记相反的玩家。它不是普通的分摊伤害：结算瞬间的配对组成与整个角色碰撞体都重要。",
+  "learning": "规定标记分配、搭档行进、精确人数、完整身体判定、失败伤害、重复事件处理和重置。",
+  "category": "合作协调",
+  "readTime": "10 分钟",
+  "demo": {
+    "title": "平衡克恩的两座符文圆阵",
+    "timeline": "极性配对时间轴",
+    "step": "冲击前每个圆内都要有一个 + 和一个 −",
+    "phaseNames": ["公布四个标记", "组成两对并结算", "恢复并重置"],
+    "phaseDescriptions": [
+      "第 0.70 秒，克恩向四名不同的存活玩家分配 +、+、−、−。两个半径 74 单位的圆阵和标记持续可见，供搭档选择不同目的地。",
+      "第 1.60 至 2.15 秒，两组相反符号的玩家分别进入左右圆阵并停稳。第 3.15 秒，两圈在一次冲击中结算。每圈都要恰好有两个完整身体且符号相反；缺人、多人与同号均使该组受到 70 伤害。",
+      "冲击后克恩有明显的恢复动作。第 5.50 秒，四个标记与两个配对任务一同清除，下一轮从未标记状态开始。"
+    ],
+    "boss": "首领",
+    "player": "玩家",
+    "danger": "配对错误或不完整：失败组受到 70 伤害",
+    "locked": "四个唯一标记、两个半径 74 的圆阵、一次冲击事件",
+    "safe": "每圈恰好完整容纳一个 + 和一个 −",
+    "reducedMotion": "减少动态效果时不会自动播放。可拖动至 0.70、1.25、2.15、3.15 和 5.50 秒。",
+    "diagramDescription": "克恩给四名玩家标上 +、+、−、−，并开启两个相隔的圆阵。玩家走成两组相反极性的搭档，每圈一组。一次冲击检查所有身体是否完整入圈，然后清除标记。"
+  },
+  "steps": [
+    {
+      "title": "怎样才算有效配对？",
+      "body": "移动前锁定四名不同的存活玩家，恰好分配两个 + 与两个 −。冲击时每圈必须恰好有两个相反标记。死亡或掉线要触发明确的处理规则，不能暗中改签。"
+    },
+    {
+      "title": "两个身体放得下吗？",
+      "body": "半径 74 的区域要计入每名玩家半径 24 的碰撞体。两位搭档不能彼此重叠，两个区域也应远到无法让一人同时计入。按正常步速测量行程。"
+    },
+    {
+      "title": "一次冲击怎样结算？",
+      "body": "在第 3.15 秒用同一场战斗事件检查两个区域。重复回调不能再次造成伤害。记录分配、实际成员、符号、失败原因与重置；测试多一人、同号、断线和迟到。"
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "把任意两人当作搭档",
+      "body": "两个同号玩家必须明确失败，否则 + 与 − 的预告就没有对应规则。"
+    },
+    {
+      "title": "只检查中心点",
+      "body": "中心入圈时身体仍可能露在外面。应检查完整碰撞体并给搭档留出站位空间。"
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "不靠颜色辨认",
+      "body": "持续显示 + 与 −、不同轮廓和清晰的区域边界；颜色只能提供辅助。"
+    },
+    {
+      "title": "测量搭档行程",
+      "body": "从最不利的起点按普通速度测试，并留下辨认两对已就位的停顿。"
+    },
+    {
+      "title": "准确记录失败",
+      "body": "保存战斗和事件 ID、标记、圆心与半径、身体半径及成员；区分缺人、多余、同号和重复事件。"
+    }
+  ],
+  "story": {
+    "title": "两枚符文闭合回路",
+    "body": "克恩举起两道开裂石环。一枚正符文与一枚负符文使每条回路闭合；失衡的石环会放电。"
+  },
+  "adaptation": {
+    "title": "将配对与分摊伤害分开",
+    "body": "符号可以换成光与暗、南与北或两种音符。改变场地或配对数量时，必须重新计算路程、容量与可读性。普通分摊只需足够人数，这里要求精确组成。"
+  },
+  "distinction": {
+    "title": "相反者相聚，两对彼此分开",
+    "body": "个人散开要求所有标记者远离，而分摊伤害不关心符号。本规则让相反搭档靠近，却让两对彼此隔开。"
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "持续可见的 + 与 − 在移动前就说明配对关系。"
+    },
+    {
+      "id": "counterplay",
+      "body": "玩家可以选择相反符号的搭档并走进空余圆阵。"
+    },
+    {
+      "id": "threat-geometry",
+      "body": "每个半径 74 的圆内要完整容纳两个半径 24 的身体。"
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "公布、移动、停稳、同时冲击、重置构成不同节拍。"
+    },
+    {
+      "id": "progress-clarity",
+      "body": "两条闭合回路在唯一的冲击前显示配对是否就绪。"
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Aufheben",
+      "screenshot": "https://i.ytimg.com/vi/j8Sf0MTCh74/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=j8Sf0MTCh74",
+      "video": "https://www.youtube.com/watch?v=j8Sf0MTCh74&t=641s",
+      "videoDurationSeconds": 3394,
+      "body": "Aufheben 施加 Thesis 与 Anti-Thesis；在 Bombify 阶段，相反标记者需要配对，多出的同号玩家会增加失败风险。视频从介绍标记的准确章节开始；实际战斗还包含计时与队伍人数变化。"
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Sophia",
+      "screenshot": "https://i.ytimg.com/vi/c-K44YN4TG8/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=c-K44YN4TG8",
+      "video": "https://www.youtube.com/watch?v=c-K44YN4TG8&t=333s",
+      "videoDurationSeconds": 501,
+      "body": "Sin and Punishment 赋予黑白圆环标记，和相反颜色相遇才能安全结算。视频从第一轮圆环开始；演示将配对规则从 Sophia 的其他移动攻击中抽离。"
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "The Ultima Warrior",
+      "screenshot": "https://i.ytimg.com/vi/wCxiCSmlGcA/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=wCxiCSmlGcA",
+      "video": "https://www.youtube.com/watch?v=wCxiCSmlGcA&t=209s",
+      "videoDurationSeconds": 382,
+      "body": "The Ultima Warrior 吸收 Sophia 后会给两人黑环、两人白环。视频此时说明相反颜色的配对，展示了同一关系如何进入另一名首领的招式循环。"
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

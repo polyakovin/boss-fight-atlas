@@ -1,0 +1,30 @@
+{
+  "id": "pairing-polarity",
+  "number": 123,
+  "published": true,
+  "sourceLocale": "en",
+  "contentVersion": 1,
+  "animation": "pairing-polarity",
+  "lenses": [
+    "telegraphing",
+    "counterplay",
+    "threat-geometry",
+    "difficulty-rhythm",
+    "progress-clarity"
+  ],
+  "related": ["stack-damage", "personal-spread", "entity-tether", "tower-soak"],
+  "sources": [
+    {
+      "title": "Aufheben Bombify and opposing Thesis / Antithesis — firsthand MapleSEA guide",
+      "url": "https://kprobin.blogspot.com/2023/02/maplesea-legends-of-zipangu-future.html"
+    },
+    {
+      "title": "Ultima Warrior's Sophia rings — Final Fantasy XIV Community Wiki",
+      "url": "https://ffxiv.consolegameswiki.com/wiki/The_Fractal_Continuum_(Hard)"
+    },
+    {
+      "title": "Sophia's Sin and Punishment pair markers — Final Fantasy XIV Community Wiki",
+      "url": "https://ffxiv.consolegameswiki.com/wiki/Containment_Bay_P1T6_(Extreme)"
+    }
+  ]
+}

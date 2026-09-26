@@ -677,6 +677,19 @@ const PROFILE_OVERRIDES = {
       'progress-clarity',
     ],
   },
+  'pairing-polarity': {
+    geometry: ['zone', 'target'],
+    signal: ['marker'],
+    response: ['coordinate', 'reposition'],
+    dimensions: ['2d', '3d'],
+    lenses: [
+      'telegraphing',
+      'counterplay',
+      'threat-geometry',
+      'difficulty-rhythm',
+      'progress-clarity',
+    ],
+  },
   'party-split': { geometry: ['arena'], response: ['coordinate', 'reposition', 'manage'] },
 };
 

@@ -1,0 +1,134 @@
+{
+  "title": "Pairing polarity",
+  "subtitle": "Turn opposite marks into two unambiguous pairs",
+  "variant": "Two + marks · two − marks · two receiving zones · one resolution",
+  "summary": "The boss marks four players; each receiving zone needs exactly one player of each polarity.",
+  "overview": "Pairing polarity makes a social relationship part of the hit test. The boss gives two players + and two players −, then opens two separate circles. Each succeeds only with exactly two living players of opposite signs. Unlike a generic stack, partner composition and complete body geometry matter at the same instant.",
+  "learning": "Specify assignment, non-color signs, partner travel, exact occupancy, full-body containment, failure damage, duplicate resolution, and reset.",
+  "category": "Cooperative coordination",
+  "readTime": "10 min",
+  "demo": {
+    "title": "Balance two rune circles around Kern",
+    "timeline": "Pairing polarity timeline",
+    "step": "Each circle needs one + and one − before the pulse",
+    "phaseNames": ["Reveal four marks", "Form pairs and resolve", "Recover and reset"],
+    "phaseDescriptions": [
+      "At 0.70 seconds Kern assigns +, +, −, and − to four distinct living players. Both 74-unit circles and the polarity glyphs remain visible while partners choose separate destinations.",
+      "From 1.60 to 2.15 seconds the first + joins the first − in the left circle, and the second + joins the second − in the right. They hold until one pulse at 3.15 seconds. Each circle needs exactly two complete bodies with opposite signs; missing, extra, or same-sign occupants fail for 70 damage.",
+      "After the pulse, Kern visibly recovers. The four marks and both pair obligations clear at 5.50 seconds, and the next cycle starts from an unmarked state."
+    ],
+    "boss": "Boss",
+    "player": "Player",
+    "danger": "Wrong or incomplete pair: 70 damage to the failed group",
+    "locked": "Four unique marks, two 74-unit circles, one impact event",
+    "safe": "Exactly one + and one − fit fully inside each circle",
+    "reducedMotion": "Reduced motion disables autoplay. Scrub to 0.70, 1.25, 2.15, 3.15, and 5.50 seconds.",
+    "diagramDescription": "Kern marks four players +, +, −, and −. Two separated receiving circles appear. The marked players walk into two opposite-sign pairs, one pair per circle. A single pulse validates both complete bodies in each circle, then the markings reset."
+  },
+  "steps": [
+    {
+      "title": "What does a valid pair mean?",
+      "body": "Snapshot four distinct living players and assign exactly two + and two − marks before movement begins. At impact, each zone must contain exactly two of those players with opposite signs. Reject a dead or missing member explicitly instead of silently reassigning a mark."
+    },
+    {
+      "title": "Can both bodies fit?",
+      "body": "Use a 74-unit receiving radius and include each 24-unit body radius when testing containment. The two partners must have room to stand without overlapping each other, and the circles must be far enough apart that one player cannot satisfy both. Reserve ordinary walking time from the starting positions."
+    },
+    {
+      "title": "How does one pulse resolve?",
+      "body": "Resolve both circles in one encounter-scoped event at 3.15 seconds. A duplicate callback must apply no second damage. Log the four assignments, final occupants, polarity of each pair, failure cause, and reset; test an extra body, same-sign pair, disconnect, late arrival, and replay."
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "Treating a pair as any two bodies",
+      "body": "A same-sign pair must fail visibly. Otherwise the + and − telegraphs promise a distinction the collision rule never enforces."
+    },
+    {
+      "title": "Checking centers but not bodies",
+      "body": "A player's anchor can enter the circle while its body remains outside. Include the entire hitbox and verify that the two partners have non-overlapping standing room."
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "Make the assignment legible without hue",
+      "body": "Use persistent + and − glyphs, distinct contour patterns, and readable zone outlines. Color may reinforce the marks but cannot carry the rule alone."
+    },
+    {
+      "title": "Measure partner travel",
+      "body": "Test the slowest valid pair at ordinary movement speed from the worst spawn combination. The hold interval should be long enough to recognize that both pairs are correct before the pulse."
+    },
+    {
+      "title": "Instrument failure precisely",
+      "body": "Record encounter and event IDs, mark roster, zone centers and radius, body radius, each occupant, and whether the failure was missing, extra, same-sign, or duplicate. This makes retry deterministic."
+    }
+  ],
+  "story": {
+    "title": "Two runes complete a circuit",
+    "body": "Kern raises two split stone rings. One positive and one negative rune close each circuit; an unbalanced ring discharges into its occupants."
+  },
+  "adaptation": {
+    "title": "Separate pairing from damage sharing",
+    "body": "The same rule can use light and dark, north and south, or two musical notes instead of + and −. You may change the arena shape or the number of pairs, but must then recalculate travel, containment, and readability. A stack merely asks for enough bodies; this requires a precise opposite-sign composition."
+  },
+  "distinction": {
+    "title": "Opposites meet, then separate from other pairs",
+    "body": "Personal spread pushes marked players apart, while stack damage pulls several bodies together without caring which signs they carry. Pairing polarity requires closeness within each opposite pair and separation between the two pairs."
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "Persistent + and − glyphs announce the relationship before movement starts."
+    },
+    {
+      "id": "counterplay",
+      "body": "Each player can choose an opposite-sign partner and walk into an open receiving circle."
+    },
+    {
+      "id": "threat-geometry",
+      "body": "Exactly two complete 24-unit bodies must fit inside each 74-unit circle."
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "Reveal, travel, hold, simultaneous pulse, and reset give the group distinct reading beats."
+    },
+    {
+      "id": "progress-clarity",
+      "body": "The two completed circuits show whether both pairs are ready before a single impact."
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Aufheben",
+      "screenshot": "https://i.ytimg.com/vi/j8Sf0MTCh74/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=j8Sf0MTCh74",
+      "video": "https://www.youtube.com/watch?v=j8Sf0MTCh74&t=641s",
+      "videoDurationSeconds": 3394,
+      "body": "Aufheben applies Thesis and Anti-Thesis marks; its Bombify sequence makes players with opposing marks pair while extra same-sign players create a failure risk. The clip begins at the guide's exact debuff chapter; unlike the two-zone demo, the live encounter combines pairing with a timer and party-size contingencies."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Sophia",
+      "screenshot": "https://i.ytimg.com/vi/c-K44YN4TG8/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=c-K44YN4TG8",
+      "video": "https://www.youtube.com/watch?v=c-K44YN4TG8&t=333s",
+      "videoDurationSeconds": 501,
+      "body": "Sin and Punishment gives black and white ring marks that resolve safely by meeting an opposite color. The guide's first ring sequence begins at this timestamp; the demo isolates that pairing rule from Sophia's other movement and balance attacks."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "The Ultima Warrior",
+      "screenshot": "https://i.ytimg.com/vi/wCxiCSmlGcA/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=wCxiCSmlGcA",
+      "video": "https://www.youtube.com/watch?v=wCxiCSmlGcA&t=209s",
+      "videoDurationSeconds": 382,
+      "body": "When The Ultima Warrior absorbs Sophia, two players receive black rings and two white rings. The guide identifies opposite-color pairing at this moment; its four-player version shows how the same relation can be reused inside a different boss rotation."
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}

@@ -102,6 +102,8 @@ import {
   debuffHandoffExpire,
   orderedTargetsState,
   orderedTargetsResolve,
+  pairingPolarityState,
+  pairingPolarityResolve,
   counterStanceOutcome,
   counterStanceState,
   blueprintFrame,
@@ -129,8 +131,8 @@ import {
   renderBlueprintThumbnail,
 } from '../lib/blueprint-view.mjs';
 
-test('all 116 promoted lesson animations have distinct rule modes and complete moving frames', () => {
-  assert.equal(BLUEPRINT_MECHANIC_IDS.length, 116);
+test('all 117 promoted lesson animations have distinct rule modes and complete moving frames', () => {
+  assert.equal(BLUEPRINT_MECHANIC_IDS.length, 117);
   const modes = new Set();
   for (const id of BLUEPRINT_MECHANIC_IDS) {
     for (let time = 0; time <= BLUEPRINT_DURATION; time += 0.1) {
@@ -151,7 +153,7 @@ test('all 116 promoted lesson animations have distinct rule modes and complete m
           assert.ok(Number.isFinite(value), `${id} has an invalid ${primitive.type}`);
     }
   }
-  assert.equal(modes.size, 116);
+  assert.equal(modes.size, 117);
 });
 
 test('every blueprint exposes signal, committed action, and recovery without player teleports', () => {
@@ -216,7 +218,8 @@ test('every blueprint exposes signal, committed action, and recovery without pla
       id !== 'proximity-damage' &&
       id !== 'tank-swap' &&
       id !== 'debuff-handoff' &&
-      id !== 'ordered-targets'
+      id !== 'ordered-targets' &&
+      id !== 'pairing-polarity'
     )
       assert.equal(blueprintFrame(id, 3).dangerActive, true, id);
     assert.equal(blueprintFrame(id, 3).playerSafe, true, id);
@@ -331,6 +334,7 @@ test('every damaging promoted animation derives safety from its own active geome
       id !== 'tank-swap' &&
       id !== 'debuff-handoff' &&
       id !== 'ordered-targets' &&
+      id !== 'pairing-polarity' &&
       id !== 'part-break' &&
       id !== 'counter-stance' &&
       id !== 'absorption-power-up' &&
@@ -5563,4 +5567,67 @@ test('ordered targets keep one committed recipient per numbered hit', () => {
   const preview = renderBlueprintThumbnail(id, 'test-ordered-targets');
   assert.match(preview, /data-blueprint-preview="ordered-targets"/);
   assert.match(preview, /data-character-art-preview="tavi-ally-1"/);
+});
+
+test('pairing polarity requires exactly two opposite complete bodies in each circle', () => {
+  const id = 'pairing-polarity';
+  assert.deepEqual([0, 0.8, 2.2, 3.2, 5.6].map(pairingPolarityState), [
+    'unmarked',
+    'pair',
+    'hold',
+    'resolved',
+    'reset',
+  ]);
+  const valid = pairingPolarityResolve();
+  assert.equal(valid.resolution, 'paired');
+  assert.deepEqual(valid.pairs, [
+    ['player-1', 'player-3'],
+    ['player-2', 'player-4'],
+  ]);
+  assert.equal(valid.applicationCount, 1);
+  assert.deepEqual(valid.failedPlayerIds, []);
+  assert.equal(pairingPolarityResolve({ alreadyResolved: true }).resolution, 'duplicate');
+  assert.equal(pairingPolarityResolve({ alreadyResolved: true }).applicationCount, 0);
+  assert.equal(pairingPolarityResolve({ players: [] }).resolution, 'invalid');
+  assert.equal(pairingPolarityResolve({ players: [null, null, null, null] }).resolution, 'invalid');
+  const sameSigns = pairingPolarityResolve({
+    players: [
+      { id: 'player-1', x: 132, y: 680, polarity: '+', alive: true },
+      { id: 'player-2', x: 193, y: 680, polarity: '+', alive: true },
+      { id: 'player-3', x: 367, y: 680, polarity: '−', alive: true },
+      { id: 'player-4', x: 428, y: 680, polarity: '−', alive: true },
+    ],
+  });
+  assert.equal(sameSigns.resolution, 'failed');
+  assert.deepEqual(sameSigns.failedPlayerIds, ['player-1', 'player-2', 'player-3', 'player-4']);
+  assert.equal(
+    pairingPolarityResolve({
+      players: [
+        { id: 'player-1', x: 100, y: 680, polarity: '+', alive: true },
+        { id: 'player-2', x: 367, y: 680, polarity: '+', alive: true },
+        { id: 'player-3', x: 193, y: 680, polarity: '−', alive: true },
+        { id: 'player-4', x: 428, y: 680, polarity: '−', alive: true },
+      ],
+    }).resolution,
+    'failed',
+    'a center inside the circle is insufficient when its body crosses the boundary',
+  );
+  assert.equal(blueprintFrame(id, 2.2).pairingPolaritySuccess, false);
+  assert.equal(blueprintFrame(id, 3.16).pairingPolaritySuccess, true);
+  assert.deepEqual(blueprintFrame(id, 3.16).pairingPolarityPairs, valid.pairs);
+  assert.equal(blueprintFrame(id, 3.16).playerSafe, true);
+  assert.equal(blueprintFrame(id, 3.16).pairingPolarityFailedDamage, 70);
+  assert.equal(blueprintFrame(id, 5.6).pairingPolarityRetry, true);
+  for (let t = 0.02; t < BLUEPRINT_DURATION; t += 0.02) {
+    const a = blueprintFrame(id, t - 0.02);
+    const b = blueprintFrame(id, t);
+    for (let index = 0; index < 4; index += 1) {
+      const left = a.pairingPolarityPositions[index];
+      const right = b.pairingPolarityPositions[index];
+      assert.ok(Math.hypot(right.x - left.x, right.y - left.y) < 18, 'player teleports');
+    }
+  }
+  const preview = renderBlueprintThumbnail(id, 'test-pairing-polarity');
+  assert.match(preview, /data-blueprint-preview="pairing-polarity"/);
+  assert.match(preview, /data-character-art-preview="tavi-ally-2"/);
 });

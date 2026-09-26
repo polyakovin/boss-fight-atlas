@@ -70,6 +70,7 @@ export function initializeBlueprint(widget) {
   const handoffTimer = find('[data-blueprint-handoff-timer]');
   const orderNext = find('[data-blueprint-order-next]');
   const orderMarks = [...widget.querySelectorAll('[data-blueprint-order-mark]')];
+  const polarityMarks = [...widget.querySelectorAll('[data-blueprint-polarity-mark]')];
   const partnerLabel = find('[data-blueprint-partner-label]');
   const playerLabel = find('[data-blueprint-player-label]');
   const primitives = [...widget.querySelectorAll('[data-blueprint-primitive]')];
@@ -1322,6 +1323,22 @@ export function initializeBlueprint(widget) {
         mark.setAttribute('opacity', frame.orderedTargetNext ? '1' : '0');
       }
     }
+    if (mechanicId === 'pairing-polarity') {
+      widget.dataset.blueprintPolarityState = frame.pairingPolarityState;
+      widget.dataset.blueprintPolaritySuccess = String(frame.pairingPolaritySuccess);
+      widget.dataset.blueprintPolarityPairs = frame.pairingPolarityPairs
+        .map((pair) => pair.join('+'))
+        .join(',');
+      widget.dataset.blueprintPolarityFailedDamage = String(frame.pairingPolarityFailedDamage);
+      widget.dataset.blueprintPolarityRetry = String(frame.pairingPolarityRetry);
+      for (const mark of polarityMarks) {
+        const index = Number(mark.dataset.blueprintPolarityMark);
+        const position = frame.pairingPolarityPositions[index];
+        mark.setAttribute('x', String(position.x));
+        mark.setAttribute('y', String(position.y - 62));
+        mark.setAttribute('opacity', frame.pairingPolarityVisible ? '1' : '0');
+      }
+    }
     boss.setAttribute(
       'transform',
       `translate(${frame.boss.x} ${frame.boss.y})${frame.bossRotation ? ` rotate(${frame.bossRotation})` : ''} scale(${frame.bossScale})`,
@@ -1345,7 +1362,8 @@ export function initializeBlueprint(widget) {
     for (const [index, ally] of allies.entries()) {
       const position = (frame.stackDamageAllies ??
         frame.personalSpreadPositions?.slice(1) ??
-        frame.orderedTargetAllies ?? [
+        frame.orderedTargetAllies ??
+        frame.pairingPolarityAllies ?? [
           frame.towerSoakAlly ??
             frame.entityTetherAlly ??
             frame.tankSwapAlly ??
@@ -1359,7 +1377,8 @@ export function initializeBlueprint(widget) {
           frame.entityTetherAllyMotion ??
           frame.tankSwapAllyMotion ??
           frame.debuffHandoffAllyMotion ??
-          frame.orderedTargetAlliesMotion,
+          frame.orderedTargetAlliesMotion ??
+          frame.pairingPolarityAlliesMotion,
         frame.playerFacing,
       );
     }

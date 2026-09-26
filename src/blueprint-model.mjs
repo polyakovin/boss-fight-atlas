@@ -2053,6 +2053,36 @@ const SPECS = {
     resetAt: 5.5,
     encounterId: 'kern-ordered-targets-1',
   },
+  'pairing-polarity': {
+    mode: 'pairing-polarity',
+    boss: [280, 265],
+    player: [155, 620],
+    target: [155, 620],
+    allies: [
+      [255, 620],
+      [355, 620],
+      [455, 620],
+    ],
+    receivingSpots: [
+      [132, 680],
+      [367, 680],
+      [193, 680],
+      [428, 680],
+    ],
+    zones: [
+      [162.5, 680],
+      [397.5, 680],
+    ],
+    polarities: ['+', '+', '−', '−'],
+    revealAt: 0.7,
+    move: [1.25, 2.15],
+    resolveAt: 3.15,
+    hitDuration: 0.25,
+    radius: 74,
+    failedDamage: 70,
+    resetAt: 5.5,
+    encounterId: 'kern-pairing-polarity-1',
+  },
   'wide-swing': { mode: 'arc', boss: [225, 340], player: [380, 500], target: [420, 780] },
   lunge: {
     mode: 'lunge',
@@ -4937,6 +4967,89 @@ export function orderedTargetsResolve({
     nextNumber: expectedNumber + Number(resolution === 'resolved'),
     applicationCount: Number(resolution === 'resolved'),
     resolution,
+  });
+}
+
+export function pairingPolarityState(time) {
+  const spec = SPECS['pairing-polarity'];
+  const t = localTime(time);
+  if (t < spec.revealAt) return 'unmarked';
+  if (t < spec.move[1]) return 'pair';
+  if (t < spec.resolveAt) return 'hold';
+  if (t < spec.resetAt) return 'resolved';
+  return 'reset';
+}
+
+export function pairingPolarityResolve({
+  encounterId = 'kern-pairing-polarity-1',
+  eventId = 'polarity-1',
+  players = [
+    { id: 'player-1', x: 132, y: 680, polarity: '+', alive: true },
+    { id: 'player-2', x: 367, y: 680, polarity: '+', alive: true },
+    { id: 'player-3', x: 193, y: 680, polarity: '−', alive: true },
+    { id: 'player-4', x: 428, y: 680, polarity: '−', alive: true },
+  ],
+  zones = [
+    { x: 162.5, y: 680 },
+    { x: 397.5, y: 680 },
+  ],
+  radius = 74,
+  bodyRadius = BLUEPRINT_PLAYER_RADIUS,
+  alreadyResolved = false,
+} = {}) {
+  const valid =
+    typeof encounterId === 'string' &&
+    encounterId.length > 0 &&
+    typeof eventId === 'string' &&
+    eventId.length > 0 &&
+    Array.isArray(players) &&
+    players.length === 4 &&
+    new Set(players.map((player) => player?.id)).size === 4 &&
+    players.every(
+      (player) =>
+        typeof player?.id === 'string' &&
+        player.id.length > 0 &&
+        player.alive === true &&
+        ['+', '−'].includes(player.polarity) &&
+        Number.isFinite(player.x) &&
+        Number.isFinite(player.y),
+    ) &&
+    Array.isArray(zones) &&
+    zones.length === 2 &&
+    zones.every((zone) => Number.isFinite(zone?.x) && Number.isFinite(zone?.y)) &&
+    Number.isFinite(radius) &&
+    radius > bodyRadius &&
+    Number.isFinite(bodyRadius) &&
+    bodyRadius >= 0;
+  if (!valid || alreadyResolved)
+    return Object.freeze({
+      encounterId,
+      eventId,
+      resolution: !valid ? 'invalid' : 'duplicate',
+      pairs: [],
+      failedPlayerIds: [],
+      applicationCount: 0,
+    });
+  const pairs = zones.map((zone) =>
+    players
+      .filter((player) => Math.hypot(player.x - zone.x, player.y - zone.y) + bodyRadius <= radius)
+      .map((player) => player.id),
+  );
+  const assignedIds = pairs.flat();
+  const success =
+    pairs.every(
+      (pair) =>
+        pair.length === 2 &&
+        players.find((player) => player.id === pair[0]).polarity !==
+          players.find((player) => player.id === pair[1]).polarity,
+    ) && new Set(assignedIds).size === 4;
+  return Object.freeze({
+    encounterId,
+    eventId,
+    resolution: success ? 'paired' : 'failed',
+    pairs,
+    failedPlayerIds: success ? [] : players.map((player) => player.id),
+    applicationCount: 1,
   });
 }
 
@@ -10553,6 +10666,41 @@ function primitivesFor(spec, frame) {
       ),
     ];
   }
+  if (mode === 'pairing-polarity') {
+    const visible = frame.time >= spec.revealAt && frame.time < spec.resetAt;
+    const impact = strikePulse(frame.time, spec.resolveAt, spec.hitDuration);
+    return [
+      rect(55, 245, 450, 650, 0.58, 'muted', 0.025),
+      ...spec.zones.flatMap(([x, y], index) => [
+        circle(
+          x,
+          y,
+          spec.radius,
+          visible ? (frame.pairingPolaritySuccess ? 0.7 : 0.53) : 0,
+          frame.pairingPolaritySuccess ? 'safe' : 'signal',
+          5,
+        ),
+        circle(
+          x,
+          y,
+          spec.radius + 14 * impact,
+          impact,
+          frame.pairingPolaritySuccess ? 'safe' : 'danger',
+          6,
+        ),
+        line(spec.boss[0], spec.boss[1] + 55, x, y - 70, visible ? 0.34 : 0, 'signal', 4),
+        circle(x, y - 110, 16, visible ? (index ? 0.7 : 1) : 0, 'accent', 4),
+      ]),
+      circle(
+        280,
+        680,
+        175 * smooth((frame.time - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
+        frame.pairingPolarityRetry ? 0.7 : 0,
+        'accent',
+        7,
+      ),
+    ];
+  }
   if (mode === 'coordinated-duo-attack') {
     const t = frame.time;
     const leader = frame.decoy;
@@ -13085,6 +13233,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     const target = frame.orderedTargetPositions[activeIndex];
     return Math.hypot(value.x - target.x, value.y - target.y) > spec.radius + radius;
   }
+  if (mode === 'pairing-polarity') return frame.pairingPolaritySuccess;
   if (mode === 'coordinated-duo-attack') {
     const target = frame.coordinatedDuoAttackTarget;
     return (
@@ -15358,6 +15507,16 @@ export function blueprintFrame(id, time) {
     );
   }
   if (spec.mode === 'ordered-targets') {
+    const moveOut = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
+    const moveBack = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
+    const progress = moveOut * (1 - moveBack);
+    player = {
+      x: mix(spec.player[0], spec.receivingSpots[0][0], progress),
+      y: mix(spec.player[1], spec.receivingSpots[0][1], progress),
+    };
+    stride = Math.max(pulse(moveOut), pulse(moveBack));
+  }
+  if (spec.mode === 'pairing-polarity') {
     const moveOut = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
     const moveBack = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
     const progress = moveOut * (1 - moveBack);
@@ -18275,6 +18434,40 @@ export function blueprintFrame(id, time) {
     frame.bossMotion.attack = Math.max(...spec.hits.map((hitAt) => strikePulse(t, hitAt, 0.45)));
     frame.dangerActive = spec.hits.some((hitAt) => t >= hitAt && t < hitAt + spec.hitDuration);
   }
+  if (spec.mode === 'pairing-polarity') {
+    const moveOut = smooth((t - spec.move[0]) / (spec.move[1] - spec.move[0]));
+    const moveBack = smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt));
+    const progress = moveOut * (1 - moveBack);
+    const allies = spec.allies.map(([x, y], index) => ({
+      x: mix(x, spec.receivingSpots[index + 1][0], progress),
+      y: mix(y, spec.receivingSpots[index + 1][1], progress),
+    }));
+    const positions = [player, ...allies];
+    const result = pairingPolarityResolve({
+      encounterId: spec.encounterId,
+      players: positions.map((position, index) => ({
+        id: `player-${index + 1}`,
+        alive: true,
+        polarity: spec.polarities[index],
+        ...position,
+      })),
+      zones: spec.zones.map(([x, y]) => ({ x, y })),
+      radius: spec.radius,
+    });
+    frame.pairingPolarityState = pairingPolarityState(t);
+    frame.pairingPolarityPositions = positions;
+    frame.pairingPolarityAllies = allies;
+    frame.pairingPolarityVisible = t >= spec.revealAt && t < spec.resetAt;
+    frame.pairingPolaritySuccess =
+      t >= spec.resolveAt && t < spec.resetAt && result.resolution === 'paired';
+    frame.pairingPolarityPairs = frame.pairingPolaritySuccess ? result.pairs : [];
+    frame.pairingPolarityFailedDamage = spec.failedDamage;
+    frame.pairingPolarityRetry = t >= spec.resetAt;
+    frame.pairingPolarityAlliesMotion = motion({ stride });
+    frame.playerMotion.stride = stride;
+    frame.bossMotion.attack = strikePulse(t, spec.resolveAt, 0.52);
+    frame.dangerActive = t >= spec.resolveAt && t < spec.resolveAt + spec.hitDuration;
+  }
   if (spec.mode === 'real-time-progression') {
     frame.realTimeProgressionState = realTimeProgressionState(t);
     frame.realTimeProgressionCheckpointId = spec.checkpointId;
@@ -18677,7 +18870,8 @@ export function blueprintFrame(id, time) {
                 spec.mode === 'entity-tether' ||
                 spec.mode === 'gaze-check' ||
                 spec.mode === 'debuff-handoff' ||
-                spec.mode === 'ordered-targets'
+                spec.mode === 'ordered-targets' ||
+                spec.mode === 'pairing-polarity'
               ? 92
               : -62),
   };

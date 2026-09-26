@@ -1,0 +1,134 @@
+{
+  "title": "Parejas de polaridad",
+  "subtitle": "Convierte marcas opuestas en dos parejas inequívocas",
+  "variant": "Dos signos + · dos signos − · dos zonas · una resolución",
+  "summary": "El jefe marca a cuatro jugadores; cada zona necesita exactamente un jugador de cada polaridad.",
+  "overview": "La polaridad convierte la relación entre jugadores en una regla de colisión. Dos reciben + y dos reciben −; después aparecen dos círculos separados. Cada círculo solo es válido si contiene exactamente dos jugadores vivos con signos opuestos. No es un simple daño compartido: importan la composición y el cuerpo completo en el instante del impacto.",
+  "learning": "Define las marcas, el trayecto de cada pareja, la ocupación exacta, los cuerpos completos, el daño por fallo, los eventos duplicados y el reinicio.",
+  "category": "Coordinación cooperativa",
+  "readTime": "10 min",
+  "demo": {
+    "title": "Equilibra los dos círculos rúnicos de Kern",
+    "timeline": "Cronología de parejas de polaridad",
+    "step": "Cada círculo necesita un + y un − antes del pulso",
+    "phaseNames": ["Mostrar cuatro marcas", "Formar parejas y resolver", "Recuperarse y reiniciar"],
+    "phaseDescriptions": [
+      "A los 0,70 segundos Kern asigna +, +, − y − a cuatro jugadores vivos distintos. Los dos círculos de radio 74 y los signos permanecen visibles mientras eligen destinos separados.",
+      "Entre 1,60 y 2,15 segundos una pareja de signos opuestos entra en cada círculo. Permanecen allí hasta un único pulso a los 3,15 segundos. Cada zona exige dos cuerpos completos con signos contrarios; la ausencia, un tercero o los signos iguales provocan 70 de daño.",
+      "Tras el pulso, Kern muestra una recuperación visible. Las cuatro marcas y las dos obligaciones de pareja desaparecen a los 5,50 segundos; el siguiente ciclo empieza sin marcas."
+    ],
+    "boss": "Jefe",
+    "player": "Jugador",
+    "danger": "Pareja errónea o incompleta: 70 de daño al grupo fallido",
+    "locked": "Cuatro marcas únicas, dos círculos de radio 74 y un pulso",
+    "safe": "Un + y un − completamente dentro de cada círculo",
+    "reducedMotion": "Con movimiento reducido no hay reproducción automática. Examina 0,70; 1,25; 2,15; 3,15 y 5,50 segundos.",
+    "diagramDescription": "Kern marca a cuatro jugadores con +, +, − y −. Aparecen dos círculos separados. Forman una pareja de signos opuestos en cada uno; un pulso comprueba ambos cuerpos completos y después borra las marcas."
+  },
+  "steps": [
+    {
+      "title": "¿Qué constituye una pareja válida?",
+      "body": "Fija cuatro jugadores vivos distintos y asigna dos + y dos − antes del movimiento. En el impacto, cada zona debe contener exactamente dos signos opuestos. Una muerte o desconexión requiere una regla explícita, no una reasignación oculta."
+    },
+    {
+      "title": "¿Caben los dos cuerpos?",
+      "body": "En el círculo de radio 74 incluye el radio corporal de 24. Los miembros no deben solaparse, y las zonas deben estar tan separadas que nadie cuente en ambas. Mide el recorrido con velocidad normal."
+    },
+    {
+      "title": "¿Cómo se resuelve un solo pulso?",
+      "body": "Comprueba ambas zonas en un único evento del encuentro a los 3,15 segundos. Una llamada repetida no debe aplicar daño de nuevo. Registra marcas, ocupantes, signos, fallo y reinicio; prueba miembros extra, signos iguales y llegadas tardías."
+    }
+  ],
+  "mistakes": [
+    {
+      "title": "Aceptar cualquier par de cuerpos",
+      "body": "Dos signos iguales deben fallar de forma visible; de otro modo las marcas prometen una regla que no existe."
+    },
+    {
+      "title": "Comprobar centros y no cuerpos",
+      "body": "El centro puede entrar mientras una parte del cuerpo queda fuera. Incluye todo el volumen y deja espacio entre compañeros."
+    }
+  ],
+  "designNotes": [
+    {
+      "title": "Marcas legibles sin color",
+      "body": "Los signos + y − persistentes, contornos distintos y límites claros comunican la regla. El color solo ayuda."
+    },
+    {
+      "title": "Mide el tiempo de encuentro",
+      "body": "Prueba el peor origen con velocidad ordinaria y deja una pausa para reconocer que ambas parejas están listas."
+    },
+    {
+      "title": "Registra el motivo exacto",
+      "body": "Guarda los identificadores de encuentro y evento, las marcas, la geometría, los ocupantes y si faltó o sobró alguien, hubo dos signos iguales o se repitió el evento."
+    }
+  ],
+  "story": {
+    "title": "Dos runas cierran un circuito",
+    "body": "Kern eleva dos anillos de piedra abiertos. Una runa positiva y otra negativa cierran cada circuito; un anillo desequilibrado se descarga."
+  },
+  "adaptation": {
+    "title": "Separa las parejas del daño compartido",
+    "body": "Puedes usar luz y oscuridad, norte y sur o dos notas. Si cambias la arena o el número de parejas, vuelve a medir trayectos, capacidad y lectura. Un grupo apilado solo exige cuerpos suficientes; aquí importa la combinación exacta."
+  },
+  "distinction": {
+    "title": "Los opuestos se unen; las parejas se separan",
+    "body": "La dispersión personal separa a todos; el daño compartido no distingue signos. Aquí cada pareja opuesta se acerca y las dos parejas permanecen separadas."
+  },
+  "lensNotes": [
+    {
+      "id": "telegraphing",
+      "body": "Los signos + y − persistentes anuncian la relación antes de moverse."
+    },
+    {
+      "id": "counterplay",
+      "body": "Cada jugador puede elegir un compañero opuesto y caminar hasta un círculo libre."
+    },
+    {
+      "id": "threat-geometry",
+      "body": "Dos cuerpos completos de radio 24 deben caber en cada círculo de radio 74."
+    },
+    {
+      "id": "difficulty-rhythm",
+      "body": "Mostrar, viajar, esperar, pulsar y reiniciar forman ritmos legibles."
+    },
+    {
+      "id": "progress-clarity",
+      "body": "Dos circuitos cerrados revelan si ambos grupos están listos antes del impacto."
+    }
+  ],
+  "examples": [
+    {
+      "dimension": "2D",
+      "game": "MapleStory",
+      "boss": "Aufheben",
+      "screenshot": "https://i.ytimg.com/vi/j8Sf0MTCh74/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=j8Sf0MTCh74",
+      "video": "https://www.youtube.com/watch?v=j8Sf0MTCh74&t=641s",
+      "videoDurationSeconds": 3394,
+      "body": "Aufheben aplica Thesis y Anti-Thesis; durante Bombify los signos opuestos forman parejas y los compañeros extra del mismo signo aumentan el riesgo. El vídeo empieza en el capítulo exacto de las marcas; el combate añade un temporizador y condiciones según el tamaño del grupo."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "Sophia",
+      "screenshot": "https://i.ytimg.com/vi/c-K44YN4TG8/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=c-K44YN4TG8",
+      "video": "https://www.youtube.com/watch?v=c-K44YN4TG8&t=333s",
+      "videoDurationSeconds": 501,
+      "body": "Sin and Punishment marca anillos negros y blancos: resolverlos de forma segura exige unirse al color opuesto. El vídeo comienza en la primera secuencia de anillos; la demostración aísla esta regla de los demás ataques de Sophia."
+    },
+    {
+      "dimension": "3D",
+      "game": "Final Fantasy XIV",
+      "boss": "The Ultima Warrior",
+      "screenshot": "https://i.ytimg.com/vi/wCxiCSmlGcA/hqdefault.jpg",
+      "screenshotSource": "https://www.youtube.com/watch?v=wCxiCSmlGcA",
+      "video": "https://www.youtube.com/watch?v=wCxiCSmlGcA&t=209s",
+      "videoDurationSeconds": 382,
+      "body": "Tras absorber a Sophia, The Ultima Warrior asigna dos anillos negros y dos blancos. La guía explica aquí las parejas de colores opuestos: una misma relación aparece en otra rotación del jefe."
+    }
+  ],
+  "reviewStatus": "needs-review",
+  "sourceVersion": 1
+}
