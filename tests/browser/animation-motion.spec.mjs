@@ -120,6 +120,30 @@ for (const lesson of lessons) {
   });
 }
 
+test('ground slam gauntlet lands at the stone wave origin', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openLesson(page, 'ground-slam');
+  const gauntlet = page.locator(
+    '[data-pattern-boss] [data-rig-part="arm-front"] [data-slam-gauntlet]',
+  );
+  await expect(gauntlet).toHaveCount(1);
+  await seek(page, 'pattern', 1.87);
+  const contact = await gauntlet.evaluate((piece) => {
+    const svg = piece.ownerSVGElement;
+    const toArena = svg.getScreenCTM().inverse().multiply(piece.getScreenCTM());
+    const tip = new DOMPoint(61, 42).matrixTransform(toArena);
+    return { x: tip.x, y: tip.y };
+  });
+  expect(Math.hypot(contact.x - 280, contact.y - 310)).toBeLessThan(10);
+
+  const stones = page.locator('[data-pattern-demo] [data-pattern-slam-stones]');
+  const contactPath = await stones.getAttribute('d');
+  await seek(page, 'pattern', 2.7);
+  expect(await stones.getAttribute('d')).not.toBe(contactPath);
+  await seek(page, 'pattern', 1.87);
+  expect(await stones.getAttribute('d')).toBe(contactPath);
+});
+
 for (const lesson of ['charge', 'sweep']) {
   test(`${lesson}: reduced motion freezes playback while manual seeking remains available`, async ({
     page,
