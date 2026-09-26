@@ -10547,20 +10547,6 @@ function primitivesFor(spec, frame) {
     const targetY = frame.player.y - 42;
     return [
       path(
-        'M 70 103 H 490 V 149 H 70 Z M 84 149 H 120 V 819 H 84 Z M 440 149 H 476 V 819 H 440 Z',
-        0.52,
-        'muted',
-        0,
-        0.61,
-      ),
-      path(
-        'M 100 784 L 280 748 L 460 784 V 816 L 280 780 L 100 816 Z M 84 875 L 280 835 L 476 875 V 903 L 280 863 L 84 903 Z',
-        0.52,
-        'muted',
-        0,
-        0.61,
-      ),
-      path(
         'M 200 349 H 360 L 374 378 H 186 Z M 214 378 H 346 V 415 H 214 Z',
         0.64,
         'muted',
@@ -10619,20 +10605,6 @@ function primitivesFor(spec, frame) {
     const playerX = frame.player.x;
     const playerY = frame.player.y;
     return [
-      path(
-        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
-        0.5,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
       path('M 200 117 H 360 V 150 L 280 169 L 200 150 Z', 0.72, 'muted', 0, 0.68),
       path(
         `M 210 125 H ${210 + frame.proximityHealth * 1.4} V 145 H 210 Z`,
@@ -10691,20 +10663,6 @@ function primitivesFor(spec, frame) {
     const secondFlash = strikePulse(frame.time, spec.secondHit[0], 0.46);
     const flash = Math.max(firstFlash, secondFlash);
     return [
-      path(
-        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
-        0.5,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
       path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
       path(
         'M 92 123 H 250 V 160 L 171 184 L 92 160 Z M 310 123 H 468 V 160 L 389 184 L 310 160 Z',
@@ -10774,20 +10732,6 @@ function primitivesFor(spec, frame) {
     const flameTip = owner.y - 193 - 18 * (1 - countdown);
     const visible = frame.debuffHandoffVisible;
     return [
-      path(
-        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
-        0.5,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
       path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
       path(
         `M ${frame.player.x - 41} ${frame.player.y + 37} L ${frame.player.x} ${frame.player.y + 17} L ${frame.player.x + 41} ${frame.player.y + 37} L ${frame.player.x + 30} ${frame.player.y + 56} L ${frame.player.x} ${frame.player.y + 68} L ${frame.player.x - 30} ${frame.player.y + 56} Z`,
@@ -10844,20 +10788,6 @@ function primitivesFor(spec, frame) {
     const t = frame.time;
     const visible = t >= spec.revealAt && t < spec.resetAt;
     return [
-      path(
-        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
-        0.5,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
       path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
       ...spec.receivingSpots.flatMap(([x, y], index) => {
         const number = index + 1;
@@ -10912,20 +10842,6 @@ function primitivesFor(spec, frame) {
     const impact = strikePulse(frame.time, spec.resolveAt, spec.hitDuration);
     const tone = frame.pairingPolaritySuccess ? 'safe' : 'signal';
     return [
-      path(
-        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
-        0.5,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
       path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
       ...spec.zones.flatMap(([x, y], index) => {
         const pair = index
@@ -10978,20 +10894,6 @@ function primitivesFor(spec, frame) {
     const leftDoorEnd = gateOpen ? 193 : 280;
     const rightDoorStart = gateOpen ? 367 : 280;
     return [
-      path(
-        'M 68 103 H 492 V 147 H 68 Z M 82 147 H 118 V 817 H 82 Z M 442 147 H 478 V 817 H 442 Z',
-        0.5,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 100 784 L 280 747 L 460 784 V 816 L 280 779 L 100 816 Z M 84 875 L 280 835 L 476 875 V 904 L 280 864 L 84 904 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
       path('M 218 352 H 342 L 326 381 H 234 Z', 0.72, 'muted', 0, 0.7),
       path(
         'M 260 401 H 300 V 773 H 260 Z M 246 401 H 314 V 428 H 246 Z M 247 746 H 313 V 773 H 247 Z',
@@ -10999,13 +10901,6 @@ function primitivesFor(spec, frame) {
         'muted',
         0,
         0.7,
-      ),
-      path(
-        'M 100 745 L 170 725 L 239 745 V 778 L 170 758 L 100 778 Z M 321 745 L 390 725 L 460 745 V 778 L 390 758 L 321 778 Z',
-        0.62,
-        'muted',
-        0,
-        0.48,
       ),
       path(
         'M 111 607 H 209 V 647 H 111 Z M 125 525 H 195 V 607 H 125 Z M 351 607 H 449 V 647 H 351 Z M 365 525 H 435 V 607 H 365 Z',
