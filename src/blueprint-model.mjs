@@ -10275,63 +10275,75 @@ function primitivesFor(spec, frame) {
     const active = frame.personalSpreadHitActive;
     const unsafe = frame.personalSpreadHitCounts[0] > 1;
     return [
-      rect(...spec.arena, 0.58, 'muted', 0.025),
       path(
-        'M 62 775 L 172 738 L 280 775 L 388 738 L 498 775 V 805 L 388 773 L 280 813 L 172 773 L 62 805 Z',
-        0.55,
+        'M 68 104 H 492 V 145 H 68 Z M 80 145 H 113 V 813 H 80 Z M 447 145 H 480 V 813 H 447 Z',
+        0.5,
         'muted',
         0,
-        0.045,
+        0.58,
+      ),
+      path(
+        'M 99 784 L 280 748 L 461 784 V 816 L 280 779 L 99 816 Z M 84 874 L 280 834 L 476 874 V 903 L 280 864 L 84 903 Z',
+        0.52,
+        'muted',
+        0,
+        0.6,
+      ),
+      path(
+        'M 210 365 L 350 365 L 365 390 L 195 390 Z M 219 390 H 341 V 419 H 219 Z',
+        0.6,
+        'muted',
+        0,
+        0.55,
       ),
       ...frame.personalSpreadHealth.flatMap((value, index) => {
         const x = [230, 95, 365][index];
         return [
-          rect(x, 125, 100, 20, 0.76, 'muted', 0.09),
-          rect(x, 125, value, 20, 0.9, value === 0 ? 'signal' : 'safe', 0.55),
+          path(`M ${x} 117 H ${x + 100} V 150 L ${x + 50} 163 L ${x} 150 Z`, 0.68, 'muted', 0, 0.7),
+          path(
+            `M ${x + 7} 125 H ${x + 7 + value * 0.86} V 146 H ${x + 7} Z`,
+            0.92,
+            value === 0 ? 'signal' : 'safe',
+            0,
+            0.75,
+          ),
         ];
       }),
-      ...frame.personalSpreadPositions.flatMap((center, index) => [
-        circle(
-          center.x,
-          center.y,
-          spec.markerRadius,
-          marked ? 0.9 : 0.16,
-          active && unsafe ? 'signal' : 'accent',
-          active ? 10 : 6,
-          marked ? 0.045 : 0.008,
-        ),
-        path(
-          `M ${center.x - 15} ${center.y - 60} L ${center.x} ${center.y - 82} L ${center.x + 15} ${center.y - 60} Z`,
-          marked ? 0.92 : 0,
-          index === 0 ? 'signal' : 'accent',
-          6,
-          0.03,
-        ),
-        circle(
-          center.x,
-          center.y,
-          spec.markerRadius + 16,
-          active ? 0.7 : 0,
-          unsafe ? 'signal' : 'safe',
-          9,
-        ),
-      ]),
-      line(280, 415, 280, 555, marked ? 0.65 : 0, 'signal', 7, '10 10'),
-      circle(280, 710, 54, active && unsafe ? 0.86 : 0, 'signal', 11, 0.045),
-      path(
-        'M 252 683 L 308 739 M 308 683 L 252 739',
-        frame.personalSpreadFailure ? 0.94 : 0,
-        'signal',
-        11,
-      ),
-      circle(
-        280,
-        710,
-        76 * smooth((t - spec.resetAt) / (BLUEPRINT_DURATION - spec.resetAt)),
-        frame.personalSpreadRetry ? 0.75 : 0,
-        'accent',
-        7,
-      ),
+      ...frame.personalSpreadPositions.flatMap((center, index) => {
+        const tone = active && unsafe ? 'signal' : index === 0 ? 'signal' : 'accent';
+        return [
+          circle(
+            center.x,
+            center.y,
+            spec.markerRadius,
+            marked ? 0.72 : 0.14,
+            tone,
+            5,
+            marked ? 0.1 : 0.01,
+          ),
+          path(
+            `M ${center.x - 25} ${center.y - 203} H ${center.x + 25} V ${center.y - 161} L ${center.x} ${center.y - 117} L ${center.x - 25} ${center.y - 161} Z`,
+            marked ? 0.9 : 0,
+            tone,
+            0,
+            0.72,
+          ),
+          path(
+            `M ${center.x - 13} ${center.y - 194} H ${center.x + 13} V ${center.y - 182} H ${center.x - 13} Z`,
+            marked ? 0.86 : 0,
+            'muted',
+            0,
+            0.7,
+          ),
+          path(
+            `M ${center.x - 60} ${center.y + 17} L ${center.x} ${center.y - 10} L ${center.x + 60} ${center.y + 17} L ${center.x + 25} ${center.y + 38} H ${center.x - 25} Z`,
+            active ? 0.68 : 0,
+            unsafe ? 'signal' : 'safe',
+            0,
+            0.55,
+          ),
+        ];
+      }),
     ];
   }
   if (mode === 'tower-soak') {
