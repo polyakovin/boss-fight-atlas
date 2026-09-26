@@ -6,7 +6,7 @@
 
 The atlas has **124 published mechanic lessons** from the research audit, each with an interactive animation, implementation guidance, design lenses, sources, and boss references. The **Boss builder** can combine any of the 124 mechanics, filter them by threat geometry, cue, player response, dimension, and design lens, and arrange them into phases and combinations. It suggests compatible mechanics and potential conflicts, can generate a random boss and name, and exports the sketch as JSON. Your draft stays in your browser.
 
-Available in English, Russian, Simplified Chinese, Hindi, Bengali, Spanish, Arabic, and Japanese. Facts, design concepts, examples, and translations all welcome independent review. [Open the Russian catalog](https://polyakovin.github.io/gamedev-boss-fights/ru/).
+Available in English, Russian, Simplified Chinese, Hindi, Bengali, Spanish, Arabic, and Japanese. Facts, design concepts, examples, and translations all welcome independent review.
 
 ## Make your first contribution
 
@@ -28,7 +28,7 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:4173/gamedev-boss-fights/](http://localhost:4173/gamedev-boss-fights/). The Russian lesson is at `/gamedev-boss-fights/ru/mechanics/charge/`, and the localized builder is at `/gamedev-boss-fights/ru/builder/`.
+Open [localhost:4173/gamedev-boss-fights/](http://localhost:4173/gamedev-boss-fights/).
 
 The development command builds once and serves `dist/`. After editing source files, run `npm run build` in another terminal and refresh the page. There is no automatic rebuild watcher.
 
@@ -49,21 +49,21 @@ This is a static Node generator with plain HTML, CSS, browser JavaScript modules
 
 Repository documentation, code, tests, and metadata use English. Translated text belongs in `locales/`, `content/mechanics-index-locales/`, and locale-specific lesson and lens JSON. The repository check rejects non-English text outside those locations and exact duplicate files.
 
-| Location                               | Purpose                                                              |
-| -------------------------------------- | -------------------------------------------------------------------- |
-| `content/mechanics/<id>/meta.json`     | Publication state, content version, animation ID, and sources        |
-| `content/mechanics/<id>/<locale>.json` | A complete lesson in one language                                    |
-| `content/mechanics-index.json`         | Stable IDs, order, categories, and compact English/Russian seed copy |
-| `content/lenses/<id>/meta.json`        | Lens publication state, version, relationships, and sources          |
-| `content/lenses/<id>/<locale>.json`    | A lens title and explanation in one language                         |
-| `locales/*.json`                       | Shared interface translations and language registry                  |
-| `schemas/`                             | JSON schemas checked before building                                 |
-| `lib/animations.mjs`, `lib/*-view.mjs` | Registered lesson diagrams, catalog thumbnails, and browser assets   |
-| `src/boss-builder*.mjs`                | Local draft state, portable JSON export, and builder behavior        |
-| `src/`                                 | Browser behavior, styles, original SVG, and pure simulation models   |
-| `scripts/`                             | Validation, generation, draft scaffolding, and local server          |
-| `tests/`                               | Model and browser checks                                             |
-| `dist/`                                | Generated output; not committed                                      |
+| Location                               | Purpose                                                               |
+| -------------------------------------- | --------------------------------------------------------------------- |
+| `content/mechanics/<id>/meta.json`     | Publication state, content version, animation ID, and sources         |
+| `content/mechanics/<id>/<locale>.json` | A complete lesson in one language                                     |
+| `content/mechanics-index.json`         | Stable IDs, order, categories, and seed copy for catalog localization |
+| `content/lenses/<id>/meta.json`        | Lens publication state, version, relationships, and sources           |
+| `content/lenses/<id>/<locale>.json`    | A lens title and explanation in one language                          |
+| `locales/*.json`                       | Shared interface translations and language registry                   |
+| `schemas/`                             | JSON schemas checked before building                                  |
+| `lib/animations.mjs`, `lib/*-view.mjs` | Registered lesson diagrams, catalog thumbnails, and browser assets    |
+| `src/boss-builder*.mjs`                | Local draft state, portable JSON export, and builder behavior         |
+| `src/`                                 | Browser behavior, styles, original SVG, and pure simulation models    |
+| `scripts/`                             | Validation, generation, draft scaffolding, and local server           |
+| `tests/`                               | Model and browser checks                                              |
+| `dist/`                                | Generated output; not committed                                       |
 
 The index is generated from the audit with `npm run sync:mechanics-index`; published lesson JSON provides the full public text. All 124 indexed mechanics are currently published. `npm run new:mechanic -- your-new-id` scaffolds an unpublished mechanic, and `npm run new:lens -- your-new-lens` scaffolds a lens. Publishing an additional mechanic also requires extending the audit and index generator. A draft can be published only after all eight lesson translations are complete, their `sourceVersion` values match `meta.contentVersion`, placeholders are resolved, and an animation is registered. Read the [content guide](docs/content-guide.md) before publishing.
 
