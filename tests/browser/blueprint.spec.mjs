@@ -469,7 +469,9 @@ test('volley releases three parallel bolts on one beat and clears its outside ro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('catalog and builder reuse the 118 promoted rule-specific previews', async ({ page }) => {
+test('catalog and builder show the same 118 rule-specific scenes in their respective formats', async ({
+  page,
+}) => {
   await page.goto('en/');
   await expect(page.locator('[data-blueprint-preview]')).toHaveCount(118);
   const catalogLayouts = await page.locator('[data-blueprint-preview]').evaluateAll((previews) =>
@@ -501,8 +503,12 @@ test('catalog and builder reuse the 118 promoted rule-specific previews', async 
       const boss = preview.querySelector('[data-character-art-preview="kern"]');
       const player = preview.querySelector('[data-character-art-preview="tavi"]');
       const primitiveShapes = [...preview.querySelectorAll('g[clip-path] > g > g > *')];
+      const diagram = preview.parentElement.getBoundingClientRect();
       return {
+        time: preview.dataset.blueprintPreviewTime,
         layout: `${preview.dataset.blueprintPreviewTime}|${boss?.getAttribute('transform')}|${player?.getAttribute('transform')}`,
+        portrait: preview.viewBox.baseVal.height > preview.viewBox.baseVal.width,
+        verticalCard: diagram.height > diagram.width,
         visibleGeometry: primitiveShapes.some((shape) => {
           const bounds = shape.getBoundingClientRect();
           const stroke = getComputedStyle(shape).stroke;
@@ -515,7 +521,15 @@ test('catalog and builder reuse the 118 promoted rule-specific previews', async 
       };
     }),
   );
-  expect(builderLayouts).toEqual(catalogLayouts);
+  expect(builderLayouts.map(({ time }) => time)).toEqual(
+    catalogLayouts.map(({ layout }) => layout.split('|')[0]),
+  );
+  expect(
+    builderLayouts.every(
+      ({ portrait, verticalCard, visibleGeometry }) => portrait && verticalCard && visibleGeometry,
+    ),
+  ).toBe(true);
+  expect(new Set(builderLayouts.map(({ layout }) => layout)).size).toBeGreaterThanOrEqual(18);
 });
 
 test('delayed rune warns harmlessly, ignites on its fixed beat, and extinguishes', async ({

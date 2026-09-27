@@ -33,7 +33,6 @@
   --font-label:
     'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', 'Noto Sans Arabic',
     'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans SC', 'Noto Sans JP', monospace;
-  --radius: 14px;
   color-scheme: light;
   font-family: var(--font-body);
   color: var(--ink);
@@ -70,8 +69,11 @@
   --diagram-player-label: #62ddd4;
   color-scheme: dark;
 }
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  border-radius: 0;
 }
 body {
   margin: 0;
@@ -267,7 +269,6 @@ section[id] {
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 50%;
 }
 .theme-toggle:hover {
   border-color: var(--accent);
@@ -311,7 +312,6 @@ section[id] {
   gap: 8px;
   padding: 8px 13px;
   border: 1px solid var(--line);
-  border-radius: 7px;
 }
 .language-menu summary::-webkit-details-marker {
   display: none;
@@ -333,7 +333,6 @@ section[id] {
   width: 220px;
   box-shadow: 0 12px 50px var(--shadow);
   border: 1px solid var(--line);
-  border-radius: 10px;
   padding: 8px;
 }
 .language-menu nav a {
@@ -341,7 +340,6 @@ section[id] {
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  border-radius: 4px;
 }
 .language-menu .language-check {
   display: grid;
@@ -437,7 +435,6 @@ section[id] {
   padding: 10px 12px;
   margin-top: 22px;
   border: 1px solid var(--line);
-  border-radius: 10px;
   background: var(--surface);
 }
 .mechanic-builder-action__toggle {
@@ -463,7 +460,6 @@ section[id] {
   height: 20px;
   place-items: center;
   border: 1px solid var(--accent-line);
-  border-radius: 5px;
   color: transparent;
   background: var(--paper);
 }
@@ -479,7 +475,6 @@ section[id] {
 .mechanic-builder-action__toggle:has(input:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
-  border-radius: 3px;
 }
 .mechanic-builder-action > a {
   display: inline-flex;
@@ -508,7 +503,6 @@ section[id] {
   min-height: 27px;
   padding: 4px 9px;
   border: 1px solid var(--variant-line);
-  border-radius: 999px;
   background: var(--variant-bg);
   color: var(--variant-ink);
   font-size: 10px;
@@ -530,7 +524,6 @@ section[id] {
   max-width: min(280px, calc(100vw - 36px));
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
   background: var(--ink);
   box-shadow: 0 10px 24px var(--shadow);
   color: var(--paper);
@@ -590,7 +583,6 @@ section[id] {
   gap: 5px;
   padding: 5px 9px;
   border: 1px solid var(--line);
-  border-radius: 999px;
   background: transparent;
   color: var(--accent);
   font-family: var(--font-label);
@@ -677,7 +669,6 @@ section[id] {
   height: 11px;
   margin: 8px 0 0;
   border: 1px solid var(--accent-line);
-  border-radius: 2px;
   background: transparent;
   cursor: pointer;
 }
@@ -750,7 +741,6 @@ section[id] {
   min-width: 0;
   padding: 20px 22px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
 }
 .combat-feel__card h3 {
@@ -761,7 +751,6 @@ section[id] {
   display: inline-block;
   padding: 2px 10px;
   border: 1px solid var(--variant-line);
-  border-radius: 999px;
   background: var(--variant-bg);
   color: var(--variant-ink);
   font-family: var(--font-label);
@@ -812,7 +801,6 @@ section[id] {
   min-height: 390px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
   transition:
     border-color 160ms ease,
@@ -860,7 +848,6 @@ section[id] {
   padding: 3px 8px;
   color: var(--paper);
   background: var(--ink);
-  border-radius: 999px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.22);
   font-family: var(--font-label);
   font-size: 10px;
@@ -878,7 +865,6 @@ section[id] {
   width: 34px;
   height: 34px;
   border: 1px solid rgb(255 255 255 / 0.46);
-  border-radius: 50%;
   color: #fff;
   background: rgb(9 15 28 / 0.72);
   backdrop-filter: blur(7px);
@@ -1073,7 +1059,7 @@ section[id] {
 }
 .about-hero h1 {
   max-width: 820px;
-  margin: 12px 0 24px;
+  margin: 0 0 24px;
   font-size: clamp(48px, 8vw, 100px);
   line-height: 0.96;
   letter-spacing: -0.06em;
@@ -1126,7 +1112,6 @@ section[id] {
   min-height: 40px;
   padding: 9px 13px;
   border: 1px solid var(--accent);
-  border-radius: 8px;
   color: var(--accent);
   font-size: 12px;
   font-weight: 700;
@@ -1142,14 +1127,8 @@ section[id] {
 .about-prototype > header {
   max-width: 850px;
 }
-.about-prototype > header > .eyebrow,
-.about-prototype__comparison .eyebrow,
-.about-resources > div > .eyebrow {
+.about-prototype__comparison .eyebrow {
   color: var(--accent);
-}
-.about-prototype h2,
-.about-resources h2 {
-  margin-top: 10px;
 }
 .about-prototype > header > p,
 .about-resources > div > p {
@@ -1243,9 +1222,6 @@ section[id] {
 .about-approach > header {
   margin-bottom: 34px;
 }
-.about-approach h2 {
-  margin-top: 8px;
-}
 .about-principles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1288,11 +1264,10 @@ section[id] {
   gap: clamp(40px, 8vw, 120px);
   align-items: end;
   padding: clamp(32px, 6vw, 64px);
-  border-radius: var(--radius);
   background: var(--surface-strong);
 }
 .about-contact h2 {
-  margin: 9px 0 18px;
+  margin: 0 0 18px;
 }
 .about-contact p {
   max-width: 690px;
@@ -1345,7 +1320,7 @@ section[id] {
 }
 .catalog-hero h1 {
   max-width: 680px;
-  margin: 15px 0 20px;
+  margin: 0 0 20px;
   font-size: clamp(40px, 4.4vw, 64px);
   line-height: 1.03;
   letter-spacing: -0.055em;
@@ -1378,7 +1353,6 @@ section[id] {
   gap: 10px;
   padding: 11px 17px;
   border: 1px solid var(--accent);
-  border-radius: 9px;
   font: 700 13px/1.3 var(--font-label);
   transition:
     color 0.18s,
@@ -1413,31 +1387,11 @@ section[id] {
   width: 16px;
   height: 16px;
 }
-.catalog-hero__features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  padding: 0;
-  margin: 26px 0 0;
-  list-style: none;
-  color: var(--muted);
-  font: 600 11px/1.45 var(--font-label);
-}
-.catalog-hero__features li {
-  position: relative;
-}
-.catalog-hero__features li:not(:first-child)::before {
-  position: absolute;
-  inset-inline-start: -12px;
-  color: var(--accent);
-  content: '•';
-}
 .catalog-hero__lesson {
   display: block;
   min-width: 0;
   padding: 21px;
   border: 1px solid var(--line);
-  border-radius: calc(var(--radius) + 4px);
   background: var(--surface);
   box-shadow: 0 24px 70px var(--shadow);
   transition:
@@ -1452,18 +1406,12 @@ section[id] {
   box-shadow: 0 30px 80px var(--shadow);
   text-decoration: none;
 }
-.catalog-hero__lesson-label {
-  color: var(--accent);
-  font: 700 10px/1.4 var(--font-label);
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
 .catalog-hero__lesson-heading {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 36px;
   gap: 18px;
   align-items: start;
-  margin: 11px 0 17px;
+  margin: 0 0 17px;
 }
 .catalog-hero__lesson-heading h2 {
   font-size: clamp(25px, 2.7vw, 34px);
@@ -1480,7 +1428,6 @@ section[id] {
   width: 36px;
   height: 36px;
   place-items: center;
-  border-radius: 50%;
   color: var(--accent);
   background: var(--accent-soft);
 }
@@ -1488,7 +1435,6 @@ section[id] {
   height: 168px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 11px;
   background: var(--preview);
 }
 .catalog-hero__preview svg {
@@ -1503,7 +1449,6 @@ section[id] {
   margin: 14px 0 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 9px;
   background: var(--line);
   list-style: none;
   counter-reset: question;
@@ -1535,9 +1480,6 @@ section[id] {
   gap: 9px clamp(36px, 7vw, 90px);
   align-items: end;
   margin-bottom: 34px;
-}
-.catalog-workflow__heading .eyebrow {
-  grid-column: 1 / -1;
 }
 .catalog-workflow__heading h2 {
   max-width: 620px;
@@ -1590,7 +1532,6 @@ section[id] {
   align-items: center;
   margin-bottom: clamp(70px, 9vw, 110px);
   overflow: hidden;
-  border-radius: calc(var(--radius) + 6px);
   background: var(--surface-strong);
 }
 .catalog-guides__art {
@@ -1613,7 +1554,7 @@ section[id] {
   padding: 42px 0 42px 44px;
 }
 .catalog-guides__copy h2 {
-  margin: 10px 0 15px;
+  margin: 0 0 15px;
   font-size: clamp(28px, 3.3vw, 42px);
   line-height: 1.1;
 }
@@ -1769,7 +1710,6 @@ section[id] {
   width: max-content;
   padding: 3px 7px;
   border: 1px solid color-mix(in srgb, var(--signal) 55%, var(--line));
-  border-radius: 999px;
   background: color-mix(in srgb, var(--signal) 13%, var(--surface));
   color: var(--signal);
   font-family: var(--font-label);
@@ -1789,7 +1729,6 @@ section[id] {
   height: 72px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 9px;
   background: var(--preview);
 }
 .catalog-lesson__preview svg {
@@ -2130,16 +2069,12 @@ section[id] {
   padding-bottom: 34px;
   border-bottom: 1px solid var(--line);
 }
-.lens-catalog-hero > .eyebrow,
-.lens-page__copy > .eyebrow {
-  color: var(--accent);
-}
 .lens-catalog-hero h1,
 .lens-page__hero h1 {
   font-size: clamp(36px, 4vw, 52px);
   letter-spacing: -0.055em;
   line-height: 1.02;
-  margin: 16px 0 19px;
+  margin: 0 0 19px;
   overflow-wrap: anywhere;
 }
 .lens-catalog-hero p,
@@ -2148,9 +2083,6 @@ section[id] {
   font-size: 18px;
   line-height: 1.65;
   margin: 0;
-}
-.lens-page__framework > .eyebrow {
-  color: var(--accent);
 }
 .lens-catalog-grid {
   display: grid;
@@ -2164,7 +2096,6 @@ section[id] {
   min-height: 350px;
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
   transition:
     border-color 160ms ease,
@@ -2185,7 +2116,7 @@ section[id] {
 .lens-card h2 {
   font-size: 23px;
   line-height: 1.25;
-  margin: 12px 0 13px;
+  margin: 0 0 13px;
 }
 .lens-card h2 .icon,
 .lens-mechanic-card h2 .icon {
@@ -2229,14 +2160,12 @@ section[id] {
   padding-top: 28px;
   margin-top: 22px;
 }
-.lens-page__mechanics > .eyebrow,
-.lens-page__framework > .eyebrow,
-.lens-page__related > .eyebrow {
+.lens-page__framework > .eyebrow {
   color: var(--accent);
 }
 .lens-page__mechanics > h2 {
   font-size: 26px;
-  margin: 9px 0 19px;
+  margin: 0 0 19px;
 }
 .lens-page__framework > h2 {
   margin: 9px 0 8px;
@@ -2258,7 +2187,6 @@ section[id] {
 .lens-page__framework article {
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
 }
 .lens-page__framework h3 {
@@ -2280,7 +2208,6 @@ section[id] {
   display: block;
   padding: 20px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
 }
 .lens-mechanic-card:hover {
@@ -2299,6 +2226,9 @@ section[id] {
 }
 .lens-page__related .lens-chips {
   margin-top: 13px;
+}
+.lens-page__related h2 {
+  font-size: 26px;
 }
 .lens-page__review {
   color: var(--muted);
@@ -2319,11 +2249,8 @@ section[id] {
   padding-bottom: 31px;
   border-bottom: 1px solid var(--line);
 }
-.boss-builder-hero > .eyebrow {
-  color: var(--accent);
-}
 .boss-builder-hero h1 {
-  margin: 13px 0 13px;
+  margin: 0 0 13px;
   font-size: clamp(40px, 4.6vw, 60px);
   letter-spacing: -0.055em;
   line-height: 1.03;
@@ -2348,7 +2275,6 @@ section[id] {
 .boss-builder-storage::before {
   width: 7px;
   height: 7px;
-  border-radius: 50%;
   background: var(--accent);
   content: '';
 }
@@ -2370,7 +2296,6 @@ section[id] {
 .boss-builder-phases,
 .boss-builder-mechanics {
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
 }
 .boss-builder-sidebar {
@@ -2398,7 +2323,6 @@ section[id] {
 .boss-builder-field textarea {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 8px;
   background: var(--paper);
   color: var(--ink);
   font: inherit;
@@ -2443,7 +2367,6 @@ section[id] {
   min-height: 38px;
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: 7px;
   font-size: 11px;
   font-weight: 700;
 }
@@ -2499,7 +2422,6 @@ section[id] {
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 12px;
   background: var(--surface);
   color: var(--ink);
   box-shadow: 0 20px 64px color-mix(in srgb, var(--ink) 20%, transparent);
@@ -2516,7 +2438,6 @@ section[id] {
   width: 36px;
   height: 3px;
   margin-bottom: 16px;
-  border-radius: 999px;
   background: var(--accent);
   content: '';
 }
@@ -2549,7 +2470,6 @@ section[id] {
   min-height: 40px;
   padding: 8px 13px;
   border: 1px solid var(--line);
-  border-radius: 8px;
   font: inherit;
   font-size: 11px;
   font-weight: 700;
@@ -2586,7 +2506,6 @@ section[id] {
   min-height: 32px;
   padding: 6px 9px;
   border: 1px solid var(--accent-line);
-  border-radius: 7px;
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 10px;
@@ -2610,7 +2529,6 @@ section[id] {
 .boss-builder-phase {
   padding: 11px;
   border: 1px solid var(--line);
-  border-radius: 9px;
   background: var(--paper);
   cursor: pointer;
 }
@@ -2642,7 +2560,6 @@ section[id] {
   min-height: 28px;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 6px;
   background: transparent;
   color: var(--muted);
   font-size: 11px;
@@ -2661,7 +2578,6 @@ section[id] {
   margin-top: 8px;
   padding: 8px;
   border: 1px solid var(--line);
-  border-radius: 7px;
   color: var(--soft-ink);
   font-size: 10px;
   font-weight: 650;
@@ -2694,7 +2610,6 @@ section[id] {
 .boss-builder-active-phase select {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 7px;
   background: var(--paper);
   color: var(--ink);
   font: inherit;
@@ -2750,7 +2665,6 @@ section[id] {
   margin-bottom: 18px;
   padding: 15px;
   border: 1px solid var(--line);
-  border-radius: 10px;
   background: var(--paper);
 }
 .boss-builder-recommendations header h3 {
@@ -2769,7 +2683,6 @@ section[id] {
   min-width: 0;
   padding: 11px;
   border: 1px solid var(--line);
-  border-radius: 8px;
   background: var(--surface);
 }
 .boss-builder-relation-group h4 {
@@ -2816,7 +2729,7 @@ section[id] {
   gap: 18px;
 }
 .boss-builder-mechanics__heading h2 {
-  margin-top: 6px;
+  margin-top: 0;
   font-size: 26px;
 }
 .boss-builder-mechanics__heading > span {
@@ -2856,7 +2769,6 @@ section[id] {
   padding: 9px 12px;
   padding-inline-start: 38px;
   border: 1px solid var(--line);
-  border-radius: 8px;
   background: var(--paper);
   color: var(--ink);
   font: inherit;
@@ -2874,7 +2786,6 @@ section[id] {
   margin-bottom: 14px;
   padding: 13px;
   border: 1px solid var(--line);
-  border-radius: 10px;
   background: var(--paper);
 }
 .boss-builder-filter {
@@ -2922,7 +2833,6 @@ section[id] {
 .boss-builder-mechanic {
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 11px;
   background: var(--paper);
   transition:
     border-color 160ms ease,
@@ -2946,7 +2856,7 @@ section[id] {
   position: relative;
   display: grid;
   grid-template-columns: 145px minmax(0, 1fr);
-  min-height: 150px;
+  min-height: 248px;
   cursor: pointer;
 }
 .boss-builder-mechanic__select > input {
@@ -2965,7 +2875,6 @@ section[id] {
   width: 23px;
   height: 23px;
   border: 1px solid var(--accent-line);
-  border-radius: 50%;
   background: var(--surface);
   color: transparent;
 }
@@ -3035,7 +2944,6 @@ section[id] {
 .boss-builder-mechanic__tags > span {
   padding: 3px 5px;
   border: 1px solid var(--accent-line);
-  border-radius: 999px;
   color: var(--accent);
   font-family: var(--font-label);
   font-size: 7px;
@@ -3115,7 +3023,6 @@ section[id] {
   min-width: 0;
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
 }
 .draft-profile__card > span {
@@ -3161,7 +3068,6 @@ section[id] {
   min-width: 0;
   padding: clamp(20px, 3vw, 28px);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background: var(--surface);
 }
 .wip-example-card h3 {
@@ -3208,7 +3114,6 @@ section[id] {
   place-items: center;
   min-height: 250px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
   background:
     linear-gradient(color-mix(in srgb, var(--preview) 80%, transparent), var(--preview)),
     repeating-linear-gradient(
@@ -3221,7 +3126,7 @@ section[id] {
   font-size: 18px;
 }
 .wip-mechanic-panel h2 {
-  margin: 9px 0 11px;
+  margin: 0 0 11px;
   font-size: clamp(28px, 4vw, 42px);
 }
 .wip-mechanic-panel p {
@@ -3236,7 +3141,6 @@ section[id] {
   align-items: center;
   padding: 10px 14px;
   border: 1px solid var(--accent);
-  border-radius: 8px;
   color: var(--accent);
   font-size: 12px;
   font-weight: 700;
@@ -3290,7 +3194,6 @@ section[id] {
 }
 .language-choice {
   border: 1px solid var(--line);
-  border-radius: 8px;
   padding: 14px 20px;
   display: flex;
   justify-content: space-between;
@@ -3508,9 +3411,6 @@ section[id] {
   .catalog-workflow__heading {
     grid-template-columns: 1fr;
   }
-  .catalog-workflow__heading .eyebrow {
-    grid-column: auto;
-  }
   .catalog-guides {
     grid-template-columns: 1fr;
   }
@@ -3665,6 +3565,7 @@ section[id] {
   }
   .boss-builder-mechanic__select {
     grid-template-columns: 122px minmax(0, 1fr);
+    min-height: 210px;
   }
   .boss-builder-support__card {
     padding: 22px 18px 18px;
@@ -3778,7 +3679,7 @@ section[id] {
     padding: 25px 0 54px;
   }
   .catalog-hero h1 {
-    margin-block: 12px 16px;
+    margin-block: 0 16px;
     font-size: clamp(35px, 11.5vw, 46px);
   }
   .catalog-hero .lead {
@@ -3792,13 +3693,6 @@ section[id] {
   .catalog-hero__primary,
   .catalog-hero__secondary {
     width: 100%;
-  }
-  .catalog-hero__features {
-    gap: 7px 16px;
-    margin-top: 20px;
-  }
-  .catalog-hero__features li:not(:first-child)::before {
-    inset-inline-start: -10px;
   }
   .catalog-hero__lesson {
     padding: 16px;
