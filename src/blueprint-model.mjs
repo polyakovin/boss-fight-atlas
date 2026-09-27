@@ -6110,6 +6110,19 @@ function primitivesFor(spec, frame) {
       strikePulse(frame.time, spec.firstRelease[0], 0.34),
       strikePulse(frame.time, spec.secondRelease[0], 0.34),
     );
+    const releaseEnd =
+      frame.time < spec.secondWindup[0] ? spec.firstRelease[1] : spec.secondRelease[1];
+    const recovering =
+      (frame.time >= spec.firstRelease[1] && frame.time < spec.firstRecoveryEnd) ||
+      (frame.time >= spec.secondRelease[1] && frame.time < spec.recoveryEnd);
+    const thrust = frame.dangerActive
+      ? 1
+      : winding
+        ? 0.16 + progress * 0.32
+        : recovering
+          ? mix(0.9, 0.16, smooth((frame.time - releaseEnd) / 0.38))
+          : 0.16;
+    const fistX = boss.x + 43 + thrust * 27;
     const rune = (offset, threshold) => {
       const x = boss.x + offset;
       return path(
@@ -6139,35 +6152,47 @@ function primitivesFor(spec, frame) {
         7,
         '12 10',
       ),
-      line(
-        boss.x + 38,
-        boss.y,
-        spec.laneEnd[0],
-        spec.laneEnd[1],
+      path(
+        `M ${boss.x + 38} ${boss.y - 19} L ${boss.x + 72} ${boss.y - 22} L ${boss.x + 102} ${boss.y - 16} L ${boss.x + 137} ${boss.y - 22} L ${boss.x + 170} ${boss.y - 17} L ${boss.x + 204} ${boss.y - 21} L ${spec.laneEnd[0]} ${boss.y - 15} L ${spec.laneEnd[0]} ${boss.y + 17} L ${boss.x + 214} ${boss.y + 22} L ${boss.x + 177} ${boss.y + 16} L ${boss.x + 145} ${boss.y + 22} L ${boss.x + 110} ${boss.y + 17} L ${boss.x + 77} ${boss.y + 21} L ${boss.x + 38} ${boss.y + 19} Z`,
         frame.dangerActive ? 0.95 : 0,
-        'signal',
-        spec.laneHalfWidth * 2,
+        'muted',
+        2,
+        0.91,
       ),
       rune(-34, 0.12),
       rune(0, 0.45),
       rune(34, 0.78),
       path(
-        `M ${boss.x - 66} ${boss.y - 54} L ${boss.x - 91} ${boss.y - 97} L ${boss.x - 48} ${boss.y - 84} Z M ${boss.x + 66} ${boss.y - 54} L ${boss.x + 91} ${boss.y - 97} L ${boss.x + 48} ${boss.y - 84} Z`,
+        `M ${boss.x - 43} ${boss.y - 24} L ${boss.x - 39} ${boss.y - 48} L ${boss.x - 27} ${boss.y - 30} L ${boss.x - 31} ${boss.y - 15} Z M ${boss.x + 42} ${boss.y - 24} L ${boss.x + 39} ${boss.y - 48} L ${boss.x + 28} ${boss.y - 29} L ${boss.x + 31} ${boss.y - 14} Z`,
         ready ? 0.82 : 0,
         'safe',
-        0,
-        0.74,
+        2,
+        0.82,
       ),
-      circle(boss.x + 42, boss.y, 18 + releaseFlash * 24, releaseFlash, 'signal', 8),
-      line(
-        boss.x - 62,
-        boss.y + 66,
-        boss.x + 62,
-        boss.y + 66,
-        frame.dangerActive ? 0.78 : 0,
+      path(
+        `M ${fistX + 11} ${boss.y - 20} L ${fistX + 31} ${boss.y - 34} M ${fistX + 18} ${boss.y - 1} L ${fistX + 46} ${boss.y - 3} M ${fistX + 11} ${boss.y + 16} L ${fistX + 33} ${boss.y + 32}`,
+        releaseFlash,
+        'signal',
+        4,
+      ),
+      path(
+        `M ${boss.x + 48} ${boss.y - 2} L ${boss.x + 85} ${boss.y - 6} L ${boss.x + 117} ${boss.y + 5} L ${boss.x + 157} ${boss.y - 4} L ${boss.x + 192} ${boss.y + 7} L ${spec.laneEnd[0] - 12} ${boss.y - 2}`,
+        frame.dangerActive ? 0.91 : 0,
+        'signal',
+        3,
+      ),
+      path(
+        `M ${boss.x + 26} ${boss.y - 15} L ${fistX - 8} ${boss.y - 20} L ${fistX + 9} ${boss.y - 14} L ${fistX + 16} ${boss.y + 5} L ${fistX - 2} ${boss.y + 18} L ${boss.x + 26} ${boss.y + 14} Z`,
+        0.92,
         'muted',
-        8,
-        '10 8',
+        2,
+        0.94,
+      ),
+      path(
+        `M ${fistX - 6} ${boss.y - 15} L ${fistX + 7} ${boss.y - 10} L ${fistX + 11} ${boss.y + 3} M ${fistX - 1} ${boss.y - 3} L ${fistX + 7} ${boss.y - 10}`,
+        winding ? 0.34 + progress * 0.55 : frame.dangerActive ? 0.94 : 0.3,
+        'accent',
+        2,
       ),
     ];
   }

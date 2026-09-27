@@ -1401,7 +1401,7 @@ test('wind-up separates readable buildup beats, a held pose, release, and recove
   await seek(1750);
   await expect(widget).toHaveAttribute('data-blueprint-wind-up', 'released-danger');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
-  await expect(widget.locator('[data-blueprint-primitive="3"] line')).not.toHaveAttribute(
+  await expect(widget.locator('[data-blueprint-primitive="3"] path')).not.toHaveAttribute(
     'opacity',
     '0',
   );
@@ -1416,7 +1416,7 @@ test('wind-up separates readable buildup beats, a held pose, release, and recove
     'opacity',
     '0',
   );
-  await expect(widget.locator('[data-blueprint-primitive="3"] line')).toHaveAttribute(
+  await expect(widget.locator('[data-blueprint-primitive="3"] path')).toHaveAttribute(
     'opacity',
     '0',
   );

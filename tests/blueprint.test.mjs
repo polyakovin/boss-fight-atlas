@@ -1930,6 +1930,9 @@ test('wind-up exposes readable buildup beats before both fixed release windows',
   assert.equal(firstRelease.playerSafe, true);
   assert.equal(blueprintPointSafe(id, 1.75, { x: 450, y: 430 }), false);
   assert.ok(firstRelease.primitives[3].opacity > 0, 'the promised lane becomes active');
+  assert.equal(firstRelease.primitives[3].type, 'path');
+  assert.equal(firstRelease.primitives[10].type, 'path');
+  assert.notEqual(building.primitives[10].data, firstRelease.primitives[10].data);
 
   const held = blueprintFrame(id, 3.9);
   assert.equal(held.windUpState, 'held-ready');
@@ -1940,6 +1943,7 @@ test('wind-up exposes readable buildup beats before both fixed release windows',
   const secondRelease = blueprintFrame(id, 4.45);
   assert.equal(secondRelease.windUpState, 'held-release');
   assert.equal(secondRelease.playerSafe, true);
+  assert.ok(secondRelease.primitives[10].opacity > 0);
   assert.equal(blueprintPointSafe(id, 4.45, { x: 450, y: 430 }), false);
   assert.match(renderBlueprintThumbnail(id, 'test-wind-up'), /data-blueprint-preview="wind-up"/);
 });
