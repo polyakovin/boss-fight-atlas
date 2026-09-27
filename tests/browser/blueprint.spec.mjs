@@ -156,10 +156,10 @@ test('converging fronts visibly close both sides while the player exits above', 
   await expect(widget).toHaveAttribute('data-blueprint-ready', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
   await expect(page.locator('.game-example')).toHaveCount(3);
-  const left = widget.locator('[data-blueprint-primitive="0"] rect');
-  const right = widget.locator('[data-blueprint-primitive="1"] rect');
-  const initialWidth = Number(await left.getAttribute('width'));
-  const initialRight = Number(await right.getAttribute('x'));
+  const left = widget.locator('[data-blueprint-primitive="0"] path');
+  const right = widget.locator('[data-blueprint-primitive="1"] path');
+  const initialWidth = await left.evaluate((element) => element.getBBox().width);
+  const initialRight = await right.evaluate((element) => element.getBBox().x);
 
   await timeline.evaluate((element) => {
     element.value = '3850';
@@ -170,8 +170,10 @@ test('converging fronts visibly close both sides while the player exits above', 
   await expect(widget.locator('[data-blueprint-phase-name]')).toHaveText(
     'Leave before the corridor closes',
   );
-  expect(Number(await left.getAttribute('width'))).toBeGreaterThan(initialWidth + 120);
-  expect(Number(await right.getAttribute('x'))).toBeLessThan(initialRight - 120);
+  expect(await left.evaluate((element) => element.getBBox().width)).toBeGreaterThan(
+    initialWidth + 120,
+  );
+  expect(await right.evaluate((element) => element.getBBox().x)).toBeLessThan(initialRight - 120);
 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
