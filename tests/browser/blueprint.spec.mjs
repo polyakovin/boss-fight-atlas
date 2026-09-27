@@ -1707,12 +1707,20 @@ test('recovery separates the last active instant, approach budget, punish, and r
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="11"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(1800);
   await expect(widget).toHaveAttribute('data-blueprint-recovery', 'approach-window');
   await expect(widget).toHaveAttribute('data-blueprint-recovery-locked', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-boss-ready', 'false');
   await expect(widget.locator('[data-blueprint-primitive="5"] circle')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="12"] path')).toHaveAttribute(
     'opacity',
     '0',
   );
