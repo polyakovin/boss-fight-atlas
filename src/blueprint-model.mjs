@@ -12142,7 +12142,7 @@ function primitivesFor(spec, frame) {
     ];
   }
   if (mode === 'returning-projectile') {
-    const start = point(spec.boss);
+    const start = { x: spec.boss[0] + 39, y: spec.boss[1] + 11 };
     const turn = point(spec.turn);
     const returnControl = point(spec.returnControl);
     const turnAt = 0.52;
@@ -12166,24 +12166,31 @@ function primitivesFor(spec, frame) {
               2 * (1 - returnProgress) * (returnControl.y - turn.y) +
               2 * returnProgress * (start.y - returnControl.y),
           };
-    const heading = Math.atan2(tangent.y, tangent.x);
-    const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+    const spin = Math.atan2(tangent.y, tangent.x) + action * Math.PI * 10;
+    const forward = { x: Math.cos(spin), y: Math.sin(spin) };
     const side = { x: -forward.y, y: forward.x };
     const bladePoint = (along, across) =>
       `${projectile.x + forward.x * along + side.x * across} ${projectile.y + forward.y * along + side.y * across}`;
+    const opacity = phase === 0 ? 0.75 + prepare * 0.2 : phase === 1 ? 1 : 1 - recover;
     return [
       {
         ...path(
-          `M ${bladePoint(23, 0)} L ${bladePoint(7, 8)} L ${bladePoint(0, 23)} L ${bladePoint(-7, 8)} L ${bladePoint(-23, 0)} L ${bladePoint(-7, -8)} L ${bladePoint(0, -23)} L ${bladePoint(7, -8)} Z`,
-          phase === 1 ? 1 : 0.7,
-          'signal',
-          0,
-          0.9,
+          `M ${bladePoint(24, -22)} L ${bladePoint(5, -6)} L ${bladePoint(-13, -12)} L ${bladePoint(-20, -2)} L ${bladePoint(0, 5)} L ${bladePoint(22, 23)} L ${bladePoint(30, 14)} L ${bladePoint(8, 0)} L ${bladePoint(31, -13)} Z`,
+          opacity,
+          'muted',
+          2,
+          0.94,
         ),
         x: projectile.x,
         y: projectile.y,
-        radius: 23,
+        radius: 30,
       },
+      path(
+        `M ${bladePoint(-8, -3)} L ${bladePoint(4, 0)} L ${bladePoint(0, 8)} Z M ${bladePoint(5, -6)} L ${bladePoint(24, -22)} M ${bladePoint(8, 0)} L ${bladePoint(22, 23)}`,
+        opacity * 0.95,
+        'signal',
+        2,
+      ),
     ];
   }
   if (mode === 'orbiting-projectiles') {

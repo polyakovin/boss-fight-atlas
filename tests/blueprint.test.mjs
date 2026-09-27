@@ -777,7 +777,9 @@ test('returning projectile announces an outbound leg and a distinct committed re
 
   assert.deepEqual(signal.player, blueprintFrame('returning-projectile', 0).player);
   assert.equal(signal.primitives[0].type, 'path');
-  assert.equal(signal.primitives[0].x, signal.boss.x);
+  assert.equal(signal.primitives[0].x, signal.boss.x + 39);
+  assert.equal(signal.primitives[0].radius, 30);
+  assert.ok(outgoing.primitives[1].opacity > 0.9, 'the thrown stone carries a crystal rune');
   assert.ok(outgoing.primitives[0].x < turn.primitives[0].x);
   assert.ok(returning.primitives[0].y > turn.primitives[0].y);
   const distanceFromOwner = (frame) =>
