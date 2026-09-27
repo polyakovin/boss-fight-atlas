@@ -112,6 +112,7 @@ test('mine arms its visible circle, keeps the player safe, and fits on mobile', 
 test('moving hazard travels with its visible footprint and leaves a clear wake', async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('en/mechanics/moving-hazard/');
   const widget = page.locator('[data-blueprint-demo]');
   const timeline = widget.locator('[data-blueprint-timeline]');
@@ -121,8 +122,13 @@ test('moving hazard travels with its visible footprint and leaves a clear wake',
   await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
   await expect(page.locator('.game-example')).toHaveCount(3);
 
-  const circle = widget.locator('[data-blueprint-primitive="1"] circle');
-  const initialX = Number(await circle.getAttribute('cx'));
+  const boulder = widget.locator('[data-blueprint-primitive="1"] path');
+  const centerX = () =>
+    boulder.evaluate((element) => {
+      const bounds = element.getBBox();
+      return bounds.x + bounds.width / 2;
+    });
+  const initialX = await centerX();
   await timeline.evaluate((element) => {
     element.value = '3000';
     element.dispatchEvent(new Event('input', { bubbles: true }));
@@ -132,7 +138,7 @@ test('moving hazard travels with its visible footprint and leaves a clear wake',
   await expect(widget.locator('[data-blueprint-phase-name]')).toHaveText(
     'Track the live footprint',
   );
-  expect(Number(await circle.getAttribute('cx'))).toBeGreaterThan(initialX + 100);
+  expect(await centerX()).toBeGreaterThan(initialX + 100);
 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
