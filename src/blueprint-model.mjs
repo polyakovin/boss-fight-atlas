@@ -6817,19 +6817,24 @@ function primitivesFor(spec, frame) {
         0.84,
       ),
       path(
-        'M 48 730 L 512 730 L 512 878 L 48 878 Z',
+        'M 48 737 L 76 731 L 91 739 L 116 727 L 143 734 L 169 725 L 192 736 L 221 729 L 250 740 L 278 728 L 306 737 L 332 725 L 359 735 L 388 730 L 416 739 L 446 727 L 475 737 L 512 731 L 512 878 L 48 878 Z',
         signalVisible ? 0.48 + signalProgress * 0.3 : 0,
-        'accent',
-        0,
-        0.72,
+        'muted',
+        2,
+        0.7,
       ),
-      path('M 48 730 L 512 730 L 512 878 L 48 878 Z', scrolling ? 0.94 : 0, 'signal', 0, 0.86),
       path(
-        'M 52 729 L 508 729 L 496 743 L 64 743 Z',
-        signalVisible || scrolling ? 0.72 : 0.12,
+        'M 48 737 L 76 731 L 91 739 L 116 727 L 143 734 L 169 725 L 192 736 L 221 729 L 250 740 L 278 728 L 306 737 L 332 725 L 359 735 L 388 730 L 416 739 L 446 727 L 475 737 L 512 731 L 512 878 L 48 878 Z',
+        scrolling ? 0.94 : 0,
+        'muted',
+        2,
+        0.89,
+      ),
+      path(
+        'M 52 737 L 85 733 L 112 728 L 142 733 L 171 726 L 193 737 L 223 730 L 250 739 L 279 729 L 307 738 L 333 726 L 360 736 L 389 731 L 416 739 L 447 728 L 475 737 L 508 733',
+        signalVisible || scrolling ? 0.9 : 0,
         scrolling ? 'signal' : 'accent',
-        0,
-        0.76,
+        4,
       ),
       ...spec.platforms.map(([x, y, width]) =>
         path(
@@ -6854,6 +6859,19 @@ function primitivesFor(spec, frame) {
         'safe',
         0,
         0.84,
+      ),
+      path(
+        'M 85 739 L 97 772 L 109 760 L 120 794 M 184 732 L 176 762 L 194 781 L 183 816 M 273 736 L 289 764 L 277 784 L 297 819 M 369 734 L 356 771 L 375 788 M 458 731 L 445 755 L 462 775 L 455 806',
+        scrolling ? 0.78 : signalVisible ? 0.36 : 0,
+        'signal',
+        3,
+      ),
+      path(
+        'M 72 718 L 81 702 L 92 711 L 86 728 Z M 155 714 L 168 695 L 175 720 L 161 730 Z M 314 715 L 327 700 L 337 723 L 320 732 Z M 430 716 L 445 699 L 451 724 L 437 733 Z',
+        scrolling ? 0.85 : signalVisible ? 0.34 : 0,
+        'muted',
+        2,
+        0.85,
       ),
     ];
   }

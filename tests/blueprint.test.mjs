@@ -2285,6 +2285,8 @@ test('forced scrolling keeps one authored pace, a fixed failure edge, and a visi
   assert.equal(active.playerSafe, true);
   assert.ok(active.forcedScrollingOffset > 100);
   assert.ok(active.primitives[6].opacity > 0.9, 'the fixed lower current becomes dangerous');
+  assert.ok(active.primitives[15].opacity > 0, 'cracks mark the grinding stone edge');
+  assert.ok(active.primitives[16].opacity > 0, 'broken stones rise from the wall');
   assert.equal(blueprintPointSafe(id, 2.75, { x: 350, y: 750 }), false);
   assert.equal(blueprintPointSafe(id, 2.75, { x: 350, y: 620 }), true);
 
@@ -2292,6 +2294,7 @@ test('forced scrolling keeps one authored pace, a fixed failure edge, and a visi
   assert.equal(cleared.forcedScrollingRouteCleared, true);
   assert.equal(cleared.dangerActive, false);
   assert.equal(cleared.primitives[6].opacity, 0, 'the lower current ends at the stop rune');
+  assert.equal(cleared.primitives[16].opacity, 0, 'the broken edge settles after the stop');
 
   const punish = blueprintFrame(id, 5.05);
   assert.equal(punish.punishStrike, true);

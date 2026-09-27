@@ -2163,6 +2163,10 @@ test('forced scrolling exposes its fixed pace, lower failure edge, and route-com
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="16"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(4400);
   await expect(widget).toHaveAttribute('data-blueprint-forced-scrolling', 'route-cleared');
