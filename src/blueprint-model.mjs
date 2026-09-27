@@ -11911,7 +11911,7 @@ function primitivesFor(spec, frame) {
     ];
   }
   if (mode === 'single-shot') {
-    const start = point(spec.boss);
+    const start = { x: boss.x + 43, y: boss.y + 8 };
     const end = point(spec.shotEnd);
     const head = {
       x: mix(start.x, end.x, action),
@@ -11928,19 +11928,39 @@ function primitivesFor(spec, frame) {
       `${head.x + forward.x * along + side.x * across} ${head.y + forward.y * along + side.y * across}`;
     return [
       line(start.x, start.y, end.x, end.y, phase === 0 ? 0.28 + prepare * 0.3 : 0, 'accent', 4),
-      line(tail.x, tail.y, head.x, head.y, phase === 1 ? 0.32 : 0, 'signal', 5),
+      line(tail.x, tail.y, head.x, head.y, phase === 1 ? 0.24 : 0, 'accent', 4),
       {
         ...path(
-          `M ${tip(23, 0)} L ${tip(-10, 11)} L ${tip(-17, 0)} L ${tip(-10, -11)} Z`,
+          `M ${tip(27, 0)} L ${tip(6, -10)} L ${tip(-11, -13)} L ${tip(-23, -4)} L ${tip(-16, 4)} L ${tip(-25, 11)} L ${tip(-2, 11)} Z`,
           phase === 1 ? 1 : 0,
-          'signal',
-          0,
-          0.9,
+          'muted',
+          2,
+          0.88,
         ),
         x: head.x,
         y: head.y,
-        radius: 20,
+        radius: 27,
       },
+      path(
+        `M ${start.x - 10} ${start.y - 8} L ${start.x + 6} ${start.y - 11} L ${start.x + 14} ${start.y + 1} L ${start.x + 3} ${start.y + 11} L ${start.x - 9} ${start.y + 7} Z`,
+        phase === 0 ? 0.45 + prepare * 0.5 : phase === 1 ? 0.68 : 0.25 * (1 - recover),
+        'accent',
+        2,
+        0.52,
+      ),
+      path(
+        `M ${tip(19, 0)} L ${tip(-5, -7)} L ${tip(-15, -6)} M ${tip(19, 0)} L ${tip(-4, 7)}`,
+        phase === 1 ? 0.94 : 0,
+        'accent',
+        2,
+      ),
+      path(
+        `M ${tip(27, 0)} L ${tip(12, -5)} L ${tip(12, 5)} Z`,
+        phase === 1 ? 0.98 : 0,
+        'signal',
+        1,
+        0.9,
+      ),
     ];
   }
   if (mode === 'crossfire') {
