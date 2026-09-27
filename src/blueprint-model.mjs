@@ -2204,9 +2204,9 @@ const SPECS = {
   },
   'shrinking-safe-area': {
     mode: 'shrink',
-    boss: [280, 390],
+    boss: [280, 445],
     player: [430, 650],
-    target: [348, 568],
+    target: [325, 555],
   },
   knockback: {
     mode: 'knockback',
@@ -13481,11 +13481,47 @@ function primitivesFor(spec, frame) {
     });
     return [...slabs, ...rubble];
   }
-  if (mode === 'shrink')
+  if (mode === 'shrink') {
+    const center = { x: 280, y: 500 };
+    const wallRadius = phase === 2 ? mix(150, 320, recover) : mix(320, 150, action);
+    const wallOpacity =
+      phase === 0 ? 0.44 + prepare * 0.32 : phase === 1 ? 0.94 : 0.94 * (1 - recover);
     return [
-      circle(280, 500, mix(320, 150, action), phase === 2 ? 1 : active, 'signal', 28),
-      circle(280, 500, mix(292, 122, action), phase === 2 ? 1 : active, 'safe', 0, 0.08),
+      circle(
+        center.x,
+        center.y,
+        wallRadius,
+        phase === 0 ? active * 0.32 : 0.23 * (phase === 2 ? 1 - recover : 1),
+        'signal',
+        28,
+      ),
+      circle(
+        center.x,
+        center.y,
+        wallRadius - 28,
+        phase === 2 ? 1 - recover : active,
+        'safe',
+        0,
+        0.035,
+      ),
+      ...Array.from({ length: 40 }, (_, index) => {
+        const angle = (index * Math.PI * 2) / 40 + (((index * 13) % 9) - 4) * 0.007;
+        const rock = polar(center, wallRadius + [-7, 4, -2, 6, -5][index % 5], angle);
+        const radial = { x: Math.cos(angle), y: Math.sin(angle) };
+        const tangent = { x: -Math.sin(angle), y: Math.cos(angle) };
+        const size = [0.9, 1.13, 0.76, 1.2, 0.84][index % 5];
+        const at = (along, across) =>
+          `${rock.x + radial.x * along * size + tangent.x * across * size} ${rock.y + radial.y * along * size + tangent.y * across * size}`;
+        return path(
+          `M ${at(-24, 0)} L ${at(-5, -14)} L ${at(13, -11)} L ${at(20, 4)} L ${at(3, 15)} Z`,
+          wallOpacity,
+          'muted',
+          2,
+          0.82,
+        );
+      }),
     ];
+  }
   if (mode === 'knockback') {
     const origin = { x: boss.x + 40, y: boss.y + 8 };
     const contact = point(spec.player);
