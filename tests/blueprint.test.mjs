@@ -554,6 +554,21 @@ test('target lock commits before the marked player leaves', () => {
   assert.equal(blueprintPointSafe('target-lock', 3.34, { x: 390, y: 620 }), true);
 });
 
+test('knockback reaches the player before the displacement begins', () => {
+  const warning = blueprintFrame('knockback', 1.4);
+  const incoming = blueprintFrame('knockback', 1.95);
+  const contact = blueprintFrame('knockback', 2.18);
+  const pushed = blueprintFrame('knockback', 2.8);
+  assert.deepEqual(warning.player, incoming.player);
+  assert.deepEqual(incoming.player, contact.player);
+  assert.ok(incoming.primitives[2].opacity > 0.8);
+  assert.equal(incoming.primitives[6].opacity, 0);
+  assert.ok(contact.primitives[6].opacity > 0);
+  assert.ok(pushed.player.y > contact.player.y);
+  assert.equal(contact.bossMotion.impact, 0);
+  assert.equal(pushed.playerSafe, true);
+});
+
 test('telegraph sends stone shards through the announced cone and clears on recovery', () => {
   const warning = blueprintFrame('telegraph', 1.26);
   const active = blueprintFrame('telegraph', 3.1);

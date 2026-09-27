@@ -2213,6 +2213,7 @@ const SPECS = {
     boss: [215, 350],
     player: [330, 510],
     target: [430, 680],
+    hitAt: 2.18,
   },
   'target-lock': {
     mode: 'target-lock',
@@ -13047,17 +13048,72 @@ function primitivesFor(spec, frame) {
       circle(280, 500, mix(320, 150, action), phase === 2 ? 1 : active, 'signal', 28),
       circle(280, 500, mix(292, 122, action), phase === 2 ? 1 : active, 'safe', 0, 0.08),
     ];
-  if (mode === 'knockback')
+  if (mode === 'knockback') {
+    const origin = { x: boss.x + 40, y: boss.y + 8 };
+    const contact = point(spec.player);
+    const travel = clamp(
+      (frame.time - BLUEPRINT_PHASE_ENDS[0]) / (spec.hitAt - BLUEPRINT_PHASE_ENDS[0]),
+    );
+    const wave = {
+      x: mix(origin.x, contact.x, travel),
+      y: mix(origin.y, contact.y, travel),
+    };
+    const heading = Math.atan2(contact.y - origin.y, contact.x - origin.x);
+    const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+    const side = { x: -forward.y, y: forward.x };
+    const facet = (center, along, across) =>
+      `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+    const waveOpacity = phase === 1 ? 1 - smooth((frame.time - spec.hitAt) / 0.22) : 0;
+    const contactPulse =
+      frame.time >= spec.hitAt ? 1 - smooth((frame.time - spec.hitAt) / 0.35) : 0;
     return [
-      line(boss.x + 35, boss.y + 15, player.x, player.y, active * 0.74, 'signal', 12),
-      path(
-        `M ${player.x - 43} ${player.y + 31} L ${player.x - 23} ${player.y + 17} L ${player.x - 14} ${player.y + 34} Z M ${player.x - 66} ${player.y + 43} L ${player.x - 45} ${player.y + 26} L ${player.x - 38} ${player.y + 44} Z`,
-        active,
+      line(
+        origin.x,
+        origin.y,
+        contact.x,
+        contact.y,
+        phase === 0 ? 0.22 + prepare * 0.34 : 0,
         'accent',
-        0,
-        0.7,
+        3,
+      ),
+      path(
+        `M ${origin.x - 15} ${origin.y - 12} L ${origin.x + 3} ${origin.y - 19} L ${origin.x + 18} ${origin.y - 3} L ${origin.x + 8} ${origin.y + 17} L ${origin.x - 13} ${origin.y + 11} Z`,
+        phase === 2 ? 0.3 * (1 - recover) : 0.62 + prepare * 0.32,
+        'muted',
+        2,
+        0.9,
+      ),
+      path(
+        `M ${facet(wave, -13, -48)} L ${facet(wave, 12, -35)} L ${facet(wave, -4, -20)} L ${facet(wave, 27, -4)} L ${facet(wave, 7, 16)} L ${facet(wave, 17, 34)} L ${facet(wave, -10, 45)} L ${facet(wave, -18, 18)} L ${facet(wave, -15, -18)} Z`,
+        waveOpacity * 0.86,
+        'muted',
+        2,
+        0.88,
+      ),
+      ...[-23, 2, 25].map((across, index) => {
+        const center = {
+          x: wave.x + side.x * across - forward.x * index * 19,
+          y: wave.y + side.y * across - forward.y * index * 19,
+        };
+        const length = 20 + index * 4;
+        return path(
+          `M ${facet(center, length, 0)} L ${facet(center, -5, -10)} L ${facet(center, -16, -3)} L ${facet(center, -11, 12)} L ${facet(center, 8, 7)} Z`,
+          waveOpacity * (index === 1 ? 0.98 : 0.8),
+          index === 1 ? 'signal' : 'muted',
+          2,
+          0.9,
+        );
+      }),
+      circle(contact.x, contact.y, 43, contactPulse * 0.74, 'signal', 4),
+      path(
+        `M ${contact.x - 31} ${contact.y + 9} L ${contact.x - 18} ${contact.y - 10} L ${contact.x - 8} ${contact.y + 6} Z M ${contact.x + 19} ${contact.y + 14} L ${contact.x + 36} ${contact.y - 5} L ${contact.x + 42} ${contact.y + 16} Z`,
+        contactPulse * 0.78,
+        'muted',
+        2,
+        0.84,
       ),
     ];
+  }
   if (mode === 'target-lock') {
     const locked = point(spec.lockPoint);
     const mark = phase === 0 ? player : locked;
@@ -14281,7 +14337,7 @@ export function blueprintFrame(id, time) {
   else if (spec.mode === 'party-size-scaling') responseProgress = 0;
   else if (spec.mode === 'partner-revival') responseProgress = 0;
   else if (spec.mode === 'knockback')
-    responseProgress = phase === 0 ? 0 : phase === 1 ? smooth(action) : 1;
+    responseProgress = phase === 0 ? 0 : phase === 1 ? smooth((t - spec.hitAt) / 0.95) : 1;
   else if (spec.mode === 'target-lock')
     responseProgress = phase === 1 ? smooth(action / 0.45) : phase === 2 ? 1 : 0;
   else if (spec.mode === 'homing')
@@ -19426,6 +19482,17 @@ export function blueprintFrame(id, time) {
           ? mix(WIDE_SWING_FROM, WIDE_SWING_TO, action)
           : mix(WIDE_SWING_TO, WIDE_SWING_FROM, recover);
     frame.wideSwingWeapon = sweepWeaponPose((angle * 180) / Math.PI, frame.bossMotion);
+  }
+  if (spec.mode === 'knockback') {
+    const release = strikePulse(t, spec.hitAt, 0.7);
+    const stagger = pulse(smooth((t - spec.hitAt) / 1.12));
+    frame.bossMotion.attack = Math.max(t < spec.hitAt ? prepare * 0.36 : 0, release);
+    frame.bossMotion.lean =
+      -0.24 * prepare * (1 - smooth((t - (spec.hitAt - 0.3)) / 0.3)) + release * 0.38;
+    frame.bossMotion.impact = 0;
+    frame.playerMotion.impact = strikePulse(t, spec.hitAt, 0.5);
+    frame.playerMotion.lean = stagger * 0.45;
+    if (t >= spec.hitAt && t < spec.hitAt + 0.95) frame.playerMotion.stride = stagger * 0.3;
   }
   const decorativeIndices = DECORATIVE_PRIMITIVE_INDICES[id] ?? [];
   frame.primitives = primitivesFor(spec, frame).map((primitive, index) =>
