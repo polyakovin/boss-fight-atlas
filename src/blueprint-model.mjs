@@ -5456,23 +5456,37 @@ function primitivesFor(spec, frame) {
         `M ${origin.x} ${origin.y} L ${left.x} ${left.y} L ${right.x} ${right.y} Z`,
         warning,
         'accent',
-        0,
-        0.2,
+        2,
+        0.08,
       ),
       path(
-        `M ${origin.x - 26} ${origin.y - 24} L ${origin.x + 26} ${origin.y - 24} L ${origin.x + 18} ${origin.y + 18} L ${origin.x - 18} ${origin.y + 18} Z M ${origin.x - 14} ${origin.y + 9} L ${origin.x + 14} ${origin.y + 9} L ${origin.x + 10} ${origin.y + 29} L ${origin.x - 10} ${origin.y + 29} Z`,
+        `M ${origin.x - 33} ${origin.y + 16} L ${origin.x - 25} ${origin.y - 5} L ${origin.x - 13} ${origin.y - 12} L ${origin.x - 3} ${origin.y - 7} L ${origin.x + 8} ${origin.y - 16} L ${origin.x + 19} ${origin.y - 9} L ${origin.x + 31} ${origin.y + 17} Z M ${origin.x - 10} ${origin.y + 14} L ${origin.x + 1} ${origin.y - 6} L ${origin.x + 13} ${origin.y + 14}`,
         phase === 2 ? 1 - recover : 0.85,
-        'accent',
-        0,
-        0.75,
+        'muted',
+        2,
+        0.88,
       ),
-      ...shots.map((shot) =>
-        circle(shot.x, shot.y, shot.radius, shot.active ? 0.98 : 0, 'signal', 0, 0.82),
-      ),
-      circle(
-        origin.x,
-        origin.y,
-        34,
+      ...shots.map((shot) => {
+        const heading = Math.atan2(shot.y - origin.y, shot.x - origin.x);
+        const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+        const side = { x: -forward.y, y: forward.x };
+        const tip = (along, across) =>
+          `${shot.x + forward.x * along + side.x * across} ${shot.y + forward.y * along + side.y * across}`;
+        return {
+          ...path(
+            `M ${tip(21, 0)} L ${tip(5, -10)} L ${tip(-8, -8)} L ${tip(-16, -2)} L ${tip(-11, 8)} L ${tip(6, 9)} Z`,
+            shot.active ? 0.98 : 0,
+            'muted',
+            2,
+            0.94,
+          ),
+          x: shot.x,
+          y: shot.y,
+          radius: shot.radius,
+        };
+      }),
+      path(
+        `M ${origin.x - 20} ${origin.y - 9} L ${origin.x - 36} ${origin.y - 30} M ${origin.x} ${origin.y - 17} L ${origin.x} ${origin.y - 41} M ${origin.x + 19} ${origin.y - 9} L ${origin.x + 36} ${origin.y - 30}`,
         phase === 1
           ? Math.max(
               ...spec.releases.map((release) =>
@@ -5481,8 +5495,21 @@ function primitivesFor(spec, frame) {
             ) * 0.8
           : 0,
         'signal',
-        7,
+        3,
       ),
+      ...shots.map((shot) => {
+        const heading = Math.atan2(shot.y - origin.y, shot.x - origin.x);
+        const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+        const side = { x: -forward.y, y: forward.x };
+        const tip = (along, across) =>
+          `${shot.x + forward.x * along + side.x * across} ${shot.y + forward.y * along + side.y * across}`;
+        return path(
+          `M ${tip(19, 0)} L ${tip(-2, -4)} L ${tip(-13, -2)} M ${tip(19, 0)} L ${tip(2, 6)}`,
+          shot.active ? 0.96 : 0,
+          'signal',
+          2,
+        );
+      }),
     ];
   }
   if (mode === 'directional-shield') {
