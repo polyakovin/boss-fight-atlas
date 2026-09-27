@@ -2229,6 +2229,10 @@ test('chase herding exposes the pressure band, authored intercept, capture, and 
   await expect(widget).toHaveAttribute('data-blueprint-chase-herding', 'maintain-distance');
   await expect(widget).toHaveAttribute('data-blueprint-chase-in-band', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
+  await expect(widget.locator('[data-blueprint-primitive="14"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
   await expect(widget.locator('[data-blueprint-primitive="6"] circle')).not.toHaveAttribute(
     'opacity',
     '0',
