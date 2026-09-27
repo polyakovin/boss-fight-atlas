@@ -2182,7 +2182,7 @@ const SPECS = {
     mode: 'shockwave',
     boss: [280, 300],
     player: [280, 690],
-    target: [280, 785],
+    target: [280, 840],
   },
   'lingering-hazard': {
     mode: 'lingering',
@@ -13326,14 +13326,21 @@ function primitivesFor(spec, frame) {
     const origin = { x: boss.x, y: boss.y + 30 };
     const radius = mix(50, 440, action);
     return [
-      circle(origin.x, origin.y, radius, active, 'signal', 24),
-      ...Array.from({ length: 8 }, (_, index) => {
-        const center = polar(origin, radius, (index * Math.PI) / 4);
+      circle(origin.x, origin.y, radius, active * 0.17, 'signal', 24),
+      ...Array.from({ length: 48 }, (_, index) => {
+        const angle = (index * Math.PI * 2) / 48 + (((index * 17) % 11) - 5) * 0.008;
+        const reach = radius + [-12, 3, 10, -5, 8, -9, 1][index % 7];
+        const center = polar(origin, reach, angle);
+        const radial = { x: Math.cos(angle), y: Math.sin(angle) };
+        const tangent = { x: -Math.sin(angle), y: Math.cos(angle) };
+        const size = [0.64, 1.24, 0.88, 1.36, 0.73, 1.06][index % 6];
+        const at = (along, across) =>
+          `${center.x + radial.x * along * size + tangent.x * across * size} ${center.y + radial.y * along * size + tangent.y * across * size}`;
         return path(
-          `M ${center.x - 6} ${center.y + 3} L ${center.x + 2} ${center.y - 9} L ${center.x + 9} ${center.y + 5} Z`,
-          active * 0.8,
+          `M ${at(15, 0)} L ${at(3, -10)} L ${at(-11, -7)} L ${at(-14, 4)} L ${at(0, 11)} Z`,
+          active * 0.88,
           'muted',
-          0,
+          1.5,
           0.86,
         );
       }),

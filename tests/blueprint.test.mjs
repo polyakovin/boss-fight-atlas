@@ -881,6 +881,17 @@ test('pulse beam keeps one lane, synchronizes collision, and crosses only during
   }
 });
 
+test('shockwave carries stone fragments at its damaging front while the player outruns it', () => {
+  const active = blueprintFrame('shockwave', 3);
+  const wave = active.primitives[0];
+  const stones = active.primitives.slice(1);
+  assert.equal(stones.length, 48);
+  assert.ok(stones.every((stone) => stone.type === 'path' && stone.opacity > wave.opacity));
+  assert.equal(blueprintPointSafe('shockwave', 3, { x: wave.x + wave.radius, y: wave.y }), false);
+  for (let step = 160; step <= 430; step += 1)
+    assert.equal(blueprintFrame('shockwave', step / 100).playerSafe, true);
+});
+
 test('chain explosions keep a fixed order, damage one live node, and let the player follow the wake', () => {
   const signal = blueprintFrame('chain-explosions', 1.59);
   const first = blueprintFrame('chain-explosions', 1.85);
