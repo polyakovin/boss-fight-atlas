@@ -2928,6 +2928,10 @@ test('sound detection attacks a recorded event while a quiet player relocates', 
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="16"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(4280);
   await expect(widget).toHaveAttribute('data-blueprint-sound-detection', 'counter-window');
