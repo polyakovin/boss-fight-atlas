@@ -239,8 +239,8 @@ test('threat generator releases independent motes and stops after the last fligh
   await page.goto('en/mechanics/threat-generator/');
   const widget = page.locator('[data-blueprint-demo]');
   const timeline = widget.locator('[data-blueprint-timeline]');
-  const source = widget.locator('[data-blueprint-primitive="3"] circle');
-  const secondMote = widget.locator('[data-blueprint-primitive="10"] circle');
+  const source = widget.locator('[data-blueprint-primitive="3"] path');
+  const secondMote = widget.locator('[data-blueprint-primitive="7"] path');
   await expect(page.locator('.wip-badge, .draft-profile')).toHaveCount(0);
   await expect(page.locator('.game-example')).toHaveCount(3);
   await expect(widget).toHaveAttribute('data-blueprint-ready', 'true');
@@ -254,9 +254,8 @@ test('threat generator releases independent motes and stops after the last fligh
   await expect(widget.locator('[data-blueprint-phase-name]')).toHaveText(
     'Release repeated threats',
   );
-  await expect(source).toHaveAttribute('cx', '405');
-  await expect(source).toHaveAttribute('cy', '455');
-  await expect(secondMote).toHaveAttribute('opacity', '0.96');
+  await expect(source).toHaveAttribute('d', /^M 369 444 /);
+  await expect(secondMote).toHaveAttribute('opacity', '0.98');
   await timeline.evaluate((element) => {
     element.value = '5200';
     element.dispatchEvent(new Event('input', { bubbles: true }));
