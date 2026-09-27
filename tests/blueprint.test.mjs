@@ -721,8 +721,18 @@ test('spiral barrage emits discrete arms and leaves a complete safe route', () =
   const early = blueprintFrame('spiral-barrage', 2);
   const mature = blueprintFrame('spiral-barrage', 3.2);
   const recovered = blueprintFrame('spiral-barrage', 5.99);
-  assert.equal(early.primitives.filter((projectile) => projectile.opacity > 0).length, 6);
-  assert.ok(mature.primitives.filter((projectile) => projectile.opacity > 0).length > 18);
+  assert.equal(
+    early.primitives.filter((projectile) => projectile.radius > 0 && projectile.opacity > 0).length,
+    6,
+  );
+  assert.ok(
+    mature.primitives.filter((projectile) => projectile.radius > 0 && projectile.opacity > 0)
+      .length > 18,
+  );
+  assert.equal(
+    early.primitives.filter((facet) => facet.radius === undefined && facet.opacity > 0).length,
+    6,
+  );
   assert.ok(mature.primitives.every((projectile) => projectile.type === 'path'));
   assert.equal(recovered.primitives.filter((projectile) => projectile.opacity > 0).length, 0);
   for (let step = 160; step <= 599; step += 1) {

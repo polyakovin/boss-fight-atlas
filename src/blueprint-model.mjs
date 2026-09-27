@@ -12873,25 +12873,35 @@ function primitivesFor(spec, frame) {
     });
     return [...shards, ...facets];
   }
-  if (mode === 'spiral')
-    return spiralShots(boss, frame.time).map((shot) => {
+  if (mode === 'spiral') {
+    const stones = spiralShots(boss, frame.time).map((shot) => {
       const forward = { x: Math.cos(shot.angle), y: Math.sin(shot.angle) };
       const side = { x: -forward.y, y: forward.x };
       const tip = (along, across) =>
         `${shot.x + forward.x * along + side.x * across} ${shot.y + forward.y * along + side.y * across}`;
       return {
-        ...path(
-          `M ${tip(15, 0)} L ${tip(-8, 10)} L ${tip(-13, 0)} L ${tip(-8, -10)} Z`,
-          shot.active ? 1 : 0,
+        body: {
+          ...path(
+            `M ${tip(16, 0)} L ${tip(4, -7)} L ${tip(-7, -9)} L ${tip(-14, -3)} L ${tip(-8, 8)} L ${tip(5, 7)} Z`,
+            shot.active ? 1 : 0,
+            'muted',
+            1.5,
+            0.92,
+          ),
+          x: shot.x,
+          y: shot.y,
+          radius: 16,
+        },
+        facet: path(
+          `M ${tip(15, 0)} L ${tip(-2, -2)} L ${tip(-8, 8)} M ${tip(-2, -2)} L ${tip(-7, -9)}`,
+          shot.active ? 0.92 : 0,
           'signal',
-          0,
-          0.9,
+          1.6,
         ),
-        x: shot.x,
-        y: shot.y,
-        radius: 15,
       };
     });
+    return [...stones.map(({ body }) => body), ...stones.map(({ facet }) => facet)];
+  }
   if (mode === 'ricochet') {
     const corners = [
       { x: 198, y: 262 },
@@ -14121,7 +14131,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     return (
       distanceFromBoss > 52 + radius &&
       frame.primitives
-        .filter((projectile) => projectile.opacity > 0)
+        .filter((projectile) => projectile.radius > 0 && projectile.opacity > 0)
         .every(
           (projectile) =>
             Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
