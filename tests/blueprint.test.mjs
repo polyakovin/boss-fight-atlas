@@ -840,6 +840,9 @@ test('marked area keeps its warned footprint through detonation', () => {
 });
 
 test('mine keeps one fixed radius, arms with collision, and lets the player route around it', () => {
+  const launched = blueprintFrame('mine', 0.2);
+  const flying = blueprintFrame('mine', 0.55);
+  const placed = blueprintFrame('mine', 1.2);
   const signal = blueprintFrame('mine', 1.59);
   const armed = blueprintFrame('mine', 3);
   const recovery = blueprintFrame('mine', 5.2);
@@ -853,6 +856,11 @@ test('mine keeps one fixed radius, arms with collision, and lets the player rout
     [320, 610, 96],
     [320, 610, 96],
   ]);
+  assert.ok(launched.primitives[1].x < flying.primitives[1].x);
+  assert.ok(flying.primitives[1].y < placed.primitives[1].y);
+  assert.equal(placed.primitives[1].x, 320);
+  assert.equal(placed.primitives[1].y, 610);
+  assert.ok(placed.primitives[0].opacity > 0, 'the placed mine shows its radius before arming');
   assert.equal(signal.dangerActive, false);
   assert.equal(blueprintPointSafe('mine', 1.59, { x: 320, y: 610 }), true);
   assert.equal(armed.dangerActive, true);
