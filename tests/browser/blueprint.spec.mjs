@@ -191,8 +191,10 @@ test('pull separates a wide force cue from its dangerous core and keeps lateral 
   await expect(widget).toHaveAttribute('data-blueprint-ready', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-full-height', 'true');
   await expect(page.locator('.game-example')).toHaveCount(3);
-  await expect(widget.locator('[data-blueprint-primitive="0"] circle')).toHaveAttribute('r', '445');
-  await expect(widget.locator('[data-blueprint-primitive="1"] circle')).toHaveAttribute('r', '82');
+  const core = widget.locator('[data-blueprint-primitive="1"] path');
+  const looseStone = widget.locator('[data-blueprint-primitive="3"] path');
+  const stoneBefore = await looseStone.getAttribute('d');
+  expect(await core.evaluate((element) => element.getBBox().width)).toBeGreaterThan(150);
   const player = widget.locator('[data-blueprint-player]');
   const start = await player.getAttribute('transform');
   await timeline.evaluate((element) => {
@@ -204,6 +206,8 @@ test('pull separates a wide force cue from its dangerous core and keeps lateral 
   await expect(widget.locator('[data-blueprint-phase-name]')).toHaveText(
     'Steer across the current',
   );
+  await expect(core).toHaveAttribute('opacity', '0.92');
+  await expect(looseStone).not.toHaveAttribute('d', stoneBefore);
   expect(await player.getAttribute('transform')).not.toBe(start);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
