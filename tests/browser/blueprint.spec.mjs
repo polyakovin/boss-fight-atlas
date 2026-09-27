@@ -834,14 +834,13 @@ test('part break removes the actual beam until the visible launcher repair', asy
     'opacity',
     '0',
   );
-  await expect(widget.locator('[data-blueprint-primitive="11"] path')).not.toHaveAttribute(
-    'opacity',
-    '0',
-  );
+  const launcherPart = widget.locator('[data-blueprint-primitive="5"] path');
+  const attachedPath = await launcherPart.getAttribute('d');
   await seek(2880);
   await expect(widget).toHaveAttribute('data-blueprint-part', 'broken-now');
   await seek(3780);
   await expect(widget).toHaveAttribute('data-blueprint-part', 'attack-disabled');
+  await expect(launcherPart).not.toHaveAttribute('d', attachedPath);
   await expect(widget.locator('[data-blueprint-primitive="8"] line')).toHaveAttribute(
     'opacity',
     '0',
@@ -852,6 +851,7 @@ test('part break removes the actual beam until the visible launcher repair', asy
   );
   await seek(5350);
   await expect(widget).toHaveAttribute('data-blueprint-part', 'attached');
+  await expect(launcherPart).toHaveAttribute('d', attachedPath);
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
