@@ -6636,13 +6636,15 @@ function primitivesFor(spec, frame) {
       (frame.time - spec.destinationPreview[0]) /
         (spec.destinationPreview[1] - spec.destinationPreview[0]),
     );
-    const sourceVisible = frame.time >= spec.departure[0] && frame.time < spec.arrival[0];
+    const sourceVisible = frame.time >= spec.departure[0] && frame.time < spec.departure[1];
     const destinationVisible =
       frame.time >= spec.destinationPreview[0] && frame.time < spec.recoveryEnd;
     const followUpVisible = frame.time >= spec.followUpPreview[0] && frame.time < spec.active[0];
     const activeWindow = frame.time >= spec.active[0] && frame.time < spec.active[1];
     const arrivalFlash = strikePulse(frame.time, spec.arrival[1], 0.34);
     const strike = strikePulse(frame.time, spec.punishAt, 0.38);
+    const fissurePath =
+      'M 365 408 L 379 408 L 373 465 L 381 513 L 370 558 L 378 622 L 367 672 L 375 728 L 365 790 L 414 790 L 404 739 L 415 680 L 403 626 L 412 573 L 401 516 L 411 466 L 416 408 Z';
     return [
       path(
         'M 40 94 L 520 94 L 520 878 L 40 878 Z M 55 706 L 505 706 L 512 872 L 48 872 Z',
@@ -6659,34 +6661,28 @@ function primitivesFor(spec, frame) {
         0.52,
       ),
       path(
-        `M ${origin.x - 45} ${origin.y + 35} L ${origin.x} ${origin.y + 17} L ${origin.x + 45} ${origin.y + 35} L ${origin.x + 32} ${origin.y + 51} L ${origin.x - 31} ${origin.y + 51} Z M ${origin.x - 10} ${origin.y - 12} L ${origin.x} ${origin.y - 30} L ${origin.x + 10} ${origin.y - 12} L ${origin.x} ${origin.y + 5} Z`,
-        sourceVisible ? 0.84 * (1 - departureProgress * 0.42) : 0.24,
+        `M ${origin.x - 43} ${origin.y + 39} L ${origin.x - 22} ${origin.y + 25} L ${origin.x - 5} ${origin.y + 31} L ${origin.x + 15} ${origin.y + 21} L ${origin.x + 44} ${origin.y + 40} L ${origin.x + 29} ${origin.y + 52} L ${origin.x - 32} ${origin.y + 52} Z M ${origin.x - 9} ${origin.y + 29} L ${origin.x + 4} ${origin.y + 41} L ${origin.x + 22} ${origin.y + 48}`,
+        sourceVisible ? 0.84 * (1 - departureProgress * 0.42) : 0,
         'accent',
-        0,
+        2,
         0.72,
       ),
       path(
-        `M ${destination.x - 49} ${destination.y + 35} L ${destination.x} ${destination.y + 16} L ${destination.x + 49} ${destination.y + 35} L ${destination.x + 34} ${destination.y + 52} L ${destination.x - 34} ${destination.y + 52} Z`,
-        destinationVisible ? 0.86 : 0.25,
+        `M ${destination.x - 48} ${destination.y + 39} L ${destination.x - 30} ${destination.y + 27} L ${destination.x - 12} ${destination.y + 31} L ${destination.x + 8} ${destination.y + 22} L ${destination.x + 25} ${destination.y + 28} L ${destination.x + 48} ${destination.y + 40} L ${destination.x + 31} ${destination.y + 53} L ${destination.x - 33} ${destination.y + 53} Z`,
+        destinationVisible ? 0.86 : 0,
         'safe',
-        0,
-        0.7,
+        2,
+        0.75,
       ),
       path(
-        `M ${destination.x} ${destination.y - 38} L ${destination.x + 23} ${destination.y - 3} L ${destination.x} ${destination.y + 30} L ${destination.x - 23} ${destination.y - 3} Z`,
+        `M ${destination.x} ${destination.y + 26} L ${destination.x + 16} ${destination.y + 39} L ${destination.x} ${destination.y + 51} L ${destination.x - 16} ${destination.y + 39} Z M ${destination.x - 6} ${destination.y + 39} L ${destination.x} ${destination.y + 45} L ${destination.x + 7} ${destination.y + 39}`,
         destinationVisible ? 0.48 + destinationProgress * 0.45 : 0,
         'safe',
         0,
         0.82,
       ),
-      path(
-        'M 361 408 L 419 408 L 419 790 L 361 790 Z',
-        followUpVisible ? 0.66 : 0,
-        'accent',
-        0,
-        0.34,
-      ),
-      path('M 361 408 L 419 408 L 419 790 L 361 790 Z', activeWindow ? 0.94 : 0, 'signal', 0, 0.72),
+      path(fissurePath, followUpVisible ? 0.66 : 0, 'accent', 0, 0.12),
+      path(fissurePath, activeWindow ? 0.94 : 0, 'muted', 2, 0.91),
       path(
         `M ${destination.x - 48} ${destination.y + 22} L ${destination.x - 62} ${destination.y - 6} L ${destination.x - 26} ${destination.y + 6} Z M ${destination.x + 47} ${destination.y + 20} L ${destination.x + 61} ${destination.y - 8} L ${destination.x + 26} ${destination.y + 4} Z`,
         arrivalFlash,
@@ -6701,6 +6697,25 @@ function primitivesFor(spec, frame) {
         'safe',
         0,
         0.84,
+      ),
+      path(
+        'M 390 411 L 385 459 L 396 505 L 383 559 L 397 613 L 384 668 L 395 727 L 389 782',
+        activeWindow ? 0.97 : 0,
+        'signal',
+        4,
+      ),
+      path(
+        'M 372 462 L 381 448 L 390 461 L 382 478 Z M 401 534 L 411 522 L 417 540 L 405 551 Z M 369 621 L 378 608 L 390 628 L 374 639 Z M 402 700 L 412 686 L 417 706 L 406 717 Z',
+        activeWindow ? 0.88 : 0,
+        'muted',
+        2,
+        0.85,
+      ),
+      path(
+        `M ${destination.x - 36} ${destination.y + 49} L ${destination.x - 19} ${destination.y + 41} L ${destination.x} ${destination.y + 53} L ${destination.x + 22} ${destination.y + 40} L ${destination.x + 39} ${destination.y + 48}`,
+        followUpVisible ? 0.58 : activeWindow ? 0.88 : 0,
+        activeWindow ? 'signal' : 'accent',
+        3,
       ),
     ];
   }
