@@ -1411,6 +1411,18 @@ test('delayed rune remains safe through its countdown, then activates at its fix
   );
 });
 
+test('fight phase raises a solid fractured stone ridge before the new state settles', () => {
+  const warning = blueprintFrame('fight-phase', 1.1);
+  const active = blueprintFrame('fight-phase', 3.1);
+  assert.equal(active.primitives[3].type, 'path');
+  assert.notEqual(active.primitives[3].data, warning.primitives[3].data);
+  assert.equal(active.playerSafe, true);
+  assert.equal(blueprintPointSafe('fight-phase', 3.1, { x: 280, y: 695 }), false);
+  assert.equal(blueprintPointSafe('fight-phase', 3.1, { x: 280, y: 600 }), true);
+  for (let time = 1.6; time < 4.3; time += 0.02)
+    assert.equal(blueprintFrame('fight-phase', time).playerSafe, true, `phase route at ${time}`);
+});
+
 test('attack combination keeps a held hammer through both strikes and recovery', () => {
   const id = 'attack-combination';
   const frames = [0, 1.5, 2.3, 3.36, 4.8, 5.9].map((time) => blueprintFrame(id, time));
