@@ -4984,6 +4984,14 @@ test('coordinated duo attack overlaps one target and cancels the second follow-u
   await expect(widget).toHaveAttribute('data-blueprint-coordinated-duo-attack', 'overlapping-legs');
   await expect(widget).toHaveAttribute('data-blueprint-coordinated-duo-attack-followup-count', '1');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
+  await expect(widget.locator('[data-blueprint-primitive="19"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="20"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
   await seek(3580);
   await expect(widget).toHaveAttribute(
     'data-blueprint-coordinated-duo-attack-resolution',

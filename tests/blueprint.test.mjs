@@ -5220,9 +5220,17 @@ test('coordinated duo attack shares an anchor-derived target and cancels a depen
   );
   assert.deepEqual(blueprintFrame(id, 2.3).coordinatedDuoAttackTarget, { x: 305, y: 750 });
   assert.equal(blueprintFrame(id, 2.3).coordinatedDuoAttackFollowupCount, 1);
+  const overlap = blueprintFrame(id, 2.3);
+  assert.ok(overlap.primitives[19].opacity > 0.9, 'the leader splits the stone floor');
+  assert.ok(overlap.primitives[20].opacity > 0.9, 'the follower converges on the same point');
+  assert.ok(overlap.primitives[21].opacity > 0.9, 'a glowing seam marks the first fissure');
+  assert.ok(overlap.primitives[23].opacity > 0, 'the leader throws stone chips');
+  assert.ok(overlap.primitives[24].opacity > 0, 'the follower throws separate stone chips');
+  assert.ok(overlap.primitives[25].opacity > 0, 'both fissures meet at broken stone');
   assert.equal(blueprintFrame(id, 3.58).coordinatedDuoAttackResolution, 'interrupted');
   assert.equal(blueprintFrame(id, 4).coordinatedDuoAttackFollowupCancelled, true);
   assert.equal(blueprintFrame(id, 4).coordinatedDuoAttackFollowupCount, 0);
+  assert.equal(blueprintFrame(id, 4).primitives[20].opacity, 0, 'the dependent fissure cancels');
   assert.equal(blueprintFrame(id, 5.5).coordinatedDuoAttackFollowupCount, 0);
   for (let t = 2.05; t < 2.68; t += 0.02) assert.equal(blueprintFrame(id, t).playerSafe, true);
   assert.equal(blueprintPointSafe(id, 2.3, { x: 305, y: 750 }), false);
