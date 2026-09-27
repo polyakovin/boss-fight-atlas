@@ -2759,6 +2759,10 @@ test('beat-synced attack counts in, lands three lanes on the clock, and exposes 
   await expect(widget).toHaveAttribute('data-blueprint-beat-attack', '1');
   await expect(widget).toHaveAttribute('data-blueprint-beat-attack-lane', '2');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
+  await expect(widget.locator('[data-blueprint-primitive="25"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(2280);
   await expect(widget).toHaveAttribute('data-blueprint-beat-attack', '2');

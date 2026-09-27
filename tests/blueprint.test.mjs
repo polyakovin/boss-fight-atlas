@@ -2736,6 +2736,8 @@ test('beat-synced attack shares one clock across previews, lane hits, and the au
   assert.equal(right.playerSafe, true);
   assert.equal(blueprintPointSafe(id, 1.68, { x: 420, y: 700 }), false);
   assert.ok(right.primitives[20].opacity > 0.9, 'the first lane activates on the beat');
+  assert.ok(right.primitives[25].opacity > 0, 'a glowing fissure runs through the struck slab');
+  assert.ok(right.primitives[28].opacity > 0, 'the slab sheds stone chips');
 
   const center = blueprintFrame(id, 2.28);
   assert.equal(center.beatSyncedAttackIndex, 1);
