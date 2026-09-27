@@ -4071,9 +4071,13 @@ test('enrage fills the forge and keeps its core lit after the volley', async ({ 
   await expect(widget.locator('[data-blueprint-primitives] [stroke-dasharray]')).toHaveCount(0);
 
   await seek(3500);
-  await expect(widget.locator('[data-blueprint-primitive="4"] line')).toHaveAttribute(
+  await expect(widget.locator('[data-blueprint-primitive="4"] path')).toHaveAttribute(
     'opacity',
     '1',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="4"] path')).toHaveAttribute(
+    'stroke-width',
+    '5',
   );
   await seek(5200);
   await expect(widget.locator('[data-blueprint-primitive="2"] path')).toHaveAttribute(
@@ -4084,7 +4088,7 @@ test('enrage fills the forge and keeps its core lit after the volley', async ({ 
     'opacity',
     '1',
   );
-  await expect(widget.locator('[data-blueprint-primitive="4"] line')).toHaveAttribute(
+  await expect(widget.locator('[data-blueprint-primitive="4"] path')).toHaveAttribute(
     'opacity',
     '0',
   );

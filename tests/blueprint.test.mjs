@@ -525,6 +525,16 @@ test('rule-specific commitments stay visible through the response and recovery',
   }
 
   const enragedRecovery = blueprintFrame('enrage', 5.2);
+  const enragedVolley = blueprintFrame('enrage', 3.5);
+  for (const crack of enragedVolley.primitives.slice(4, 9)) {
+    assert.equal(crack.type, 'path');
+    assert.equal(crack.dangerLane, true);
+    assert.equal(crack.collisionWidth, 18);
+    assert.equal(crack.x1, enragedVolley.boss.x);
+    assert.equal(crack.y1, enragedVolley.boss.y + 49);
+  }
+  for (let time = 1.6; time <= 4.3; time += 0.02)
+    assert.equal(blueprintFrame('enrage', time).playerSafe, true, `enrage clearance at ${time}`);
   assert.equal(enragedRecovery.bossScale, 1.1);
   assert.equal(enragedRecovery.primitives[2].opacity, 1);
   assert.equal(enragedRecovery.primitives[3].opacity, 1);
