@@ -12023,7 +12023,7 @@ function primitivesFor(spec, frame) {
       x: mix(source.x, ends[index].x, action),
       y: mix(source.y, ends[index].y, action),
     }));
-    return heads.map((head, index) => {
+    const projectiles = heads.map((head, index) => {
       const source = sources[index];
       const end = ends[index];
       const heading = Math.atan2(end.y - source.y, end.x - source.x);
@@ -12033,17 +12033,44 @@ function primitivesFor(spec, frame) {
         `${head.x + forward.x * along + side.x * across} ${head.y + forward.y * along + side.y * across}`;
       return {
         ...path(
-          `M ${tip(21, 0)} L ${tip(-11, 11)} L ${tip(-17, 0)} L ${tip(-11, -11)} Z`,
+          `M ${tip(22, 0)} L ${tip(7, -10)} L ${tip(-6, -11)} L ${tip(-18, -3)} L ${tip(-12, 5)} L ${tip(-15, 10)} L ${tip(5, 8)} Z`,
           phase === 1 ? 1 : 0.42 + prepare * 0.35,
-          'signal',
-          0,
-          0.9,
+          'muted',
+          2,
+          0.92,
         ),
         x: head.x,
         y: head.y,
-        radius: 19,
+        radius: 22,
       };
     });
+    const facets = projectiles.map((projectile, index) => {
+      const source = sources[index];
+      const end = ends[index];
+      const heading = Math.atan2(end.y - source.y, end.x - source.x);
+      const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+      const side = { x: -forward.y, y: forward.x };
+      const tip = (along, across) =>
+        `${projectile.x + forward.x * along + side.x * across} ${projectile.y + forward.y * along + side.y * across}`;
+      return path(
+        `M ${tip(19, 0)} L ${tip(-3, -6)} L ${tip(-14, -2)} M ${tip(19, 0)} L ${tip(1, 7)}`,
+        projectile.opacity * 0.96,
+        'signal',
+        2,
+      );
+    });
+    const guides = sources.map((source, index) =>
+      line(
+        source.x,
+        source.y,
+        ends[index].x,
+        ends[index].y,
+        phase === 0 ? 0.24 + prepare * 0.26 : 0,
+        'accent',
+        2,
+      ),
+    );
+    return [...projectiles, ...facets, ...guides];
   }
   if (mode === 'splitting-projectile') {
     const start = point(spec.boss);
@@ -13480,10 +13507,12 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
           Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
       );
   if (mode === 'crossfire')
-    return frame.primitives.every(
-      (projectile) =>
-        Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
-    );
+    return frame.primitives
+      .filter((projectile) => projectile.radius > 0)
+      .every(
+        (projectile) =>
+          Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
+      );
   if (mode === 'splitting-projectile')
     return frame.primitives
       .filter((projectile) => projectile.opacity > 0.15)
