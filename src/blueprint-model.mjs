@@ -187,7 +187,7 @@ const SPECS = {
     boss: [170, 300],
     player: [385, 635],
     target: [500, 635],
-    emitter: [183, 310],
+    emitter: [213, 310],
     shotEnd: [515, 850],
     shotRadius: 20,
     releases: [1.9, 2.45, 3],
@@ -12856,27 +12856,47 @@ function primitivesFor(spec, frame) {
   if (mode === 'burst-fire') {
     const origin = point(spec.emitter);
     const end = point(spec.shotEnd);
+    const heading = Math.atan2(end.y - origin.y, end.x - origin.x);
+    const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+    const side = { x: -forward.y, y: forward.x };
     const shots = spec.releases.map((release) => {
       const elapsed = frame.time - release;
       const progress = clamp(elapsed / spec.flight);
       const visible = elapsed >= 0 && elapsed <= spec.flight;
-      return circle(
-        mix(origin.x, end.x, progress),
-        mix(origin.y, end.y, progress),
-        spec.shotRadius,
-        visible ? 0.98 : 0,
+      const x = mix(origin.x, end.x, progress);
+      const y = mix(origin.y, end.y, progress);
+      const tip = (along, across) =>
+        `${x + forward.x * along + side.x * across} ${y + forward.y * along + side.y * across}`;
+      return {
+        ...path(
+          `M ${tip(23, 0)} L ${tip(7, -11)} L ${tip(-10, -10)} L ${tip(-19, -3)} L ${tip(-13, 8)} L ${tip(6, 10)} Z`,
+          visible ? 0.98 : 0,
+          'muted',
+          2,
+          0.94,
+        ),
+        x,
+        y,
+        radius: spec.shotRadius,
+      };
+    });
+    const facets = shots.map((shot) => {
+      const tip = (along, across) =>
+        `${shot.x + forward.x * along + side.x * across} ${shot.y + forward.y * along + side.y * across}`;
+      return path(
+        `M ${tip(21, 0)} L ${tip(-2, -5)} L ${tip(-14, -2)} M ${tip(21, 0)} L ${tip(2, 7)}`,
+        shot.opacity,
         'signal',
         2,
-        0.88,
       );
     });
     return [
       path(
-        `M ${origin.x - 31} ${origin.y - 36} L ${origin.x - 16} ${origin.y - 44} L ${origin.x + 16} ${origin.y - 10} L ${origin.x + 4} ${origin.y + 10} Z`,
+        `M ${origin.x - 27} ${origin.y - 30} L ${origin.x - 16} ${origin.y - 38} L ${origin.x + 9} ${origin.y - 17} L ${origin.x + 15} ${origin.y + 4} L ${origin.x + 3} ${origin.y + 13} L ${origin.x - 9} ${origin.y - 11} Z`,
         0.95,
-        'accent',
-        0,
-        0.85,
+        'muted',
+        2,
+        0.94,
       ),
       line(
         origin.x,
@@ -12900,6 +12920,13 @@ function primitivesFor(spec, frame) {
         'signal',
         0,
         0.9,
+      ),
+      ...facets,
+      path(
+        `M ${origin.x - 11} ${origin.y - 25} L ${origin.x + 6} ${origin.y - 12} L ${origin.x + 10} ${origin.y + 2} M ${origin.x - 3} ${origin.y - 12} L ${origin.x + 6} ${origin.y - 12}`,
+        phase === 0 ? 0.5 + prepare * 0.45 : phase === 1 ? 0.85 : 0.35 * (1 - recover),
+        'accent',
+        2,
       ),
     ];
   }
