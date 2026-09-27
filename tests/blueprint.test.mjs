@@ -532,6 +532,11 @@ test('rule-specific commitments stay visible through the response and recovery',
 });
 
 test('rotating beams keep the full player inside the arena throughout the orbit', () => {
+  const active = blueprintFrame('rotating-beams', 3);
+  assert.ok(
+    active.primitives.slice(3, 6).every((core) => core.tone === 'accent' && core.opacity > 0.8),
+  );
+  assert.equal(active.primitives.slice(6, 18).length, 12);
   for (let step = 0; step <= 600; step += 1) {
     const { player } = blueprintFrame('rotating-beams', step / 100);
     assert.ok(player.x >= 60 && player.x <= 500);

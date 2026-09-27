@@ -13287,12 +13287,51 @@ function primitivesFor(spec, frame) {
       ),
     ];
   }
-  if (mode === 'rotating')
-    return Array.from({ length: 3 }, (_, index) => {
+  if (mode === 'rotating') {
+    const arms = Array.from({ length: 3 }, (_, index) => {
       const angle = action * Math.PI * 1.25 + (index * Math.PI * 2) / 3;
       const end = polar(boss, 430, angle);
-      return line(boss.x, boss.y, end.x, end.y, active, 'signal', 28);
+      const forward = { x: Math.cos(angle), y: Math.sin(angle) };
+      const side = { x: -forward.y, y: forward.x };
+      const shards = Array.from({ length: 4 }, (_, piece) => {
+        const flow = (action * 1.1 + piece / 4) % 1;
+        const center = polar(boss, 70 + flow * 345, angle);
+        const at = (along, across) =>
+          `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+        return path(
+          `M ${at(16, 0)} L ${at(4, -8)} L ${at(-13, -6)} L ${at(-9, 8)} L ${at(3, 7)} Z`,
+          phase === 1 ? 0.78 : 0,
+          'muted',
+          1.5,
+          0.84,
+        );
+      });
+      return { end, shards };
     });
+    const halo = phase === 0 ? 0.17 + prepare * 0.18 : phase === 1 ? 0.56 : 0.56 * (1 - recover);
+    const core = phase === 1 ? 0.9 : 0;
+    return [
+      ...arms.map(({ end }) =>
+        line(boss.x, boss.y, end.x, end.y, halo, 'signal', phase === 0 ? 4 : 28),
+      ),
+      ...arms.map(({ end }) => line(boss.x, boss.y, end.x, end.y, core, 'accent', 7)),
+      ...arms.flatMap(({ shards }) => shards),
+      path(
+        `M ${boss.x - 18} ${boss.y - 5} L ${boss.x - 7} ${boss.y - 17} L ${boss.x + 9} ${boss.y - 15} L ${boss.x + 19} ${boss.y + 3} L ${boss.x + 4} ${boss.y + 18} L ${boss.x - 16} ${boss.y + 8} Z`,
+        phase === 2 ? 0.4 * (1 - recover) : 0.72 + prepare * 0.2,
+        'muted',
+        2,
+        0.85,
+      ),
+      path(
+        `M ${boss.x} ${boss.y - 10} L ${boss.x + 11} ${boss.y} L ${boss.x} ${boss.y + 10} L ${boss.x - 11} ${boss.y} Z`,
+        phase === 2 ? 0.36 * (1 - recover) : 0.75 + prepare * 0.2,
+        'accent',
+        2,
+        0.88,
+      ),
+    ];
+  }
   if (mode === 'marked') {
     const mark = point(spec.mark);
     const release = BLUEPRINT_PHASE_ENDS[0];
