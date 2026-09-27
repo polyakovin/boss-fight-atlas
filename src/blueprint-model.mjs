@@ -5412,36 +5412,30 @@ function primitivesFor(spec, frame) {
     const moving = frame.time >= BLUEPRINT_PHASE_ENDS[0] && frame.time < spec.finishAt;
     const lane = phase === 0 ? 0.36 + prepare * 0.35 : moving ? 0.28 : 0;
     return [
-      {
-        ...rect(
-          73,
-          spec.laneY - spec.collisionRadius,
-          429,
-          spec.collisionRadius * 2,
-          lane,
-          'accent',
-          0.16,
-        ),
-        width: 0,
-      },
       path(
-        `M ${spec.switchX} ${spec.laneY - 49} L ${spec.switchX + 26} ${spec.laneY} L ${spec.switchX} ${spec.laneY + 49} L ${spec.switchX - 26} ${spec.laneY} Z M ${spec.switchX} ${spec.laneY - 24} L ${spec.switchX + 12} ${spec.laneY} L ${spec.switchX} ${spec.laneY + 24} L ${spec.switchX - 12} ${spec.laneY} Z`,
+        `M 76 ${spec.laneY - 47} L 116 ${spec.laneY - 50} L 143 ${spec.laneY - 42} M 216 ${spec.laneY - 43} L 243 ${spec.laneY - 50} L 269 ${spec.laneY - 43} M 340 ${spec.laneY + 43} L 378 ${spec.laneY + 49} L 417 ${spec.laneY + 45} M 458 ${spec.laneY - 47} L 492 ${spec.laneY - 43}`,
+        lane,
+        'accent',
+        3,
+      ),
+      path(
+        `M ${spec.switchX - 36} ${spec.laneY + 8} L ${spec.switchX - 24} ${spec.laneY - 11} L ${spec.switchX - 5} ${spec.laneY - 17} L ${spec.switchX + 13} ${spec.laneY - 11} L ${spec.switchX + 32} ${spec.laneY + 5} L ${spec.switchX + 17} ${spec.laneY + 18} L ${spec.switchX - 16} ${spec.laneY + 16} Z M ${spec.switchX - 6} ${spec.laneY - 14} L ${spec.switchX + 5} ${spec.laneY + 1} L ${spec.switchX + 25} ${spec.laneY + 7}`,
         phase === 0 ? 0.45 + prepare * 0.32 : moving ? 0.84 : 0,
         accelerating ? 'signal' : 'accent',
-        0,
-        0.72,
+        2,
+        0.82,
       ),
-      ...[-25, 0, 25].map((offset, index) =>
-        line(
-          boss.x - (accelerating ? 125 : 65) + index * 12,
-          boss.y + offset,
-          boss.x - 38,
-          boss.y + offset,
+      ...[-28, 32, 7].map((offset, index) => {
+        const chipX = boss.x - (accelerating ? [116, 90, 64][index] : [73, 58, 42][index]);
+        const chipY = boss.y + offset;
+        return path(
+          `M ${chipX - 11} ${chipY + 3} L ${chipX - 2} ${chipY - 10} L ${chipX + 13} ${chipY - 3} L ${chipX + 7} ${chipY + 9} Z`,
           moving ? (accelerating ? 0.86 : 0.37) : 0,
-          accelerating ? 'signal' : 'accent',
-          accelerating ? 9 : 5,
-        ),
-      ),
+          'muted',
+          2,
+          0.82,
+        );
+      }),
     ];
   }
   if (mode === 'limited-spread') {

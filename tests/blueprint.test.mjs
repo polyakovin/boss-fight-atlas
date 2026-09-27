@@ -1432,7 +1432,7 @@ test('speed change keeps one route, accelerates at its rune, and clears the whol
     assert.equal(frame.dangerActive, time >= 1.6 && time < 3.45);
     assert.equal(frame.playerSafe, true);
     assert.equal(blueprintPointSafe(id, time, frame.boss), !frame.dangerActive);
-    assert.equal(frame.primitives[0].rectHeight, 114);
+    assert.equal(frame.primitives[0].type, 'path');
   }
   assert.equal(blueprintFrame(id, 2.79).primitives[1].tone, 'accent');
   assert.equal(blueprintFrame(id, 2.8).primitives[1].tone, 'signal');

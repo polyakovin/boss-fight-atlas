@@ -564,7 +564,7 @@ test('speed change keeps its lane while the boss accelerates past a visible rune
   await expect(boss).not.toHaveAttribute('transform', slowBoss);
   await expect(rune).not.toHaveAttribute('class', quietRune);
   await seek(3450);
-  await expect(widget.locator('[data-blueprint-primitive="2"] line')).toHaveAttribute(
+  await expect(widget.locator('[data-blueprint-primitive="2"] path')).toHaveAttribute(
     'opacity',
     '0',
   );
