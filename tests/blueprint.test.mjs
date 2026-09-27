@@ -2860,7 +2860,11 @@ test('sound detection commits to an audible event instead of the live player pos
   assert.equal(active.playerSafe, true);
   assert.equal(blueprintPointSafe(id, 3.05, { x: 380, y: 650 }), false);
   assert.equal(blueprintPointSafe(id, 3.05, { x: 480, y: 790 }), true);
-  assert.ok(active.primitives[12].opacity > 0.8, 'the attack stays on the stale sound source');
+  assert.ok(active.primitives[12].opacity > 0, 'the attack stays on the stale sound source');
+  assert.ok(active.primitives[16].opacity > 0, 'the strike cracks stone at the heard point');
+  assert.ok(active.primitives[17].opacity > 0, 'the impact scatters broken rock');
+  assert.ok(active.primitives[18].opacity > 0, 'the boss drives a stone fist toward the source');
+  assert.ok(active.primitives[19].opacity > 0, 'the crater has a broken stone perimeter');
 
   const punish = blueprintFrame(id, 4.28);
   assert.equal(punish.punishStrike, true);

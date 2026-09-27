@@ -7746,10 +7746,16 @@ function primitivesFor(spec, frame) {
     const soundOpacity = frame.soundDetectionNoiseVisible ? 0.84 * (1 - wave * 0.68) : 0;
     return [
       path('M 62 360 L 150 342 L 238 360 L 212 378 H 88 Z', 0.65, 'muted', 0, 0.78),
-      path('M 58 555 H 258 V 742 H 508 V 832 H 58 Z', 0.82, 'safe', 0, 0.22),
       path(
-        'M 75 583 H 238 M 75 623 H 238 M 75 663 H 238 M 75 703 H 238 M 75 743 H 238 M 276 771 H 488 M 276 803 H 488',
-        0.32,
+        'M 65 649 Q 71 623 89 629 Q 111 606 128 628 Q 153 611 170 637 Q 182 659 165 672 Q 139 683 119 667 Q 96 691 74 675 Z M 81 701 Q 100 684 117 698 Q 137 679 153 699 Q 173 693 178 714 Q 164 737 140 727 Q 120 744 101 726 Q 84 733 76 719 Z M 183 648 Q 191 619 211 626 Q 233 608 248 639 Q 263 656 243 675 Q 222 682 208 670 Q 191 683 183 662 Z M 188 708 Q 209 689 229 700 Q 245 691 259 715 Q 248 737 228 731 Q 206 744 191 726 Z M 271 727 Q 289 707 306 718 Q 323 708 336 728 Q 324 750 302 742 Q 283 755 269 741 Z M 351 754 Q 364 731 382 742 Q 399 728 414 753 Q 405 778 382 768 Q 361 781 347 763 Z M 433 779 Q 448 755 467 772 Q 488 771 494 797 Q 480 818 459 806 Q 442 823 428 803 Z',
+        0.82,
+        'safe',
+        0,
+        0.2,
+      ),
+      path(
+        'M 79 587 L 100 577 L 115 590 M 167 601 L 183 581 L 205 591 M 88 645 L 111 631 L 127 646 M 176 676 L 193 655 L 219 672 M 75 722 L 98 706 L 116 722 M 286 771 L 309 757 L 326 773 M 368 788 L 389 771 L 408 783 M 442 804 L 463 785 L 480 803',
+        0.3,
         'muted',
         3,
       ),
@@ -7789,10 +7795,10 @@ function primitivesFor(spec, frame) {
         sound.x,
         sound.y,
         spec.dangerRadius,
-        active ? 0.86 : frame.soundDetectionSourceLocked ? 0.42 : 0,
+        active ? 0.3 : frame.soundDetectionSourceLocked ? 0.25 : 0,
         active ? 'signal' : 'accent',
-        0,
-        active ? 0.48 : 0.24,
+        2,
+        active ? 0.05 : 0.03,
       ),
       path('M 453 828 L 475 816 L 514 828 L 503 846 H 457 Z', 0.58, 'muted', 0, 0.78),
       path(
@@ -7807,6 +7813,33 @@ function primitivesFor(spec, frame) {
         'signal',
         0,
         0.88,
+      ),
+      path(
+        `M ${sound.x - 56} ${sound.y - 23} L ${sound.x - 31} ${sound.y - 14} L ${sound.x - 9} ${sound.y - 31} L ${sound.x + 7} ${sound.y - 7} L ${sound.x + 35} ${sound.y - 25} M ${sound.x - 13} ${sound.y - 3} L ${sound.x - 45} ${sound.y + 24} M ${sound.x + 12} ${sound.y + 10} L ${sound.x + 44} ${sound.y + 32} M ${sound.x - 4} ${sound.y + 23} L ${sound.x - 12} ${sound.y + 54}`,
+        active ? 0.92 : 0,
+        'signal',
+        4,
+      ),
+      path(
+        `M ${sound.x - 43} ${sound.y - 22} L ${sound.x - 31} ${sound.y - 38} L ${sound.x - 18} ${sound.y - 20} L ${sound.x - 33} ${sound.y - 11} Z M ${sound.x + 26} ${sound.y - 35} L ${sound.x + 42} ${sound.y - 45} L ${sound.x + 50} ${sound.y - 21} L ${sound.x + 34} ${sound.y - 16} Z M ${sound.x + 37} ${sound.y + 29} L ${sound.x + 54} ${sound.y + 15} L ${sound.x + 60} ${sound.y + 37} L ${sound.x + 47} ${sound.y + 47} Z`,
+        active ? 0.84 : 0,
+        'muted',
+        2,
+        0.88,
+      ),
+      path(
+        `M ${frame.boss.x + 17} ${frame.boss.y + 13} L ${frame.boss.x + 31} ${frame.boss.y + 4} L ${sound.x + 7} ${sound.y - 17} L ${sound.x + 18} ${sound.y - 4} L ${sound.x + 3} ${sound.y + 7} L ${frame.boss.x + 29} ${frame.boss.y + 25} Z`,
+        active ? 0.9 : 0,
+        'muted',
+        3,
+        0.95,
+      ),
+      path(
+        `M ${sound.x - 67} ${sound.y - 21} L ${sound.x - 54} ${sound.y - 49} L ${sound.x - 24} ${sound.y - 64} L ${sound.x + 7} ${sound.y - 72} L ${sound.x + 33} ${sound.y - 58} L ${sound.x + 60} ${sound.y - 35} L ${sound.x + 72} ${sound.y - 5} L ${sound.x + 62} ${sound.y + 27} L ${sound.x + 36} ${sound.y + 59} L ${sound.x + 4} ${sound.y + 70} L ${sound.x - 28} ${sound.y + 61} L ${sound.x - 53} ${sound.y + 39} Z`,
+        active ? 0.9 : 0,
+        'signal',
+        4,
+        0.03,
       ),
     ];
   }
