@@ -6594,6 +6594,36 @@ function primitivesFor(spec, frame) {
         0,
         0.84,
       ),
+      ...spec.hazards.flatMap(({ center, preview: previewWindow, active }, index) => {
+        const [x, y] = center;
+        const previewing = frame.time >= previewWindow[0] && frame.time < active[0];
+        const activeNow = frame.time >= active[0] && frame.time < active[1];
+        const buildup = clamp((frame.time - previewWindow[0]) / (active[0] - previewWindow[0]));
+        const visible = activeNow ? 0.96 : previewing ? 0.48 + buildup * 0.3 : 0;
+        const chips = Array.from({ length: 6 }, (_, piece) => {
+          const angle = (piece * Math.PI) / 3 + [0.08, -0.05, 0.11, -0.1, 0.04, -0.07][piece];
+          const distance = 48 + ((index + piece * 3) % 5) * 5;
+          const stone = polar({ x, y }, distance, angle);
+          const size = 7 + ((index * 2 + piece) % 4) * 2;
+          return `M ${stone.x - size} ${stone.y + 5} L ${stone.x - size * 0.3} ${stone.y - size} L ${stone.x + size * 0.45} ${stone.y - size * 0.7} L ${stone.x + size} ${stone.y + 4} Z`;
+        }).join(' ');
+        return [
+          path(
+            `M ${x - 21} ${y + 15} L ${x - 16} ${y - 6} L ${x - 4} ${y - 20} L ${x + 7} ${y - 12} L ${x + 17} ${y - 18} L ${x + 22} ${y + 12} L ${x + 4} ${y + 21} Z`,
+            visible,
+            'muted',
+            2,
+            0.9,
+          ),
+          path(
+            `M ${x - 4} ${y - 17} L ${x + 3} ${y - 2} L ${x + 19} ${y + 11} M ${x + 3} ${y - 2} L ${x - 15} ${y + 9}`,
+            visible * (activeNow ? 1 : 0.58),
+            activeNow ? 'signal' : 'accent',
+            2,
+          ),
+          path(chips, activeNow ? 0.92 : 0, 'muted', 2, 0.88),
+        ];
+      }),
     ];
   }
   if (mode === 'teleport') {

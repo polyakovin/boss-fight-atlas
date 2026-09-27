@@ -1851,6 +1851,9 @@ test('survival phase keeps damage irrelevant until all four timed pulses are cle
     await expect(
       widget.locator(`[data-blueprint-primitive="${5 + Number(hazard)}"] circle`),
     ).not.toHaveAttribute('opacity', '0');
+    await expect(
+      widget.locator(`[data-blueprint-primitive="${14 + Number(hazard) * 3}"] path`),
+    ).not.toHaveAttribute('opacity', '0');
   }
 
   await seek(4350);
