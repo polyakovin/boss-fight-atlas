@@ -12926,26 +12926,60 @@ function primitivesFor(spec, frame) {
   if (mode === 'homing') {
     const lockedTarget = { x: 400, y: 650 };
     const control = { x: 500, y: 350 };
+    const emitter = { x: boss.x + 38, y: boss.y + 10 };
     const cutoff = 0.72;
     const trackedProgress = clamp(action / cutoff);
-    const trackedHead = quadraticPoint(boss, control, lockedTarget, trackedProgress);
+    const trackedHead = quadraticPoint(emitter, control, lockedTarget, trackedProgress);
     const overshoot = clamp((action - cutoff) / (1 - cutoff));
     const head = {
       x: trackedHead.x - overshoot * 62,
       y: trackedHead.y + overshoot * 178,
     };
     const trailControl = {
-      x: mix(boss.x, control.x, trackedProgress),
-      y: mix(boss.y, control.y, trackedProgress),
+      x: mix(emitter.x, control.x, trackedProgress),
+      y: mix(emitter.y, control.y, trackedProgress),
     };
+    const tangent =
+      action < cutoff
+        ? {
+            x:
+              2 * (1 - trackedProgress) * (control.x - emitter.x) +
+              2 * trackedProgress * (lockedTarget.x - control.x),
+            y:
+              2 * (1 - trackedProgress) * (control.y - emitter.y) +
+              2 * trackedProgress * (lockedTarget.y - control.y),
+          }
+        : { x: -62, y: 178 };
+    const heading = Math.atan2(tangent.y, tangent.x);
+    const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+    const side = { x: -forward.y, y: forward.x };
+    const tip = (along, across) =>
+      `${head.x + forward.x * along + side.x * across} ${head.y + forward.y * along + side.y * across}`;
     return [
       path(
-        `M ${boss.x} ${boss.y} Q ${trailControl.x} ${trailControl.y} ${trackedHead.x} ${trackedHead.y}${overshoot ? ` L ${head.x} ${head.y}` : ''}`,
-        phase === 1 ? 0.42 : active * 0.2,
-        'signal',
-        5,
+        `M ${emitter.x} ${emitter.y} Q ${trailControl.x} ${trailControl.y} ${trackedHead.x} ${trackedHead.y}${overshoot ? ` L ${head.x} ${head.y}` : ''}`,
+        phase === 1 ? 0.38 : 0,
+        'accent',
+        3,
       ),
-      circle(head.x, head.y, 16, active, 'signal', 2, 0.88),
+      {
+        ...path(
+          `M ${tip(22, 0)} L ${tip(3, -12)} L ${tip(-13, -10)} L ${tip(-19, 2)} L ${tip(-8, 12)} L ${tip(6, 10)} Z`,
+          phase === 0 ? 0.68 + prepare * 0.28 : active,
+          'muted',
+          2,
+          0.94,
+        ),
+        x: head.x,
+        y: head.y,
+        radius: 22,
+      },
+      path(
+        `M ${tip(22, 0)} L ${tip(0, -2)} L ${tip(-8, 12)} M ${tip(0, -2)} L ${tip(-13, -10)}`,
+        phase === 0 ? 0.72 : active,
+        'signal',
+        2,
+      ),
     ];
   }
   if (mode === 'beam') {
