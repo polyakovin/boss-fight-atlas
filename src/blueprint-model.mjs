@@ -7684,7 +7684,24 @@ function primitivesFor(spec, frame) {
     const laneLength = Math.hypot(laneEnd.x - source.x, laneEnd.y - source.y);
     const sideX = ((laneEnd.y - source.y) / laneLength) * spec.laneHalfWidth;
     const sideY = ((source.x - laneEnd.x) / laneLength) * spec.laneHalfWidth;
-    const lane = `M ${source.x + sideX} ${source.y + sideY} L ${laneEnd.x + sideX} ${laneEnd.y + sideY} L ${laneEnd.x - sideX} ${laneEnd.y - sideY} L ${source.x - sideX} ${source.y - sideY} Z`;
+    const gougePoints = [
+      [0, 1, 0],
+      [0.2, 1, -5],
+      [0.42, 1, 4],
+      [0.64, 1, -4],
+      [0.82, 1, 5],
+      [1, 1, 0],
+      [1, -1, 0],
+      [0.82, -1, -4],
+      [0.64, -1, 5],
+      [0.42, -1, -3],
+      [0.2, -1, 4],
+      [0, -1, 0],
+    ].map(
+      ([progress, side, offset]) =>
+        `${Math.round(source.x + (laneEnd.x - source.x) * progress + sideX * side + offset)} ${Math.round(source.y + (laneEnd.y - source.y) * progress + sideY * side + offset)}`,
+    );
+    const gouge = `M ${gougePoints.join(' L ')} Z`;
     return [
       path('M 48 105 L 281 88 L 516 110 L 520 853 L 274 881 L 43 848 Z', 0.5, 'muted', 0, 0.32),
       path('M 50 119 L 272 103 L 281 336 L 49 344 Z', 0.42, 'muted', 0, 0.54),
@@ -7698,7 +7715,7 @@ function primitivesFor(spec, frame) {
       path('M 285 703 L 516 724 L 519 846 L 279 873 Z', 0.35, 'muted', 0, 0.48),
       path(
         'M 99 182 L 118 174 L 138 184 M 407 220 L 428 211 L 448 222 M 93 376 L 110 369 L 126 378 M 412 387 L 431 379 L 448 389 M 91 777 L 111 769 L 129 779',
-        0.3,
+        0,
         'accent',
         4,
       ),
@@ -7724,8 +7741,8 @@ function primitivesFor(spec, frame) {
         0,
         0.76,
       ),
-      path(lane, frame.invisibilitySourceLocked ? 0.42 : 0, 'accent', 0, 0.38),
-      path(lane, frame.invisibilityAttackActive ? 0.9 : 0, 'signal', 0, 0.68),
+      path(gouge, frame.invisibilitySourceLocked ? 0.42 : 0, 'accent', 2, 0.12),
+      path(gouge, frame.invisibilityAttackActive ? 0.9 : 0, 'muted', 2, 0.34),
       path(
         `M ${source.x - 38} ${source.y - 12} L ${source.x - 16} ${source.y - 30} L ${source.x - 12} ${source.y - 6} Z M ${source.x + 13} ${source.y + 3} L ${source.x + 42} ${source.y - 9} L ${source.x + 23} ${source.y + 19} Z`,
         frame.invisibilityRevealVisible ? 0.86 : 0,
@@ -7735,6 +7752,26 @@ function primitivesFor(spec, frame) {
       ),
       line(frame.player.x, frame.player.y, frame.boss.x, frame.boss.y, strike, 'safe', 10),
       circle(frame.boss.x + 26, frame.boss.y - 16, 12 + strike * 24, strike, 'safe', 7, 0.14),
+      path(
+        'M 382 537 L 350 576 L 323 607 L 294 644 L 261 681 L 230 715 L 202 751 L 174 785 L 136 823 M 354 573 L 329 573 L 320 599 M 263 681 L 289 680 L 296 652 M 201 752 L 175 745 L 169 765',
+        frame.invisibilityAttackActive ? 0.94 : 0,
+        'signal',
+        4,
+      ),
+      path(
+        'M 341 574 L 355 559 L 363 579 L 349 590 Z M 283 659 L 299 642 L 309 663 L 293 678 Z M 223 730 L 237 714 L 248 736 L 231 749 Z M 157 801 L 171 782 L 183 805 L 165 818 Z',
+        frame.invisibilityAttackActive ? 0.84 : 0,
+        'muted',
+        2,
+        0.88,
+      ),
+      path(
+        `M ${source.x - 27} ${source.y + 14} L ${source.x - 9} ${source.y - 7} L ${source.x + 7} ${source.y - 3} L ${source.x + 10} ${source.y + 16} L ${source.x - 4} ${source.y + 39} L ${source.x - 24} ${source.y + 43} L ${source.x - 34} ${source.y + 31} Z`,
+        frame.invisibilityAttackActive ? 0.78 : 0,
+        'muted',
+        3,
+        0.9,
+      ),
     ];
   }
   if (mode === 'sound-detection') {

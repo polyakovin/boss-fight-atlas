@@ -2790,6 +2790,7 @@ test('invisibility preserves a continuous hidden body through bounded secondary 
   assert.equal(tracking.invisibilityCueCount, 3);
   assert.equal(tracking.bossVisible, 0);
   assert.ok(tracking.primitives[13].opacity > 0.8, 'the newest footprint is strongly visible');
+  assert.equal(tracking.primitives[10].opacity, 0, 'unrelated floor chevrons stay hidden');
 
   const locked = blueprintFrame(id, 2.4);
   assert.equal(locked.invisibilitySourceLocked, true);
@@ -2802,6 +2803,8 @@ test('invisibility preserves a continuous hidden body through bounded secondary 
   assert.equal(blueprintPointSafe(id, 2.9, { x: 300, y: 625 }), false);
   assert.equal(blueprintPointSafe(id, 2.9, { x: 470, y: 710 }), true);
   assert.ok(active.primitives[19].opacity > 0.8, 'the hidden strike activates only its lane');
+  assert.ok(active.primitives[23].opacity > 0.9, 'the invisible charge gouges the stone');
+  assert.ok(active.primitives[24].opacity > 0, 'the gouge scatters rock fragments');
 
   const reveal = blueprintFrame(id, 3.25);
   assert.equal(reveal.invisibilityRevealVisible, true);
