@@ -1434,6 +1434,12 @@ test('attack combination keeps a held hammer through both strikes and recovery',
   }
   assert.notEqual(frames[1].primitives[3].data, frames[2].primitives[3].data);
   assert.notEqual(frames[2].primitives[3].data, frames[3].primitives[3].data);
+  assert.ok(frames[1].primitives[4].opacity > 0, 'the held hammer has a carved seam');
+  const sweep = blueprintFrame(id, 1.9);
+  const slam = blueprintFrame(id, 2.8);
+  assert.ok(sweep.primitives[5].opacity > 0, 'stone chips follow the first sweep');
+  assert.equal(sweep.primitives[20].opacity, 0, 'the second ring waits for the slam');
+  assert.ok(slam.primitives[20].opacity > 0, 'the slam scatters a separate stone ring');
 });
 
 test('speed change keeps one route, accelerates at its rune, and clears the whole player', () => {
