@@ -658,6 +658,17 @@ test('boss builder persists a local draft and downloads portable JSON', async ({
   ).toHaveCount(124);
   await expect(page.locator('.boss-builder-mechanic [data-blueprint-preview]')).toHaveCount(118);
   await expect(page.locator('.boss-builder-mechanic [data-pattern-preview]')).toHaveCount(5);
+  expect(
+    await page.locator('.boss-builder-mechanic__diagram svg').evaluateAll((previews) =>
+      previews.every((preview) => {
+        const diagram = preview.parentElement.getBoundingClientRect();
+        return (
+          preview.viewBox.baseVal.height > preview.viewBox.baseVal.width &&
+          diagram.height > diagram.width
+        );
+      }),
+    ),
+  ).toBe(true);
   await expect(page.locator('[data-boss-filter]')).toHaveCount(5);
   await page.locator('[data-boss-filter="geometry"]').selectOption('radial');
   const radialCount = await page.locator('.boss-builder-mechanic:visible').count();
@@ -1164,8 +1175,8 @@ test('the root defaults to English and localized catalogs point to real pages', 
     expect(builder.status()).toBe(200);
     expect(await builder.text()).toContain('data-boss-builder');
   }
-  await expect(page.locator('.site-footer')).toContainText(
-    'Interactive pattern library for boss encounter designers',
+  await expect(page.locator('.site-footer .legal')).toContainText(
+    'Original text and illustrations',
   );
   await expect(page.locator('.catalog-hero h1')).toHaveText(
     'Turn a boss idea into a fight players can read and master',

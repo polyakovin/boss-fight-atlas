@@ -5,7 +5,6 @@
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
 }
 :root[dir='rtl'] .blueprint-demo {
   --blueprint-progress-direction: to left;
@@ -70,7 +69,6 @@
   min-height: 24px;
   padding: 0.15rem 0.2rem 0.25rem;
   color: var(--accent);
-  border-radius: 3px;
   font-size: 0.68rem;
   font-weight: 700;
   line-height: 1.15;
@@ -97,7 +95,6 @@
   color: var(--paper);
   background: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 7px;
   box-shadow: 0 8px 24px var(--shadow);
   font-size: 0.68rem;
   font-weight: 450;
@@ -144,7 +141,7 @@
     var(--accent) 0 var(--blueprint-progress),
     var(--line) var(--blueprint-progress) 100%
   );
-  border-radius: 999px;
+  border-radius: 0;
 }
 .blueprint-demo__timeline input::-webkit-slider-thumb {
   appearance: none;
@@ -153,25 +150,25 @@
   margin-top: -4px;
   background: var(--accent);
   border: 2px solid var(--surface);
-  border-radius: 50%;
+  border-radius: 0;
   box-shadow: 0 0 0 1px var(--accent);
 }
 .blueprint-demo__timeline input::-moz-range-track {
   height: 4px;
   background: var(--line);
-  border-radius: 999px;
+  border-radius: 0;
 }
 .blueprint-demo__timeline input::-moz-range-progress {
   height: 4px;
   background: var(--accent);
-  border-radius: 999px;
+  border-radius: 0;
 }
 .blueprint-demo__timeline input::-moz-range-thumb {
   width: 8px;
   height: 8px;
   background: var(--accent);
   border: 2px solid var(--surface);
-  border-radius: 50%;
+  border-radius: 0;
 }
 .blueprint-demo__entity-label {
   fill: var(--diagram-boss-label);
@@ -197,7 +194,6 @@
   padding: 0.55rem 0.7rem;
   color: var(--muted);
   background: var(--accent-soft);
-  border-radius: 5px;
   font-size: 0.7rem;
   line-height: 1.45;
 }
@@ -221,16 +217,13 @@
   margin-bottom: 18px;
 }
 .wip-blueprint-animation > header h2 {
-  margin: 6px 0 0;
+  margin: 0;
   font-size: clamp(25px, 3vw, 38px);
 }
 .wip-blueprint-animation .blueprint-demo {
   width: min(680px, 100%);
 }
 @media (max-width: 650px) {
-  .blueprint-demo {
-    border-radius: 12px;
-  }
   .blueprint-demo__scene-timeline {
     inset: auto 0.65rem 0.75rem;
   }

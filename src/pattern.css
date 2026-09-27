@@ -5,7 +5,6 @@
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
 }
 :root[dir='rtl'] .pattern-demo {
   --pattern-progress-direction: to left;
@@ -78,7 +77,6 @@
   min-height: 24px;
   padding: 0.15rem 0.2rem 0.25rem;
   color: var(--accent);
-  border-radius: 3px;
   font-size: 0.68rem;
   line-height: 1.15;
   font-weight: 700;
@@ -105,7 +103,6 @@
   color: var(--paper);
   background: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 7px;
   box-shadow: 0 8px 24px var(--shadow);
   font-size: 0.68rem;
   font-weight: 450;
@@ -151,7 +148,7 @@
     var(--accent) 0 var(--pattern-progress),
     var(--line) var(--pattern-progress) 100%
   );
-  border-radius: 999px;
+  border-radius: 0;
 }
 .pattern-demo__timeline input::-webkit-slider-thumb {
   appearance: none;
@@ -160,39 +157,35 @@
   margin-top: -4px;
   background: var(--accent);
   border: 2px solid var(--surface);
-  border-radius: 50%;
+  border-radius: 0;
   box-shadow: 0 0 0 1px var(--accent);
 }
 .pattern-demo__timeline input::-moz-range-track {
   height: 4px;
   background: var(--line);
-  border-radius: 999px;
+  border-radius: 0;
 }
 .pattern-demo__timeline input::-moz-range-progress {
   height: 4px;
   background: var(--accent);
-  border-radius: 999px;
+  border-radius: 0;
 }
 .pattern-demo__timeline input::-moz-range-thumb {
   width: 8px;
   height: 8px;
   background: var(--accent);
   border: 2px solid var(--surface);
-  border-radius: 50%;
+  border-radius: 0;
 }
 .pattern-demo__motion-note {
   margin: 0.5rem;
   padding: 0.55rem 0.7rem;
   color: var(--muted);
   background: var(--accent-soft);
-  border-radius: 5px;
   font-size: 0.7rem;
   line-height: 1.45;
 }
 @media (max-width: 650px) {
-  .pattern-demo {
-    border-radius: 12px;
-  }
   .pattern-demo__canvas {
     padding-inline: 0;
   }

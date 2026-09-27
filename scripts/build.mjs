@@ -240,10 +240,9 @@ function shell(
             class="brand footer-brand"
             href="${link(locale.code + '/')}"
             aria-label="Boss Fight Atlas"
-            >${logoMark()}<span class="brand-wordmark">Boss Fight <b>Atlas</b></span></a
+          >${logoMark()}<span class="brand-wordmark">Boss Fight <b>Atlas</b></span></a
           >
           <div class="footer-copy">
-            <p>${e(t.tagline)}</p>
             <p class="legal">
               <a href="${REPOSITORY}/blob/main/LICENSE-CONTENT.md">${e(t.license)}</a>
             </p>
@@ -541,10 +540,10 @@ function renderLessonBody(
     </main>
   </div>`;
 }
-function mechanicThumbnail(entry, id) {
+function mechanicThumbnail(entry, id, options) {
   if (entry.mechanic?.meta.animation)
-    return animations[entry.mechanic.meta.animation].thumbnail(id);
-  if (entry.profile) return renderBlueprintThumbnail(entry.id, id);
+    return animations[entry.mechanic.meta.animation].thumbnail(id, options);
+  if (entry.profile) return renderBlueprintThumbnail(entry.id, id, options);
   return '<span>WIP</span>';
 }
 function draftExampleSection(items, locale, t) {
@@ -640,7 +639,6 @@ function draftAnimationSection(entry, locale) {
   };
   return /* HTML */ `<section class="wip-blueprint-animation" ${fallbackAttributes}>
     <header>
-      <span class="eyebrow">${e(labels.blueprintTitle)}</span>
       <h2>${e(labels.animationTitle)}</h2>
     </header>
     ${renderBlueprint(demo, entry.id)}
@@ -658,7 +656,6 @@ function renderLensCards(localeCode, t) {
         href="${link(`${localeCode}/lenses/${lens.meta.id}/`)}"
       >
         ${renderLensVisual(lens.meta.id, content, { compact: true })}
-        <span class="eyebrow">${e(t.lensLabel)}</span>
         <h2>${e(content.title)} ${icon('arrow-right', { className: 'icon--directional' })}</h2>
         <p>${e(content.summary)}</p>
         <span class="lens-card__count">${e(t.lensMechanicsTitle)} · ${mechanicCount}</span>
@@ -700,7 +697,6 @@ function renderAbout(locale, t) {
   return /* HTML */ `<main id="main" class="about-main">
     <article class="about-page">
       <header class="about-hero">
-        <span class="eyebrow">${e(t.aboutEyebrow)}</span>
         <h1>${e(t.aboutTitle)}</h1>
         <p>${e(t.aboutIntro)}</p>
       </header>
@@ -722,7 +718,6 @@ function renderAbout(locale, t) {
       </section>
       <section class="about-prototype" aria-labelledby="about-prototype-title">
         <header>
-          <span class="eyebrow">${e(t.builder)}</span>
           <h2 id="about-prototype-title">${e(story.prototypeTitle)}</h2>
           <p>${e(story.prototypeIntro)}</p>
         </header>
@@ -745,7 +740,6 @@ function renderAbout(locale, t) {
       </section>
       <section class="about-resources" aria-labelledby="about-resources-title">
         <div>
-          <span class="eyebrow">${e(t.sources)}</span>
           <h2 id="about-resources-title">${e(story.alternativesTitle)}</h2>
           <p>${e(story.alternativesBody)}</p>
         </div>
@@ -769,7 +763,6 @@ function renderAbout(locale, t) {
       </section>
       <section class="about-approach" aria-labelledby="about-approach-title">
         <header>
-          <span class="eyebrow">Boss Fight Atlas</span>
           <h2 id="about-approach-title">${e(t.aboutApproachTitle)}</h2>
         </header>
         <div class="about-principles">
@@ -788,7 +781,6 @@ function renderAbout(locale, t) {
       </section>
       <section class="about-contact" aria-labelledby="about-contact-title">
         <div>
-          <span class="eyebrow">${e(AUTHOR.name)}</span>
           <h2 id="about-contact-title">${e(t.aboutContactTitle)}</h2>
           <p>${e(t.aboutContactBody)}</p>
         </div>
@@ -933,7 +925,6 @@ for (const locale of locales) {
   const body = /* HTML */ `<main id="main" class="catalog-main">
     <section class="catalog-hero">
       <div class="catalog-hero__copy">
-        <span class="eyebrow">${e(t.tagline)}</span>
         <h1>${e(t.indexTitle)}</h1>
         <p class="lead">${e(t.indexSubtitle)}</p>
         <div class="catalog-hero__actions">
@@ -944,20 +935,12 @@ for (const locale of locales) {
             >${e(t.builder)}</a
           >
         </div>
-        <ul class="catalog-hero__features" aria-label="${e(t.siteMapTitle)}">
-          <li>${e(t.simulationNavTitle)}</li>
-          <li>${e(t.concepts)}</li>
-          <li>${e(t.examples)}</li>
-        </ul>
       </div>
       <a
         class="catalog-hero__lesson"
         href="${link(`${locale.code}/mechanics/charge/`)}"
         aria-label="${e(`${t.readLesson}: ${featuredLesson.title}`)}"
       >
-        <span class="catalog-hero__lesson-label"
-          >${e(t.mechanicLabel)} · ${e(featuredMechanic.number)}</span
-        >
         <div class="catalog-hero__lesson-heading">
           <div>
             <h2>${e(featuredLesson.title)}</h2>
@@ -977,7 +960,6 @@ for (const locale of locales) {
     </section>
     <section class="catalog-workflow" aria-labelledby="catalog-workflow-title">
       <header class="catalog-workflow__heading">
-        <span class="eyebrow">Boss Fight Atlas</span>
         <h2 id="catalog-workflow-title">${e(t.siteMapTitle)}</h2>
         <p>${e(t.siteMapIntro)}</p>
       </header>
@@ -1006,7 +988,6 @@ for (const locale of locales) {
         />
       </figure>
       <div class="catalog-guides__copy">
-        <span class="eyebrow">Tavi &amp; Kern</span>
         <h2 id="catalog-guides-title">${e(t.indexGuidesTitle)}</h2>
         <p>${e(t.indexGuidesBody)}</p>
       </div>
@@ -1096,7 +1077,7 @@ for (const locale of locales) {
             class="boss-builder-mechanic__diagram${entry.isWip ? ' boss-builder-mechanic__diagram--wip' : ''}"
             aria-hidden="true"
           >
-            ${mechanicThumbnail(entry, `builder-${locale.code}-${entry.id}`)}
+            ${mechanicThumbnail(entry, `builder-${locale.code}-${entry.id}`, { portrait: true })}
           </span>
           <span class="boss-builder-mechanic__copy">
             <span class="eyebrow">${e(entry.category)}</span>
@@ -1138,7 +1119,6 @@ for (const locale of locales) {
   };
   const builderBody = /* HTML */ `<main id="main" class="boss-builder-main" data-boss-builder>
     <header class="boss-builder-hero">
-      <span class="eyebrow">${e(t.builder)}</span>
       <h1>${e(t.builderTitle)}</h1>
       <p>${e(t.builderIntro)}</p>
       <span class="boss-builder-storage">${e(t.builderStorageNote)}</span>
@@ -1194,7 +1174,6 @@ for (const locale of locales) {
       <section class="boss-builder-mechanics" aria-labelledby="boss-builder-mechanics-title">
         <div class="boss-builder-mechanics__heading">
           <div>
-            <span class="eyebrow">${e(t.builderSelected)}</span>
             <h2 id="boss-builder-mechanics-title">${e(connectionCopy.explorerTitle)}</h2>
           </div>
           <span data-boss-selected>${e(t.builderSelected)}: 0</span>
@@ -1343,7 +1322,6 @@ for (const locale of locales) {
           <span>WIP</span>
         </div>
         <div>
-          <span class="eyebrow">${e(t.builder)}</span>
           <h2>${e(t.builderTitle)}</h2>
           <p>${e(t.builderIntro)}</p>
           <a class="wip-builder-link" href="${link(`${locale.code}/builder/`)}">
@@ -1367,7 +1345,6 @@ for (const locale of locales) {
   }
   const lensCatalogBody = /* HTML */ `<main id="main" class="lens-catalog-main">
     <header class="lens-catalog-hero">
-      <span class="eyebrow">${e(t.concepts)}</span>
       <h1>${e(t.conceptsTitle)}</h1>
       <p>${e(t.conceptsIntro)}</p>
     </header>
@@ -1413,7 +1390,6 @@ for (const locale of locales) {
       <article class="lens-page">
         <header class="lens-page__hero">
           <div class="lens-page__copy">
-            <span class="eyebrow">${e(t.lensLabel)}</span>
             <h1>${e(content.title)}</h1>
             <p>${e(content.summary)}</p>
           </div>
@@ -1437,7 +1413,6 @@ for (const locale of locales) {
         ${
           mechanicLinks
             ? `<section class="lens-page__mechanics" aria-labelledby="lens-mechanics-title">
-                <span class="eyebrow">${e(t.catalog)}</span>
                 <h2 id="lens-mechanics-title">${e(t.lensMechanicsTitle)}</h2>
                 <div>${mechanicLinks}</div>
               </section>`
@@ -1445,12 +1420,12 @@ for (const locale of locales) {
         }
         ${
           relatedLinks
-            ? `<nav class="lens-page__related" aria-label="${e(t.relatedTitle)}"><span class="eyebrow">${e(t.relatedTitle)}</span><div class="lens-chips">${relatedLinks}</div></nav>`
+            ? `<nav class="lens-page__related" aria-label="${e(t.relatedTitle)}"><h2>${e(t.relatedTitle)}</h2><div class="lens-chips">${relatedLinks}</div></nav>`
             : ''
         }
         ${
           lens.meta.sources.length
-            ? `<section class="sources lens-page__sources"><span class="eyebrow">${e(t.sources)}</span><h2>${e(t.sources)}</h2><ul>${lens.meta.sources.map((source) => `<li><a href="${e(source.url)}">${e(source.title)}${icon('external-link', { className: 'icon--external' })}</a></li>`).join('')}</ul></section>`
+            ? `<section class="sources lens-page__sources"><h2>${e(t.sources)}</h2><ul>${lens.meta.sources.map((source) => `<li><a href="${e(source.url)}">${e(source.title)}${icon('external-link', { className: 'icon--external' })}</a></li>`).join('')}</ul></section>`
             : ''
         }
         <p class="review-note lens-page__review">
@@ -1515,7 +1490,6 @@ const languageGatewayHtml = /* HTML */ `<!doctype html>
       ${themeButton('Switch to dark theme', 'Switch to light theme')}
       <main id="main">
         ${logoMark('brand-mark brand-mark--gateway')}
-        <p class="eyebrow">THE INTERACTIVE FIELD GUIDE</p>
         <h1>Boss Fight<br /><em>Atlas.</em></h1>
         <p class="lead">Interactive pattern library for boss encounter designers</p>
         <nav class="language-choices" aria-label="Choose a language">${languageLinks}</nav>

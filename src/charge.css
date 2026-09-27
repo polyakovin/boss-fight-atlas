@@ -9,7 +9,6 @@
   color: var(--charge-ink);
   background: var(--surface);
   border: 1px solid var(--charge-border);
-  border-radius: 18px;
   display: flex;
   flex-direction: column;
 }
@@ -110,7 +109,6 @@
   color: var(--charge-accent);
   background: transparent;
   border: 0;
-  border-radius: 3px;
   font-size: 0.68rem;
   line-height: 1.15;
   font-weight: 700;
@@ -132,7 +130,6 @@
   color: var(--paper);
   background: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 7px;
   box-shadow: 0 8px 24px var(--shadow);
   font-size: 0.68rem;
   font-weight: 450;
@@ -179,7 +176,7 @@
     var(--charge-accent) 0 var(--charge-progress),
     var(--line) var(--charge-progress) 100%
   );
-  border-radius: 999px;
+  border-radius: 0;
 }
 .charge-demo__timeline input[type='range']::-webkit-slider-thumb {
   appearance: none;
@@ -188,32 +185,31 @@
   margin-top: -4px;
   background: var(--charge-accent);
   border: 2px solid var(--surface);
-  border-radius: 50%;
+  border-radius: 0;
   box-shadow: 0 0 0 1px var(--charge-accent);
 }
 .charge-demo__timeline input[type='range']::-moz-range-track {
   height: 4px;
   background: var(--line);
-  border-radius: 999px;
+  border-radius: 0;
 }
 .charge-demo__timeline input[type='range']::-moz-range-progress {
   height: 4px;
   background: var(--charge-accent);
-  border-radius: 999px;
+  border-radius: 0;
 }
 .charge-demo__timeline input[type='range']::-moz-range-thumb {
   width: 8px;
   height: 8px;
   background: var(--charge-accent);
   border: 2px solid var(--surface);
-  border-radius: 50%;
+  border-radius: 0;
 }
 .charge-demo__motion-note {
   margin: 0.5rem;
   padding: 0.55rem 0.7rem;
   color: var(--charge-muted);
   background: var(--accent-soft);
-  border-radius: 5px;
   font-size: 0.7rem;
   line-height: 1.45;
 }
@@ -232,7 +228,6 @@
   position: absolute;
   inset: 0;
   border: 2px solid var(--accent);
-  border-radius: 50%;
   background: var(--paper);
   opacity: 0.65;
 }
@@ -243,7 +238,6 @@
   width: 52px;
   height: 52px;
   border: 2px solid var(--ink);
-  border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 2px 12px var(--shadow);
   transform: translate(
@@ -267,9 +261,6 @@
   }
 }
 @media (max-width: 650px) {
-  .charge-demo {
-    border-radius: 12px;
-  }
   .charge-demo__canvas {
     padding-inline: 0;
   }
