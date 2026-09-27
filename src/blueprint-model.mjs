@@ -12073,7 +12073,7 @@ function primitivesFor(spec, frame) {
     return [...projectiles, ...facets, ...guides];
   }
   if (mode === 'splitting-projectile') {
-    const start = point(spec.boss);
+    const start = { x: spec.boss[0] + 40, y: spec.boss[1] + 15 };
     const split = point(spec.split);
     const fragmentEnds = spec.fragmentEnds.map(point);
     const splitAt = 0.42;
@@ -12089,39 +12089,56 @@ function primitivesFor(spec, frame) {
     }));
     const parentVisible = phase === 0 ? 0.72 : phase === 1 && action < splitAt ? 1 : 0;
     const fragmentsVisible = phase === 1 && action >= splitAt ? 1 : 0;
-    return [
-      {
-        ...path(
-          `M ${parent.x - 18} ${parent.y - 9} L ${parent.x - 4} ${parent.y - 21} L ${parent.x + 17} ${parent.y - 12} L ${parent.x + 20} ${parent.y + 8} L ${parent.x + 4} ${parent.y + 21} L ${parent.x - 19} ${parent.y + 11} Z`,
-          parentVisible,
-          'signal',
-          0,
-          0.9,
-        ),
-        x: parent.x,
-        y: parent.y,
-        radius: 22,
-      },
-      ...fragments.map((fragment, index) => {
-        const end = fragmentEnds[index];
-        const heading = Math.atan2(end.y - split.y, end.x - split.x);
-        const forward = { x: Math.cos(heading), y: Math.sin(heading) };
-        const side = { x: -forward.y, y: forward.x };
-        const tip = (along, across) =>
-          `${fragment.x + forward.x * along + side.x * across} ${fragment.y + forward.y * along + side.y * across}`;
-        return {
+    const parentStone = {
+      ...path(
+        `M ${parent.x - 21} ${parent.y - 8} L ${parent.x - 7} ${parent.y - 22} L ${parent.x + 13} ${parent.y - 18} L ${parent.x + 24} ${parent.y - 2} L ${parent.x + 15} ${parent.y + 18} L ${parent.x - 10} ${parent.y + 20} L ${parent.x - 23} ${parent.y + 7} Z`,
+        parentVisible,
+        'muted',
+        2,
+        0.94,
+      ),
+      x: parent.x,
+      y: parent.y,
+      radius: 24,
+    };
+    const fragmentStones = fragments.map((fragment, index) => {
+      const end = fragmentEnds[index];
+      const heading = Math.atan2(end.y - split.y, end.x - split.x);
+      const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+      const side = { x: -forward.y, y: forward.x };
+      const tip = (along, across) =>
+        `${fragment.x + forward.x * along + side.x * across} ${fragment.y + forward.y * along + side.y * across}`;
+      return {
+        stone: {
           ...path(
-            `M ${tip(17, 0)} L ${tip(-11, 12)} L ${tip(-6, 0)} L ${tip(-11, -12)} Z`,
+            `M ${tip(18, 0)} L ${tip(6, -10)} L ${tip(-9, -13)} L ${tip(-18, -3)} L ${tip(-11, 12)} L ${tip(3, 11)} Z`,
             fragmentsVisible,
-            'signal',
-            0,
-            0.9,
+            'muted',
+            2,
+            0.95,
           ),
           x: fragment.x,
           y: fragment.y,
-          radius: 17,
-        };
-      }),
+          radius: 18,
+        },
+        facet: path(
+          `M ${tip(18, 0)} L ${tip(2, -2)} L ${tip(-11, 12)} M ${tip(2, -2)} L ${tip(-9, -13)}`,
+          fragmentsVisible * 0.95,
+          'signal',
+          2,
+        ),
+      };
+    });
+    return [
+      parentStone,
+      ...fragmentStones.map(({ stone }) => stone),
+      path(
+        `M ${parent.x - 13} ${parent.y - 5} L ${parent.x - 2} ${parent.y + 2} L ${parent.x + 8} ${parent.y - 13} M ${parent.x - 2} ${parent.y + 2} L ${parent.x + 13} ${parent.y + 12}`,
+        parentVisible * (phase === 0 ? 0.42 + prepare * 0.5 : 1),
+        'signal',
+        2.5,
+      ),
+      ...fragmentStones.map(({ facet }) => facet),
     ];
   }
   if (mode === 'returning-projectile') {
@@ -13515,7 +13532,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
       );
   if (mode === 'splitting-projectile')
     return frame.primitives
-      .filter((projectile) => projectile.opacity > 0.15)
+      .filter((projectile) => projectile.radius > 0 && projectile.opacity > 0.15)
       .every(
         (projectile) =>
           Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
