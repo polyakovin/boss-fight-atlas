@@ -545,6 +545,9 @@ test('scanning beam leaves the player clear throughout its committed sweep', () 
     assert.equal(frame.playerSafe, true, `player intersects the scan at ${step / 100}s`);
   }
   assert.equal(blueprintFrame('scanning-beam', 3.4).primitives[0].dash, '');
+  const active = blueprintFrame('scanning-beam', 3.4);
+  assert.ok(active.primitives[2].opacity > 0.45);
+  assert.equal(active.primitives.slice(3, 10).length, 7);
 });
 
 test('target lock commits before the marked player leaves', () => {

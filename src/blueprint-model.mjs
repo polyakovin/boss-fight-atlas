@@ -13241,9 +13241,50 @@ function primitivesFor(spec, frame) {
     const angle = mix(0.85, 2.3, action);
     const end = polar(boss, 720, angle);
     const previewEnd = polar(boss, 720, 0.85);
+    const beamOpacity = phase === 0 ? 0 : phase === 1 ? 0.52 : 0.52 * (1 - recover);
+    const forward = { x: Math.cos(angle), y: Math.sin(angle) };
+    const side = { x: -forward.y, y: forward.x };
+    const shards = Array.from({ length: 7 }, (_, index) => {
+      const travel = (action * 1.15 + index / 7) % 1;
+      const distance = mix(75, 700, travel);
+      const center = polar(boss, distance, angle);
+      const at = (along, across) =>
+        `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+      return path(
+        `M ${at(17, 0)} L ${at(2, -9)} L ${at(-15, -6)} L ${at(-10, 9)} L ${at(4, 7)} Z`,
+        beamOpacity * 0.86,
+        'muted',
+        1.5,
+        0.86,
+      );
+    });
     return [
-      line(boss.x, boss.y, previewEnd.x, previewEnd.y, preview, 'accent', 6),
-      line(boss.x, boss.y, end.x, end.y, active, 'signal', 48),
+      line(
+        boss.x,
+        boss.y,
+        previewEnd.x,
+        previewEnd.y,
+        phase === 0 ? 0.16 + prepare * 0.2 : 0,
+        'accent',
+        4,
+      ),
+      line(boss.x, boss.y, end.x, end.y, beamOpacity, 'signal', 48),
+      line(boss.x, boss.y, end.x, end.y, beamOpacity * 0.92, 'accent', 10),
+      ...shards,
+      path(
+        `M ${boss.x - 16} ${boss.y - 6} L ${boss.x - 5} ${boss.y - 16} L ${boss.x + 10} ${boss.y - 10} L ${boss.x + 17} ${boss.y + 5} L ${boss.x + 4} ${boss.y + 15} L ${boss.x - 15} ${boss.y + 7} Z`,
+        phase === 2 ? 0.4 * (1 - recover) : 0.7 + prepare * 0.22,
+        'muted',
+        2,
+        0.83,
+      ),
+      path(
+        `M ${boss.x} ${boss.y - 9} L ${boss.x + 9} ${boss.y} L ${boss.x} ${boss.y + 9} L ${boss.x - 9} ${boss.y} Z`,
+        phase === 2 ? 0.35 * (1 - recover) : 0.72 + prepare * 0.23,
+        'accent',
+        2,
+        0.86,
+      ),
     ];
   }
   if (mode === 'rotating')
