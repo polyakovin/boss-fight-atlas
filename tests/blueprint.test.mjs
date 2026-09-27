@@ -534,6 +534,18 @@ test('target lock commits before the marked player leaves', () => {
   assert.equal(beforeCommit.primitives[0].y, afterCommit.primitives[0].y);
 });
 
+test('telegraph sends stone shards through the announced cone and clears on recovery', () => {
+  const warning = blueprintFrame('telegraph', 1.26);
+  const active = blueprintFrame('telegraph', 3.1);
+  const recovery = blueprintFrame('telegraph', 4.3);
+  assert.equal(warning.primitives[1].data, active.primitives[2].data);
+  assert.ok(warning.primitives[1].opacity > 0);
+  assert.ok(active.primitives.slice(3).some((shard) => shard.opacity > 0));
+  assert.equal(blueprintPointSafe('telegraph', 3.1, { x: 340, y: 500 }), false);
+  assert.equal(active.playerSafe, true);
+  assert.equal(recovery.primitives[2].opacity, 0);
+});
+
 test('landing jump locks its destination before takeoff and resolves the marked radius', () => {
   const signal = blueprintFrame('landing-jump', 1.4);
   const flight = blueprintFrame('landing-jump', 2.2);
