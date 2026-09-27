@@ -14150,6 +14150,8 @@ function primitivesFor(spec, frame) {
     ];
   }
   if (mode === 'combo') {
+    const arcEnd = mix(-1.15, 2.1, clamp(action * 1.7));
+    const waveRadius = mix(40, 380, clamp(action * 1.7 - 0.7));
     const angle =
       phase === 0
         ? mix(-0.75, -1.3, prepare)
@@ -14162,17 +14164,56 @@ function primitivesFor(spec, frame) {
     const across = { x: -along.y, y: along.x };
     const corner = (length, width) =>
       `${head.x + along.x * length + across.x * width} ${head.y + along.y * length + across.y * width}`;
+    const swingOffsets = [-8, 5, -3, 10, -6, 4, -10, 7, -2, 11, -7, 3, -5, 9, -4];
+    const waveOffsets = [-11, 5, -4, 9, -7, 3, 12, -5, 7, -10, 4, -3, 10, -6, 2, -9];
     return [
-      path(arcPath(boss, 190, -1.15, mix(-1.15, 2.1, clamp(action * 1.7))), active, 'signal', 25),
-      circle(boss.x, boss.y, mix(40, 380, clamp(action * 1.7 - 0.7)), active, 'accent', 16),
+      path(arcPath(boss, 190, -1.15, arcEnd), active * 0.42, 'signal', 8),
+      circle(boss.x, boss.y, waveRadius, active * 0.24, 'accent', 16),
       line(grip.x, grip.y, head.x, head.y, 0.92, 'muted', 11),
       path(
-        `M ${corner(-17, -30)} L ${corner(17, -30)} L ${corner(17, 30)} L ${corner(-17, 30)} Z`,
+        `M ${corner(-22, -29)} L ${corner(7, -32)} L ${corner(20, -18)} L ${corner(18, 17)} L ${corner(7, 31)} L ${corner(-18, 27)} L ${corner(-25, 10)} Z`,
         0.95,
-        'accent',
-        0,
-        0.88,
+        'muted',
+        2,
+        0.94,
       ),
+      path(
+        `M ${corner(-8, -23)} L ${corner(4, -10)} L ${corner(-5, 8)} L ${corner(10, 23)} M ${corner(-15, 3)} L ${corner(-3, 8)}`,
+        0.9,
+        'accent',
+        3,
+      ),
+      ...Array.from({ length: 15 }, (_, index) => {
+        const shardAngle = -1.15 + ((2.1 + 1.15) * index) / 14;
+        const shard = polar(
+          boss,
+          190 + swingOffsets[index],
+          shardAngle + ((index % 3) - 1) * 0.024,
+        );
+        const size = 8 + (index % 4) * 2;
+        return path(
+          `M ${shard.x - size} ${shard.y + 3} L ${shard.x - 2} ${shard.y - size} L ${shard.x + size - 1} ${shard.y - 4} L ${shard.x + size + 2} ${shard.y + 6} L ${shard.x - 4} ${shard.y + size - 1} Z`,
+          phase === 1 && shardAngle <= arcEnd ? 0.66 + (index % 3) * 0.08 : 0,
+          'muted',
+          2,
+          0.9,
+        );
+      }),
+      ...Array.from({ length: 16 }, (_, index) => {
+        const shard = polar(
+          boss,
+          waveRadius + waveOffsets[index],
+          (Math.PI * 2 * index) / 16 + ((index % 3) - 1) * 0.036,
+        );
+        const size = 7 + (index % 4) * 2;
+        return path(
+          `M ${shard.x - size} ${shard.y + 4} L ${shard.x - 1} ${shard.y - size} L ${shard.x + size + 1} ${shard.y - 3} L ${shard.x + size - 2} ${shard.y + size} Z`,
+          phase === 1 && action > 0.4 ? 0.56 + (index % 4) * 0.06 : 0,
+          'accent',
+          2,
+          0.82,
+        );
+      }),
     ];
   }
   if (mode === 'weak-point') {
