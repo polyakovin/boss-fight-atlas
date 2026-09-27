@@ -2237,6 +2237,11 @@ const SPECS = {
     boss: [190, 270],
     player: [390, 630],
     target: [505, 770],
+    cone: [
+      [233, 278],
+      [485, 690],
+      [410, 735],
+    ],
   },
   'fight-phase': {
     mode: 'phase',
@@ -5343,7 +5348,6 @@ const DECORATIVE_PRIMITIVE_INDICES = Object.freeze({
   'party-split': [0],
   'partner-revival': [0, 2, 4, 5],
   'weak-point': [0, 1, 2],
-  telegraph: [0, 1],
   'fight-phase': [0, 1, 2],
   enrage: [0, 1],
 });
@@ -13087,45 +13091,49 @@ function primitivesFor(spec, frame) {
       ),
     ];
   }
-  if (mode === 'telegraph')
+  if (mode === 'telegraph') {
+    const [origin, left, right] = spec.cone.map(point);
+    const footprint = `M ${origin.x} ${origin.y} L ${left.x} ${left.y} L ${right.x} ${right.y} Z`;
+    const warning = phase === 0 ? 0.42 + prepare * 0.42 : phase === 1 ? 0.3 : 0;
+    const blast = phase === 1 ? 0.84 : 0;
+    const fragments = Array.from({ length: 9 }, (_, index) => {
+      const elapsed = action * 1.75 - index * 0.13;
+      const travel = ((elapsed % 1) + 1) % 1;
+      const near = {
+        x: mix(origin.x, left.x, travel),
+        y: mix(origin.y, left.y, travel),
+      };
+      const far = {
+        x: mix(origin.x, right.x, travel),
+        y: mix(origin.y, right.y, travel),
+      };
+      const offset = [0.3, 0.68, 0.42, 0.76, 0.22, 0.58, 0.38, 0.7, 0.48][index];
+      const x = mix(near.x, far.x, offset);
+      const y = mix(near.y, far.y, offset);
+      const size = 9 + (index % 3) * 3;
+      const tip = (along, across) =>
+        `${x + 0.45 * along - 0.89 * across} ${y + 0.89 * along + 0.45 * across}`;
+      return path(
+        `M ${tip(size * 1.55, 0)} L ${tip(-size * 0.2, -size * 0.85)} L ${tip(-size * 1.2, -size * 0.4)} L ${tip(-size * 0.7, size * 0.8)} L ${tip(size * 0.3, size * 0.45)} Z`,
+        phase === 1 && elapsed >= 0 ? 0.78 : 0,
+        index % 3 === 0 ? 'signal' : 'muted',
+        2,
+        0.88,
+      );
+    });
     return [
-      path('M 38 94 H 522 V 878 H 38 Z M 58 300 H 502 V 878 H 58 Z', 0.38, 'muted', 0, 0.56),
       path(
-        'M 57 117 H 113 V 343 H 57 Z M 447 117 H 503 V 343 H 447 Z M 125 120 H 435 V 153 H 125 Z M 65 379 L 280 356 L 496 379 V 408 L 280 383 L 65 408 Z M 65 562 L 280 535 L 496 562 V 601 L 280 570 L 65 601 Z M 65 781 L 280 748 L 496 781 V 821 L 280 784 L 65 821 Z',
-        0.43,
+        `M ${origin.x - 10} ${origin.y - 11} L ${origin.x + 8} ${origin.y - 13} L ${origin.x + 17} ${origin.y + 2} L ${origin.x + 2} ${origin.y + 15} L ${origin.x - 11} ${origin.y + 6} Z`,
+        phase === 2 ? 0.28 * (1 - recover) : 0.65 + prepare * 0.28,
         'accent',
-        0,
-        0.56,
-      ),
-      path(
-        'M 138 291 L 190 271 L 242 291 L 231 315 L 149 315 Z M 145 321 L 176 304 L 168 348 Z M 211 305 L 239 321 L 217 348 Z',
-        0.5,
-        'muted',
-        0,
+        2,
         0.7,
       ),
-      path(
-        'M 190 270 L 485 690 L 410 735 Z',
-        phase === 0 ? 0.35 + prepare * 0.35 : active,
-        phase === 0 ? 'accent' : 'signal',
-        0,
-        phase === 0 ? 0.24 : 0.58,
-      ),
-      path(
-        'M 277 437 L 292 448 L 283 465 Z M 308 477 L 322 488 L 309 503 Z M 345 547 L 362 562 L 344 577 Z M 379 601 L 399 620 L 378 632 Z M 420 661 L 443 676 L 421 695 Z',
-        phase === 0 ? prepare * 0.3 : active,
-        'muted',
-        0,
-        0.84,
-      ),
-      path(
-        'M 209 301 L 231 330 L 215 318 Z M 171 306 L 151 334 L 168 322 Z M 189 298 L 194 335 L 185 335 Z',
-        phase === 0 ? 0.25 + prepare * 0.58 : 0,
-        'accent',
-        0,
-        0.78,
-      ),
+      path(footprint, warning, 'accent', 3, phase === 0 ? 0.08 : 0),
+      path(footprint, blast, 'signal', 3, phase === 1 ? 0.18 : 0),
+      ...fragments,
     ];
+  }
   if (mode === 'phase') {
     const changed = phase === 0 ? prepare * 0.3 : phase === 1 ? 1 : 1 - recover * 0.65;
     const gateTop = mix(680, 650, changed);
@@ -13844,11 +13852,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
   if (mode === 'weak-point')
     return Math.hypot(value.x - (frame.boss.x + 58), value.y - (frame.boss.y - 12)) <= 170;
   if (mode === 'telegraph') {
-    const danger = [
-      { x: 190, y: 270 },
-      { x: 485, y: 690 },
-      { x: 410, y: 735 },
-    ];
+    const danger = spec.cone.map(point);
     return (
       !pointInPolygon(value, danger) && distanceToPolyline(value, [...danger, danger[0]]) > radius
     );
