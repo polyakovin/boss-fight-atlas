@@ -9333,6 +9333,13 @@ function primitivesFor(spec, frame) {
     const end = first ? spec.firstResolveAt : second ? spec.blockedHitAt : spec.thirdResolveAt;
     const telegraphProgress = telegraph ? clamp((frame.time - start) / (end - start)) : 0;
     const contactPulse = strikePulse(frame.time, spec.blockedHitAt, 0.48);
+    const stonePulse = Math.max(
+      strikePulse(frame.time, spec.firstResolveAt, 0.48),
+      contactPulse,
+      strikePulse(frame.time, spec.thirdResolveAt, 0.48),
+    );
+    const stoneRise = telegraph ? 18 * telegraphProgress : 128 * stonePulse;
+    const stoneOpacity = telegraph ? 0.3 + 0.38 * telegraphProgress : stonePulse;
     const healPulse = pulse(
       smooth((frame.time - spec.healing[0]) / (spec.healing[1] - spec.healing[0])),
     );
@@ -9350,11 +9357,24 @@ function primitivesFor(spec, frame) {
       path('M 145 102 H 415 V 130 H 145 Z', 0.76, 'muted', 0, 0.7),
       rect(155, 107, width, 17, 0.98, 'signal', 0.82),
       path(
-        `M ${center.x - 96} ${center.y - 20} Q ${center.x} ${center.y - 77} ${center.x + 96} ${center.y - 20} L ${center.x + 79} ${center.y + 19} Q ${center.x} ${center.y - 4} ${center.x - 79} ${center.y + 19} Z`,
-        telegraph ? 0.24 + 0.32 * telegraphProgress : contactPulse * 0.78,
+        `M ${center.x - 96} ${center.y - 15} L ${center.x - 67} ${center.y - 31} L ${center.x - 43} ${center.y - 24} L ${center.x - 12} ${center.y - 42} M ${center.x + 98} ${center.y - 9} L ${center.x + 66} ${center.y - 28} L ${center.x + 38} ${center.y - 20} L ${center.x + 12} ${center.y - 40} M ${center.x - 72} ${center.y + 24} L ${center.x - 29} ${center.y + 5} M ${center.x + 83} ${center.y + 28} L ${center.x + 34} ${center.y + 6}`,
+        telegraph ? 0.46 + 0.4 * telegraphProgress : stonePulse * 0.86,
+        'signal',
+        4,
+      ),
+      path(
+        `M ${center.x - 50} ${center.y + 12} L ${center.x - 30} ${center.y - stoneRise * 0.46} L ${center.x - 18} ${center.y - stoneRise * 0.52} L ${center.x - 7} ${center.y - stoneRise} L ${center.x + 7} ${center.y - stoneRise * 0.78} L ${center.x + 20} ${center.y - stoneRise * 0.88} L ${center.x + 35} ${center.y - stoneRise * 0.29} L ${center.x + 50} ${center.y + 12} Z`,
+        stoneOpacity,
+        'muted',
+        0,
+        0.92,
+      ),
+      path(
+        `M ${center.x - 7} ${center.y - stoneRise} L ${center.x + 7} ${center.y - stoneRise * 0.78} L ${center.x + 20} ${center.y - stoneRise * 0.88} L ${center.x + 11} ${center.y - stoneRise * 0.42} L ${center.x - 10} ${center.y - stoneRise * 0.56} Z`,
+        stoneOpacity,
         'signal',
         0,
-        0.58,
+        0.8,
       ),
       path(
         `M ${spec.safePoint[0] - 26} ${spec.safePoint[1] - 8} L ${spec.safePoint[0] - 9} ${spec.safePoint[1] - 25} L ${spec.safePoint[0] + 3} ${spec.safePoint[1] - 13} L ${spec.safePoint[0] + 17} ${spec.safePoint[1] - 30} L ${spec.safePoint[0] + 29} ${spec.safePoint[1] - 14} L ${spec.safePoint[0] + 8} ${spec.safePoint[1] + 9} Z`,
@@ -9371,20 +9391,19 @@ function primitivesFor(spec, frame) {
         0.32,
       ),
       path(
-        `M ${frame.player.x - 20} ${frame.player.y - 90} Q ${frame.player.x - 78} ${frame.player.y - 260} ${frame.boss.x - 24} ${frame.boss.y + 22} L ${frame.boss.x + 22} ${frame.boss.y + 22} Q ${frame.player.x + 68} ${frame.player.y - 260} ${frame.player.x + 20} ${frame.player.y - 90} Z`,
-        beamOpacity * 0.58,
-        'signal',
-        0,
-        0.58,
+        `M ${center.x} ${center.y - 116} L ${center.x - 17} ${center.y - 193} L ${center.x + 13} ${center.y - 255} L ${frame.boss.x - 12} ${frame.boss.y + 116} L ${frame.boss.x + 10} ${frame.boss.y + 53} L ${frame.boss.x} ${frame.boss.y + 12}`,
+        beamOpacity,
+        'safe',
+        4,
       ),
       ...Array.from({ length: 3 }, (_, index) => {
         const progress =
           ((index + 1) / 4) *
           smooth((frame.time - spec.healing[0]) / (spec.healing[1] - spec.healing[0]));
-        const x = mix(frame.player.x, frame.boss.x, progress);
-        const y = mix(frame.player.y - 88, frame.boss.y + 18, progress);
+        const x = mix(center.x + 9, frame.boss.x, progress) + (index % 2 === 0 ? 9 : -11);
+        const y = mix(center.y - 116, frame.boss.y + 22, progress);
         return path(
-          `M ${x} ${y - 15} Q ${x + 15} ${y} ${x} ${y + 15} Q ${x - 15} ${y} ${x} ${y - 15} Z`,
+          `M ${x - 10} ${y + 9} L ${x - 4} ${y - 14} L ${x + 7} ${y - 10} L ${x + 11} ${y + 7} L ${x + 1} ${y + 14} Z`,
           beamOpacity,
           'safe',
           0,
@@ -9392,11 +9411,10 @@ function primitivesFor(spec, frame) {
         );
       }),
       path(
-        `M ${frame.boss.x - 64} ${frame.boss.y + 35} Q ${frame.boss.x} ${frame.boss.y - 90 - healPulse * 45} ${frame.boss.x + 64} ${frame.boss.y + 35} Z`,
-        healPulse * 0.78,
+        `M ${frame.boss.x - 27} ${frame.boss.y - 16} L ${frame.boss.x - 14} ${frame.boss.y - 34 - healPulse * 13} L ${frame.boss.x} ${frame.boss.y - 24} L ${frame.boss.x + 14} ${frame.boss.y - 34 - healPulse * 13} L ${frame.boss.x + 27} ${frame.boss.y - 16}`,
+        healPulse * 0.86,
         'safe',
-        0,
-        0.34,
+        4,
       ),
       path(
         `M ${frame.player.x + 38} ${frame.player.y - 82} L ${frame.player.x + 92} ${frame.player.y - 136}`,
