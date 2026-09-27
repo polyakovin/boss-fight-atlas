@@ -12597,8 +12597,8 @@ function primitivesFor(spec, frame) {
     const generator = point(spec.generator);
     const placement = phase === 0 ? smooth(prepare / 0.72) : 1;
     const capsule = {
-      x: mix(boss.x, generator.x, placement),
-      y: mix(boss.y, generator.y, placement),
+      x: mix(boss.x + 38, generator.x, placement),
+      y: mix(boss.y + 12, generator.y, placement) - Math.sin(placement * Math.PI) * 65,
     };
     const sourceOpacity = phase === 2 ? 1 - recover : phase === 0 ? placement * 0.95 : 0.95;
     const charging = Math.max(
@@ -12607,46 +12607,65 @@ function primitivesFor(spec, frame) {
         frame.time <= release ? 1 - clamp((release - frame.time) / 0.28) : 0,
       ),
     );
-    return [
-      path(
-        `M ${boss.x} ${boss.y} L ${generator.x} ${generator.y}`,
-        phase === 0 ? 0.35 + prepare * 0.3 : 0,
-        'accent',
-        3,
+    const stones = generatorShots(spec, frame.time).map((shot) => ({
+      body: {
+        ...path(
+          `M ${shot.x} ${shot.y + 21} L ${shot.x - 11} ${shot.y + 4} L ${shot.x - 8} ${shot.y - 14} L ${shot.x + 6} ${shot.y - 17} L ${shot.x + 12} ${shot.y + 7} Z`,
+          shot.active ? 0.98 : 0,
+          'muted',
+          2,
+          0.93,
+        ),
+        x: shot.x,
+        y: shot.y,
+        radius: shot.radius,
+      },
+      facet: path(
+        `M ${shot.x} ${shot.y + 18} L ${shot.x + 2} ${shot.y - 3} L ${shot.x - 8} ${shot.y - 12}`,
+        shot.active ? 0.94 : 0,
+        'signal',
+        2,
       ),
-      circle(capsule.x, capsule.y, 17, phase === 0 ? 0.9 : 0, 'accent', 2, 0.86),
-      circle(boss.x, boss.y, 17, phase === 2 ? recover * 0.9 : 0, 'accent', 2, 0.86),
-      circle(generator.x, generator.y, 37, sourceOpacity, 'muted', 2, 0.9),
-      circle(
-        generator.x,
-        generator.y,
-        16,
+    }));
+    return [
+      path(`M ${boss.x + 38} ${boss.y + 12} L ${generator.x} ${generator.y}`, 0, 'accent', 3),
+      path(
+        `M ${capsule.x - 16} ${capsule.y - 5} L ${capsule.x - 5} ${capsule.y - 16} L ${capsule.x + 13} ${capsule.y - 10} L ${capsule.x + 18} ${capsule.y + 8} L ${capsule.x + 2} ${capsule.y + 17} L ${capsule.x - 15} ${capsule.y + 9} Z`,
+        phase === 0 && placement < 1 ? 0.9 : 0,
+        'muted',
+        2,
+        0.9,
+      ),
+      path(
+        `M ${boss.x - 16} ${boss.y - 5} L ${boss.x + 4} ${boss.y - 17} L ${boss.x + 18} ${boss.y + 7} L ${boss.x - 2} ${boss.y + 17} Z`,
+        phase === 2 ? recover * 0.9 : 0,
+        'muted',
+        2,
+        0.86,
+      ),
+      path(
+        `M ${generator.x - 36} ${generator.y - 11} L ${generator.x - 22} ${generator.y - 34} L ${generator.x + 8} ${generator.y - 38} L ${generator.x + 34} ${generator.y - 18} L ${generator.x + 37} ${generator.y + 13} L ${generator.x + 17} ${generator.y + 31} L ${generator.x - 19} ${generator.y + 34} L ${generator.x - 38} ${generator.y + 9} Z`,
+        sourceOpacity,
+        'muted',
+        2,
+        0.9,
+      ),
+      path(
+        `M ${generator.x} ${generator.y - 19} L ${generator.x + 18} ${generator.y} L ${generator.x} ${generator.y + 19} L ${generator.x - 18} ${generator.y} Z`,
         sourceOpacity * (0.65 + 0.35 * charging),
         'signal',
         2,
-        0.88,
+        0.82,
       ),
       path(
-        `M ${generator.x - 17} ${generator.y + 26} L ${generator.x} ${generator.y + 47} L ${generator.x + 17} ${generator.y + 26} Z`,
+        `M ${generator.x - 17} ${generator.y + 25} L ${generator.x - 14} ${generator.y + 42} L ${generator.x} ${generator.y + 50} L ${generator.x + 14} ${generator.y + 42} L ${generator.x + 17} ${generator.y + 25} Z`,
         sourceOpacity,
-        'accent',
-        0,
-        0.8,
+        'muted',
+        2,
+        0.9,
       ),
-      ...spec.shotEnds.map(([x, y]) =>
-        line(
-          generator.x,
-          generator.y + 32,
-          x,
-          y,
-          phase === 0 ? 0.22 + prepare * 0.12 : phase === 1 ? 0.25 : 0,
-          'signal',
-          2,
-        ),
-      ),
-      ...generatorShots(spec, frame.time).map((shot) =>
-        circle(shot.x, shot.y, shot.radius, shot.active ? 0.96 : 0, 'signal', 2, 0.88),
-      ),
+      ...stones.map(({ body }) => body),
+      ...stones.map(({ facet }) => facet),
     ];
   }
   if (mode === 'decoy') {

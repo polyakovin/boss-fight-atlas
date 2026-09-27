@@ -417,7 +417,7 @@ test('every damaging promoted animation derives safety from its own active geome
     } else if (!point && id === 'threat-generator') {
       const mote = frame.primitives.find(
         (primitive) =>
-          primitive.type === 'circle' && primitive.radius === 19 && primitive.opacity > 0,
+          primitive.type === 'path' && primitive.radius === 19 && primitive.opacity > 0,
       );
       point = { x: mote.x, y: mote.y };
     } else if (!point && id === 'predictive-aiming') {
@@ -1088,9 +1088,9 @@ test('threat generator announces a fixed source, emits separate motes, and ends 
   const id = 'threat-generator';
   const motes = (time) =>
     blueprintFrame(id, time).primitives.filter(
-      (primitive) =>
-        primitive.type === 'circle' && primitive.radius === 19 && primitive.opacity > 0,
+      (primitive) => primitive.type === 'path' && primitive.radius === 19 && primitive.opacity > 0,
     );
+  assert.equal(blueprintFrame(id, 3).primitives[3].type, 'path');
   assert.equal(blueprintFrame(id, 1.59).dangerActive, false);
   assert.equal(motes(1.59).length, 0);
   assert.equal(motes(2).length, 1);
