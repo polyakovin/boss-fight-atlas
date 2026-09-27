@@ -12894,7 +12894,7 @@ function primitivesFor(spec, frame) {
     });
   if (mode === 'ricochet') {
     const corners = [
-      { x: 160, y: 250 },
+      { x: 198, y: 262 },
       { x: 500, y: 420 },
       { x: 110, y: 610 },
       { x: 430, y: 790 },
@@ -12906,21 +12906,42 @@ function primitivesFor(spec, frame) {
     const head = { x: mix(start.x, end.x, progress), y: mix(start.y, end.y, progress) };
     const tailProgress = Math.max(0, progress - 0.22);
     const tail = { x: mix(start.x, end.x, tailProgress), y: mix(start.y, end.y, tailProgress) };
+    const bounceFlash = (mark) => (phase === 1 ? clamp(1 - Math.abs(action - mark) / 0.06) : 0);
+    const firstImpact = bounceFlash(1 / 3);
+    const secondImpact = bounceFlash(2 / 3);
     return [
-      line(160, 250, 500, 420, phase === 0 ? preview * 0.42 : 0, 'accent', 4),
-      line(tail.x, tail.y, head.x, head.y, active * 0.35, 'signal', 5),
+      line(198, 262, 500, 420, phase === 0 ? preview * 0.35 : 0, 'accent', 3),
+      line(tail.x, tail.y, head.x, head.y, active * 0.32, 'signal', 4),
       {
         ...path(
-          `M ${head.x - 16} ${head.y - 8} L ${head.x - 3} ${head.y - 17} L ${head.x + 15} ${head.y - 9} L ${head.x + 16} ${head.y + 8} L ${head.x + 2} ${head.y + 17} L ${head.x - 16} ${head.y + 9} Z`,
+          `M ${head.x - 20} ${head.y - 5} L ${head.x - 7} ${head.y - 17} L ${head.x + 10} ${head.y - 15} L ${head.x + 19} ${head.y - 1} L ${head.x + 11} ${head.y + 16} L ${head.x - 9} ${head.y + 14} L ${head.x - 19} ${head.y + 5} Z`,
           phase === 1 ? 1 : 0.65,
-          'signal',
-          0,
-          0.9,
+          'muted',
+          2,
+          0.95,
         ),
         x: head.x,
         y: head.y,
-        radius: 18,
+        radius: 20,
       },
+      path(
+        `M ${head.x - 13} ${head.y - 4} L ${head.x + 2} ${head.y + 1} L ${head.x + 10} ${head.y - 15} M ${head.x + 2} ${head.y + 1} L ${head.x + 11} ${head.y + 16}`,
+        phase === 1 ? 0.95 : 0.62,
+        'signal',
+        2,
+      ),
+      path(
+        'M 474 402 L 465 391 L 476 396 M 477 437 L 464 446 L 481 443',
+        firstImpact * 0.9,
+        'signal',
+        2,
+      ),
+      path(
+        'M 133 586 L 144 578 L 138 594 M 129 627 L 141 637 L 135 619',
+        secondImpact * 0.9,
+        'signal',
+        2,
+      ),
     ];
   }
   if (mode === 'homing') {

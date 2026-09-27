@@ -708,6 +708,9 @@ test('ricochet damage follows the moving stone rather than its old route', () =>
   assert.equal(firstBounce.primitives[2].y, 420);
   assert.equal(secondBounce.primitives[2].x, 110);
   assert.equal(secondBounce.primitives[2].y, 610);
+  assert.equal(firstBounce.primitives[2].type, 'path');
+  assert.ok(firstBounce.primitives[3].opacity > 0.9, 'the bouncing stone has a crystal face');
+  assert.ok(firstBounce.primitives[4].opacity > 0.8, 'stone chips mark the first wall strike');
   assert.equal(blueprintPointSafe('ricochet-projectile', 3, { x: 330, y: 335 }), true);
   for (let step = 160; step <= 430; step += 1) {
     assert.equal(blueprintFrame('ricochet-projectile', step / 100).playerSafe, true);
