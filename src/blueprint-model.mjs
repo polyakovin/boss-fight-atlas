@@ -13347,15 +13347,59 @@ function primitivesFor(spec, frame) {
     ];
   }
   if (mode === 'lingering') {
-    const radius = mix(26, 105, phase === 0 ? prepare : 1);
-    const opacity = phase === 2 ? 1 - recover : active;
+    const center = { x: 360, y: 620 };
+    const thrown = smooth(frame.time / 0.74);
+    const landed = smooth((frame.time - 0.56) / 0.3);
+    const radius = mix(23, 105, phase === 0 ? smooth((frame.time - 0.62) / 0.98) : 1);
+    const opacity = (phase === 2 ? 1 - recover : phase === 1 ? 1 : 0.5 + prepare * 0.3) * landed;
+    const outline = Array.from({ length: 14 }, (_, index) => {
+      const angle = (index * Math.PI * 2) / 14;
+      const reach = radius * [0.94, 0.88, 1, 0.91, 0.97, 0.86, 0.99][index % 7];
+      const vertex = polar(center, reach, angle);
+      return `${index ? 'L' : 'M'} ${vertex.x} ${vertex.y}`;
+    }).join(' ');
+    const crack = (x, y) => `${center.x + (x * radius) / 105} ${center.y + (y * radius) / 105}`;
+    const source = { x: boss.x + 38, y: boss.y + 10 };
+    const seed = {
+      x: mix(source.x, center.x, thrown),
+      y: mix(source.y, center.y, thrown) - Math.sin(thrown * Math.PI) * 68,
+    };
     return [
-      circle(360, 620, radius, opacity, 'signal', 2, 0.7),
+      {
+        ...path(`${outline} Z`, opacity, 'signal', 3, phase === 1 ? 0.18 : 0.07),
+        x: center.x,
+        y: center.y,
+        radius,
+      },
       path(
-        `M ${360 - radius * 0.65} ${620 - radius * 0.13} L ${360 - radius * 0.23} ${620 - radius * 0.31} L ${360 + radius * 0.09} ${620 + radius * 0.08} L ${360 + radius * 0.55} ${620 - radius * 0.2} M ${360 - radius * 0.2} ${620 + radius * 0.51} L ${360 + radius * 0.09} ${620 + radius * 0.08} L ${360 + radius * 0.39} ${620 + radius * 0.52}`,
-        opacity * 0.8,
+        `M ${crack(-75, -10)} L ${crack(-40, -23)} L ${crack(-16, 3)} L ${crack(7, -6)} L ${crack(28, 7)} L ${crack(66, -23)} M ${crack(-16, 3)} L ${crack(-34, 42)} L ${crack(-16, 57)} M ${crack(28, 7)} L ${crack(17, 38)} L ${crack(43, 58)}`,
+        opacity * 0.92,
+        'signal',
+        3.5,
+      ),
+      ...[
+        [-62, -34, 31, -7],
+        [48, -47, 24, 6],
+        [-47, 39, 19, -4],
+        [68, 25, 33, 9],
+      ].map(([offsetX, offsetY, rise, lean]) => {
+        const x = center.x + (offsetX * radius) / 105;
+        const y = center.y + (offsetY * radius) / 105;
+        const height = rise * (phase === 0 ? landed : 1);
+        return path(
+          `M ${x - 12} ${y + 9} L ${x + lean - 4} ${y - height} L ${x + 4} ${y - height * 0.48} L ${x + 14} ${y + 7} Z`,
+          opacity * 0.88,
+          'muted',
+          2,
+          0.82,
+        );
+      }),
+      path(
+        `M ${seed.x - 12} ${seed.y - 6} L ${seed.x + 4} ${seed.y - 17} L ${seed.x + 15} ${seed.y + 7} L ${seed.x - 2} ${seed.y + 16} Z`,
+        frame.time < 0.75 ? 0.9 : 0,
         'muted',
-        5,
+        2,
+        0.9,
       ),
     ];
   }
