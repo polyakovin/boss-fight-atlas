@@ -10650,28 +10650,12 @@ function primitivesFor(spec, frame) {
       (t >= spec.secondSignal[0] && t < spec.secondHit[1]);
     const hit = frame.stackDamageHitActive;
     const count = frame.stackDamageParticipantCount;
+    const strike = Math.max(
+      strikePulse(t, spec.firstResolveAt, 0.34),
+      strikePulse(t, spec.secondResolveAt, 0.34),
+    );
+    const headY = target.y - 165 + 100 * strike;
     return [
-      path(
-        'M 68 104 H 492 V 145 H 68 Z M 80 145 H 113 V 813 H 80 Z M 447 145 H 480 V 813 H 447 Z',
-        0.5,
-        'muted',
-        0,
-        0.58,
-      ),
-      path(
-        'M 99 784 L 280 748 L 461 784 V 816 L 280 779 L 99 816 Z M 84 874 L 280 834 L 476 874 V 903 L 280 864 L 84 903 Z',
-        0.52,
-        'muted',
-        0,
-        0.6,
-      ),
-      path(
-        'M 210 365 L 350 365 L 365 390 L 195 390 Z M 219 390 H 341 V 419 H 219 Z',
-        0.6,
-        'muted',
-        0,
-        0.55,
-      ),
       ...[0, 1, 2].flatMap((index) => {
         const x = [230, 95, 365][index];
         const current = frame.stackDamageHealth[index];
@@ -10696,25 +10680,24 @@ function primitivesFor(spec, frame) {
         marked ? 0.08 : 0.01,
       ),
       path(
-        `M ${target.x - 9} ${spec.boss[1] + 20} H ${target.x + 9} V ${target.y - 165} H ${target.x - 9} Z`,
+        `M ${target.x - 12} ${spec.boss[1] + 24} L ${target.x + 7} ${spec.boss[1] + 18} L ${target.x + 15} ${headY - 38} L ${target.x + 3} ${headY - 26} L ${target.x - 16} ${headY - 37} Z`,
         marked ? 0.7 : 0,
         'muted',
         0,
-        0.78,
+        0.86,
       ),
       path(
-        `M ${target.x - 48} ${target.y - 180} H ${target.x + 48} V ${target.y - 112} L ${target.x + 32} ${target.y - 100} H ${target.x - 32} L ${target.x - 48} ${target.y - 112} Z`,
-        marked ? 0.84 : 0,
-        'signal',
-        0,
-        0.72,
-      ),
-      path(
-        `M ${target.x - 32} ${target.y - 164} H ${target.x - 20} V ${target.y - 127} H ${target.x - 32} Z M ${target.x + 20} ${target.y - 164} H ${target.x + 32} V ${target.y - 127} H ${target.x + 20} Z`,
-        marked ? 0.78 : 0,
+        `M ${target.x - 49} ${headY - 39} L ${target.x - 30} ${headY - 49} L ${target.x + 30} ${headY - 45} L ${target.x + 52} ${headY - 32} L ${target.x + 45} ${headY + 28} L ${target.x + 26} ${headY + 39} L ${target.x - 39} ${headY + 33} L ${target.x - 54} ${headY + 20} Z`,
+        marked ? 0.94 : 0,
         'muted',
         0,
-        0.76,
+        0.91,
+      ),
+      path(
+        `M ${target.x - 26} ${headY - 24} L ${target.x - 10} ${headY - 11} L ${target.x - 14} ${headY + 15} L ${target.x + 3} ${headY + 25} L ${target.x + 18} ${headY + 5} L ${target.x + 7} ${headY - 13} L ${target.x + 27} ${headY - 22}`,
+        marked ? 0.84 : 0,
+        'signal',
+        4,
       ),
       path(
         `M ${target.x - 103} ${target.y + 22} L ${target.x - 38} ${target.y - 8} L ${target.x} ${target.y + 14} L ${target.x + 41} ${target.y - 10} L ${target.x + 108} ${target.y + 19} L ${target.x + 43} ${target.y + 41} L ${target.x - 34} ${target.y + 42} Z`,
