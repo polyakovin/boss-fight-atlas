@@ -2069,6 +2069,8 @@ test('recovery locks the boss long enough for a measured approach and sword puni
   assert.equal(active.playerSafe, true);
   assert.equal(blueprintPointSafe(id, 1.4, { x: 400, y: 430 }), false);
   assert.ok(active.primitives[4].opacity > 0, 'the damaging lane is solid');
+  assert.ok(active.primitives[11].opacity > 0.9, 'the active strike has stone geometry');
+  assert.notEqual(startup.primitives[13].data, active.primitives[13].data);
 
   const opening = blueprintFrame(id, 1.8);
   assert.equal(opening.dangerActive, false);
@@ -2076,6 +2078,8 @@ test('recovery locks the boss long enough for a measured approach and sword puni
   assert.equal(opening.bossReady, false);
   assert.equal(blueprintPointSafe(id, 1.8, { x: 400, y: 430 }), true);
   assert.ok(opening.primitives[5].opacity > 0, 'sword reach is visible during recovery');
+  assert.ok(opening.primitives[11].opacity > 0, 'the old stone strike remains as residue');
+  assert.equal(opening.primitives[12].opacity, 0, 'the damaging crack ends before approach');
   assert.ok(opening.primitives[6].opacity > 0, 'the countdown is visible during recovery');
   assert.equal(opening.primitives[8].opacity, 0, 'the ready flash cannot appear early');
 

@@ -6455,6 +6455,13 @@ function primitivesFor(spec, frame) {
         ? 1
         : 0;
     const strike = strikePulse(frame.time, spec.punishAt, 0.38);
+    const thrust = startup
+      ? 0.18 + 0.3 * smooth((frame.time - spec.startup[0]) / (spec.startup[1] - spec.startup[0]))
+      : activeWindow
+        ? 1
+        : recoveryOpen
+          ? mix(1, 0.18, smooth((frame.time - spec.recovery[0]) / 0.64))
+          : 0.18;
     return [
       path('M 36 94 H 524 V 878 H 36 Z M 53 246 H 507 V 878 H 53 Z', 0.34, 'muted', 0, 0.58),
       path(
@@ -6486,7 +6493,7 @@ function primitivesFor(spec, frame) {
         spec.laneHalfWidth * 2,
         activeWindow ? 0.94 : 0,
         'signal',
-        0.34,
+        0.12,
       ),
       circle(boss.x, boss.y, spec.punishReach, recoveryOpen ? 0.7 : 0, 'safe', 6, 0.04, '13 10'),
       circle(
@@ -6503,6 +6510,19 @@ function primitivesFor(spec, frame) {
       circle(boss.x, boss.y, 45 + readyFlash * 25, readyFlash, 'signal', 7),
       line(frame.player.x, frame.player.y, boss.x, boss.y, strike, 'safe', 9),
       circle(boss.x + 35, boss.y - 4, 12 + strike * 24, strike, 'safe', 7, 0.12),
+      stoneLaneRidge(
+        spec.laneStart,
+        spec.laneEnd,
+        spec.laneHalfWidth,
+        activeWindow ? 0.96 : recoveryOpen ? 0.28 : 0,
+      ),
+      path(
+        `M ${spec.laneStart[0] + 10} ${spec.laneStart[1] - 3} L ${spec.laneStart[0] + 57} ${spec.laneStart[1] + 6} L ${spec.laneStart[0] + 106} ${spec.laneStart[1] - 5} L ${spec.laneStart[0] + 158} ${spec.laneStart[1] + 4} L ${spec.laneEnd[0] - 14} ${spec.laneEnd[1] - 2}`,
+        activeWindow ? 0.96 : 0,
+        'signal',
+        3,
+      ),
+      ...stoneGauntlet(boss, thrust),
     ];
   }
   if (mode === 'survival-phase') {
