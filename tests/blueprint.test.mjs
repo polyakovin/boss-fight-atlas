@@ -2234,7 +2234,12 @@ test('boundary attack names one edge, crosses its fixed lane, and returns outsid
   assert.ok(active.bossMotion.stride > 0, 'the entering boss has distance-driven footwork');
   assert.equal(active.playerSafe, true);
   assert.ok(active.primitives[3].opacity > 0.9, 'the same fixed lane becomes solid');
+  assert.ok(active.primitives[9].opacity > 0, 'the crossing leaves broken stone behind the boss');
+  assert.equal(active.primitives[13].opacity, 0, 'the untraveled lane has no debris yet');
   assert.equal(blueprintPointSafe(id, 1.95, { x: 300, y: 610 }), false);
+
+  const lateCrossing = blueprintFrame(id, 2.25);
+  assert.ok(lateCrossing.primitives[13].opacity > 0, 'the debris follows the crossing');
 
   const impact = blueprintFrame(id, 2.28);
   assert.equal(impact.dangerActive, false);

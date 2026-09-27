@@ -6729,13 +6729,18 @@ function primitivesFor(spec, frame) {
       line(58, 370, 58, 840, 0.26, 'muted', 3),
       line(502, 370, 502, 840, 0.26, 'muted', 3),
       path(
-        'M 63 569 L 498 569 L 498 651 L 63 651 Z',
+        'M 63 574 L 115 570 L 158 578 L 213 567 L 265 574 L 316 570 L 364 577 L 418 568 L 498 574 M 63 648 L 121 653 L 171 645 L 226 655 L 280 648 L 336 654 L 389 646 L 444 652 L 498 646',
         signalVisible ? 0.52 + signalProgress * 0.24 : 0,
         'accent',
-        0,
-        0.58,
+        3,
       ),
-      path('M 40 569 L 520 569 L 520 651 L 40 651 Z', activeWindow ? 0.94 : 0, 'signal', 0, 0.72),
+      path(
+        'M 40 575 L 76 568 L 113 577 L 157 567 L 207 573 L 254 566 L 308 575 L 363 567 L 412 578 L 462 567 L 520 574 L 520 649 L 476 655 L 432 646 L 381 655 L 330 648 L 278 656 L 227 646 L 176 654 L 123 646 L 78 653 L 40 647 Z',
+        activeWindow ? 0.94 : 0,
+        'muted',
+        2,
+        0.24,
+      ),
       path(
         'M 46 586 L 61 569 L 77 586 L 62 610 Z M 46 634 L 62 610 L 77 634 L 61 651 Z',
         signalVisible ? 0.56 + signalProgress * 0.36 : activeWindow ? 0.94 : 0.18,
@@ -6764,6 +6769,16 @@ function primitivesFor(spec, frame) {
         0,
         0.85,
       ),
+      ...[95, 151, 214, 281, 347, 416, 474].map((x, index) => {
+        const y = index % 2 === 0 ? 583 : 634;
+        return path(
+          `M ${x - 15} ${y + 8} L ${x - 7} ${y - 11} L ${x + 4} ${y - 7} L ${x + 15} ${y + 4} L ${x + 7} ${y + 13} Z M ${x - 4} ${y + 7} L ${x + 5} ${y - 3}`,
+          activeWindow && boss.x > x + 18 ? 0.85 : 0,
+          'accent',
+          2,
+          0.78,
+        );
+      }),
     ];
   }
   if (mode === 'forced-scrolling') {

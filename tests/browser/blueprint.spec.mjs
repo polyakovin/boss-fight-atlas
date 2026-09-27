@@ -2086,6 +2086,14 @@ test('boundary attack signals one edge before its fixed crossing and visible out
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="9"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="13"] path')).toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(3150);
   await expect(widget).toHaveAttribute('data-blueprint-boundary-attack', 'opening');
