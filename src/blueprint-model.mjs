@@ -12444,41 +12444,51 @@ function primitivesFor(spec, frame) {
   }
   if (mode === 'pull') {
     const ringOpacity =
-      phase === 0 ? 0.42 + prepare * 0.33 : phase === 1 ? 0.54 : 0.4 * (1 - recover);
+      phase === 0 ? 0.12 + prepare * 0.1 : phase === 1 ? 0.18 : 0.14 * (1 - recover);
     const forceOpacity =
-      phase === 0 ? 0.25 + prepare * 0.28 : phase === 1 ? 0.82 : 0.35 * (1 - recover);
+      phase === 0 ? 0.4 + prepare * 0.26 : phase === 1 ? 0.94 : 0.45 * (1 - recover);
     const angleOffset = phase === 1 ? action * 0.42 : 0;
-    const stones = [0.32, 1.12, 1.92, 2.72].map((angle) => {
+    const stones = [0.22, 1.17, 1.98, 2.88, 3.56, 4.64, 5.31].map((angle, index) => {
       const center = polar(
         boss,
-        245 - (phase === 1 ? action * 75 : prepare * 25),
+        250 + [-26, 19, -8, 31, -20, 24, -5][index] - (phase === 1 ? action * 90 : prepare * 25),
         angle + angleOffset,
       );
+      const size = [0.82, 1.1, 0.96, 0.72, 1.13, 0.89, 1.02][index];
       return path(
-        `M ${center.x - 12} ${center.y - 7} L ${center.x + 9} ${center.y - 12} L ${center.x + 15} ${center.y + 8} L ${center.x - 8} ${center.y + 11} Z`,
+        `M ${center.x - 15 * size} ${center.y - 5 * size} L ${center.x - 4 * size} ${center.y - 12 * size} L ${center.x + 10 * size} ${center.y - 7 * size} L ${center.x + 14 * size} ${center.y + 6 * size} L ${center.x + (index % 2 ? 3 : 8) * size} ${center.y + 12 * size} L ${center.x - 12 * size} ${center.y + 7 * size} Z`,
         forceOpacity,
-        'accent',
-        0,
-        0.78,
+        'muted',
+        2,
+        0.88,
       );
     });
+    const dangerOutline = Array.from({ length: 13 }, (_, index) => {
+      const vertex = polar(
+        boss,
+        spec.dangerRadius - (index % 3 === 0 ? 8 : 0),
+        (index * Math.PI * 2) / 13,
+      );
+      return `${index ? 'L' : 'M'} ${vertex.x} ${vertex.y}`;
+    }).join(' ');
     return [
-      circle(boss.x, boss.y, spec.pullRadius, ringOpacity * 0.5, 'accent', 3, 0),
-      circle(
-        boss.x,
-        boss.y,
-        spec.dangerRadius,
-        phase === 1 ? 0.96 : ringOpacity,
-        phase === 1 ? 'signal' : 'accent',
-        phase === 1 ? 7 : 3,
-        phase === 1 ? 0.28 : 0.06,
-      ),
-      circle(
-        boss.x,
-        boss.y,
-        31,
-        phase === 2 ? 0.65 * (1 - recover) : 0.9,
-        phase === 1 ? 'signal' : 'accent',
+      circle(boss.x, boss.y, spec.pullRadius, 0, 'accent', 2, 0),
+      {
+        ...path(
+          `${dangerOutline} Z`,
+          phase === 1 ? 0.92 : ringOpacity * 1.8,
+          phase === 1 ? 'signal' : 'accent',
+          phase === 1 ? 5 : 2,
+          phase === 1 ? 0.08 : 0,
+        ),
+        x: boss.x,
+        y: boss.y,
+        radius: spec.dangerRadius,
+      },
+      path(
+        `M ${boss.x - 23} ${boss.y + 12} L ${boss.x - 7} ${boss.y - 19} L ${boss.x + 10} ${boss.y - 22} L ${boss.x + 27} ${boss.y + 10} L ${boss.x + 8} ${boss.y + 27} Z`,
+        phase === 2 ? 0.62 * (1 - recover) : 0.78,
+        'accent',
         2,
         0.72,
       ),

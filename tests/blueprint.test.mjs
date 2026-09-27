@@ -1031,8 +1031,12 @@ test('pull displaces the player toward its source but only the visible core deal
   const recovery = blueprintFrame('pull', 5.2);
   assert.equal(signal.primitives[0].radius, 445);
   assert.equal(middle.primitives[0].fill, 0);
+  assert.equal(middle.primitives[0].opacity, 0, 'the pull needs no floor-sized range ring');
   assert.equal(middle.primitives[1].radius, 82);
   assert.equal(middle.primitives[1].tone, 'signal');
+  assert.equal(middle.primitives[1].type, 'path');
+  assert.equal(middle.primitives.slice(3).length, 7);
+  assert.ok(middle.primitives.slice(3).every((stone) => stone.tone === 'muted'));
   assert.ok(early.player.y < signal.player.y, 'pull must visibly displace Tavi toward Kern');
   assert.ok(late.player.x > middle.player.x, 'ordinary lateral steering must remain useful');
   assert.equal(blueprintPointSafe('pull', 1.59, { x: 280, y: 300 }), true);
