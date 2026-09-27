@@ -881,6 +881,15 @@ test('pulse beam keeps one lane, synchronizes collision, and crosses only during
   }
 });
 
+test('hazard trail leaves fractured stones instead of a drawn travel route', () => {
+  const active = blueprintFrame('hazard-trail', 3.3);
+  assert.equal(active.primitives[0].opacity, 0);
+  assert.ok(active.primitives.slice(1, 7).every((residue) => residue.type === 'path'));
+  assert.ok(active.primitives.slice(1, 7).every((residue) => residue.fill < 0.1));
+  assert.ok(active.primitives.slice(13).some((crack) => crack.opacity > 0.8));
+  assert.equal(blueprintPointSafe('hazard-trail', 3.3, { x: 190, y: 290 }), false);
+});
+
 test('lingering hazard grows from a thrown stone into a fractured danger patch', () => {
   const thrown = blueprintFrame('lingering-hazard', 0.4);
   const active = blueprintFrame('lingering-hazard', 3);
