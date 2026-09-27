@@ -7600,6 +7600,8 @@ function primitivesFor(spec, frame) {
     const beatXs = [148, 236, 324, 412];
     const laneShape = (center) =>
       `M ${center - spec.laneHalfWidth} ${spec.laneTop} L ${center + spec.laneHalfWidth} ${spec.laneTop} L ${center + spec.laneHalfWidth} ${spec.laneBottom} L ${center - spec.laneHalfWidth} ${spec.laneBottom} Z`;
+    const stoneColumnShape = (center) =>
+      `M ${center - 45} 435 L ${center - 24} 428 L ${center - 9} 436 L ${center + 13} 426 L ${center + 46} 434 L ${center + 51} 517 L ${center + 38} 576 L ${center + 50} 649 L ${center + 39} 726 L ${center + 49} 811 L ${center + 42} 870 L ${center - 45} 870 L ${center - 51} 796 L ${center - 38} 723 L ${center - 49} 645 L ${center - 39} 576 L ${center - 52} 503 Z`;
     return [
       path('M 54 95 L 506 95 L 517 886 L 43 886 Z', 0.52, 'muted', 0, 0.34),
       path('M 82 105 L 479 105 L 492 195 L 68 195 Z', 0.78, 'muted', 0, 0.74),
@@ -7645,15 +7647,32 @@ function primitivesFor(spec, frame) {
       ),
       ...spec.lanes.map((center, index) =>
         path(
-          laneShape(center),
+          stoneColumnShape(center),
           index === activeLane ? 0.92 : index === previewLane ? 0.56 : 0,
-          index === activeLane ? 'signal' : 'accent',
-          0,
-          index === activeLane ? 0.62 : 0.3,
+          index === activeLane ? 'muted' : 'accent',
+          2,
+          index === activeLane ? 0.84 : 0.18,
         ),
       ),
       line(frame.player.x, frame.player.y, frame.boss.x, frame.boss.y, strike, 'safe', 10),
       circle(frame.boss.x + 26, frame.boss.y - 16, 12 + strike * 24, strike, 'safe', 7, 0.14),
+      ...spec.lanes.map((center, index) =>
+        path(
+          `M ${center - 4} 440 L ${center + 8} 508 L ${center - 7} 570 L ${center + 11} 639 L ${center - 9} 708 L ${center + 7} 780 L ${center - 3} 858 M ${center - 36} 568 L ${center - 8} 586 L ${center + 15} 577 M ${center + 9} 710 L ${center + 35} 689`,
+          index === activeLane ? 0.9 : 0,
+          'signal',
+          4,
+        ),
+      ),
+      ...spec.lanes.map((center, index) =>
+        path(
+          `M ${center - 40} 503 L ${center - 29} 484 L ${center - 18} 511 L ${center - 32} 524 Z M ${center + 24} 624 L ${center + 37} 605 L ${center + 48} 632 L ${center + 35} 645 Z M ${center - 39} 777 L ${center - 26} 759 L ${center - 14} 788 L ${center - 28} 798 Z`,
+          index === activeLane ? 0.85 : 0,
+          'muted',
+          2,
+          0.9,
+        ),
+      ),
     ];
   }
   if (mode === 'secondary-cues-invisibility') {
