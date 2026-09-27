@@ -836,10 +836,20 @@ test('chain explosions keep a fixed order, damage one live node, and let the pla
 
 test('marked area keeps its warned footprint through detonation', () => {
   const signal = blueprintFrame('marked-area-strike', 1.2);
+  const released = blueprintFrame('marked-area-strike', 1.6);
+  const incoming = blueprintFrame('marked-area-strike', 2.84);
   const strike = blueprintFrame('marked-area-strike', 3);
+  const cleared = blueprintFrame('marked-area-strike', 3.25);
   assert.equal(signal.primitives[0].radius, 58);
   assert.equal(strike.primitives[0].radius, 58);
+  assert.equal(released.primitives[1].x, released.boss.x + 57);
+  assert.ok(incoming.primitives[1].x > released.primitives[1].x);
+  assert.equal(incoming.dangerActive, false);
+  assert.equal(strike.dangerActive, true);
+  assert.equal(cleared.dangerActive, false);
+  assert.equal(strike.playerSafe, true);
   assert.equal(blueprintPointSafe('marked-area-strike', 3, { x: 380, y: 620 }), false);
+  assert.equal(blueprintPointSafe('marked-area-strike', 3.25, { x: 380, y: 620 }), true);
 });
 
 test('mine keeps one fixed radius, arms with collision, and lets the player route around it', () => {
