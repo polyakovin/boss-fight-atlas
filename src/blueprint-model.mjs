@@ -12825,11 +12825,51 @@ function primitivesFor(spec, frame) {
       circle(head.x, head.y, 16, active, 'signal', 2, 0.88),
     ];
   }
-  if (mode === 'beam')
+  if (mode === 'beam') {
+    const emitter = { x: boss.x + 41, y: boss.y + 8 };
+    const beamOpacity = phase === 1 ? 1 : 0;
+    const stream = Array.from({ length: 7 }, (_, index) => {
+      const flow = (action * 1.25 + index / 7) % 1;
+      const y = mix(emitter.y + 55, 884, flow);
+      const x = emitter.x + [-9, 12, -4, 9, -13, 3, 14][index];
+      const width = 7 + (index % 3) * 3;
+      return path(
+        `M ${x} ${y - 21} L ${x + width} ${y - 5} L ${x + 3} ${y + 20} L ${x - width} ${y + 5} Z`,
+        beamOpacity * 0.78,
+        index % 3 === 0 ? 'signal' : 'muted',
+        1,
+        0.82,
+      );
+    });
     return [
-      line(boss.x, boss.y, boss.x, 900, preview * 0.38, 'accent', 72),
-      line(boss.x, boss.y, boss.x, 900, active, 'signal', 72),
+      line(
+        emitter.x,
+        emitter.y,
+        emitter.x,
+        900,
+        phase === 0 ? 0.16 + prepare * 0.16 : 0,
+        'accent',
+        72,
+      ),
+      line(emitter.x, emitter.y, emitter.x, 900, beamOpacity * 0.54, 'signal', 72),
+      line(emitter.x, emitter.y, emitter.x, 900, beamOpacity * 0.86, 'accent', 22),
+      ...stream,
+      path(
+        `M ${emitter.x - 17} ${emitter.y - 12} L ${emitter.x + 2} ${emitter.y - 20} L ${emitter.x + 19} ${emitter.y - 4} L ${emitter.x + 8} ${emitter.y + 18} L ${emitter.x - 12} ${emitter.y + 13} Z`,
+        phase === 2 ? 0.3 * (1 - recover) : 0.6 + prepare * 0.28,
+        'muted',
+        2,
+        0.92,
+      ),
+      path(
+        `M ${emitter.x + 2} ${emitter.y - 14} L ${emitter.x + 11} ${emitter.y - 2} L ${emitter.x + 3} ${emitter.y + 13} L ${emitter.x - 7} ${emitter.y + 2} Z`,
+        phase === 2 ? 0.24 * (1 - recover) : 0.52 + prepare * 0.4,
+        'accent',
+        2,
+        0.84,
+      ),
     ];
+  }
   if (mode === 'scanning') {
     const angle = mix(0.85, 2.3, action);
     const end = polar(boss, 720, angle);
@@ -13857,7 +13897,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     const head = frame.primitives[1];
     return Math.hypot(value.x - head.x, value.y - head.y) > head.radius + radius;
   }
-  if (mode === 'beam') return Math.abs(value.x - frame.boss.x) > 36 + radius;
+  if (mode === 'beam') return Math.abs(value.x - frame.primitives[1].x1) > 36 + radius;
   if (mode === 'scanning' || mode === 'rotating')
     return frame.primitives
       .filter((primitive) => primitive.type === 'line' && primitive.tone === 'signal')
