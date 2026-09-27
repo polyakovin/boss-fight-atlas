@@ -6149,10 +6149,35 @@ function primitivesFor(spec, frame) {
       strikePulse(frame.time, spec.firstLock, 0.34),
       strikePulse(frame.time, spec.secondLock, 0.34),
     );
+    const emitter = { x: boss.x + 43, y: boss.y + 8 };
+    const releaseStart = state === 'released-second' ? spec.secondRelease[0] : spec.firstRelease[0];
+    const flow = clamp((frame.time - releaseStart) / 0.4);
+    const direction = Math.atan2(
+      frame.attackLockEnd.y - emitter.y,
+      frame.attackLockEnd.x - emitter.x,
+    );
+    const forward = { x: Math.cos(direction), y: Math.sin(direction) };
+    const side = { x: -forward.y, y: forward.x };
+    const shards = Array.from({ length: 6 }, (_, index) => {
+      const travel = (index + 0.36 + flow * 0.6) / 7;
+      const center = {
+        x: mix(emitter.x, frame.attackLockEnd.x, travel) + side.x * (index % 2 ? 5 : -5),
+        y: mix(emitter.y, frame.attackLockEnd.y, travel) + side.y * (index % 2 ? 5 : -5),
+      };
+      const tip = (along, across) =>
+        `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+      return path(
+        `M ${tip(18, 0)} L ${tip(-4, -8)} L ${tip(-14, -3)} L ${tip(-9, 8)} L ${tip(4, 6)} Z`,
+        frame.dangerActive ? 0.86 : 0,
+        index % 3 === 0 ? 'signal' : 'muted',
+        2,
+        0.88,
+      );
+    });
     return [
       line(
-        boss.x,
-        boss.y,
+        emitter.x,
+        emitter.y,
         frame.attackLockEnd.x,
         frame.attackLockEnd.y,
         tracking ? 0.42 : 0,
@@ -6161,8 +6186,8 @@ function primitivesFor(spec, frame) {
         '8 10',
       ),
       line(
-        boss.x,
-        boss.y,
+        emitter.x,
+        emitter.y,
         frame.attackLockEnd.x,
         frame.attackLockEnd.y,
         locked && !frame.dangerActive ? 0.64 : 0,
@@ -6170,11 +6195,11 @@ function primitivesFor(spec, frame) {
         5,
       ),
       line(
-        boss.x,
-        boss.y,
+        emitter.x,
+        emitter.y,
         frame.attackLockEnd.x,
         frame.attackLockEnd.y,
-        frame.dangerActive ? 0.92 : 0,
+        frame.dangerActive ? 0.58 : 0,
         'signal',
         spec.laneHalfWidth * 2,
       ),
@@ -6201,7 +6226,23 @@ function primitivesFor(spec, frame) {
         'signal',
         6,
       ),
-      circle(boss.x, boss.y, 22, 0, 'accent', 5, 0.12),
+      path(
+        `M ${emitter.x - 14} ${emitter.y - 13} L ${emitter.x + 3} ${emitter.y - 20} L ${emitter.x + 18} ${emitter.y - 4} L ${emitter.x + 8} ${emitter.y + 17} L ${emitter.x - 12} ${emitter.y + 10} Z`,
+        tracking || locked ? 0.9 : 0,
+        'muted',
+        2,
+        0.92,
+      ),
+      line(
+        emitter.x,
+        emitter.y,
+        frame.attackLockEnd.x,
+        frame.attackLockEnd.y,
+        frame.dangerActive ? 0.84 : 0,
+        'accent',
+        12,
+      ),
+      ...shards,
     ];
   }
   if (mode === 'active-phase') {
@@ -13574,7 +13615,8 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
   if (mode === 'attack-lock')
     return (
       !frame.dangerActive ||
-      distanceToSegment(value, frame.boss, frame.attackLockEnd) > spec.laneHalfWidth + radius
+      distanceToSegment(value, { x: frame.boss.x + 43, y: frame.boss.y + 8 }, frame.attackLockEnd) >
+        spec.laneHalfWidth + radius
     );
   if (mode === 'active-phase')
     return (
@@ -17283,8 +17325,12 @@ export function blueprintFrame(id, time) {
     const locked = firstCycle ? t >= spec.firstLock : t >= spec.secondLock;
     const captured = point(firstCycle ? spec.firstLockPoint : spec.secondLockPoint);
     frame.attackLockTarget = locked ? captured : player;
-    const angle = Math.atan2(frame.attackLockTarget.y - boss.y, frame.attackLockTarget.x - boss.x);
-    frame.attackLockEnd = polar(boss, spec.laneLength, angle);
+    const emitter = { x: boss.x + 43, y: boss.y + 8 };
+    const angle = Math.atan2(
+      frame.attackLockTarget.y - emitter.y,
+      frame.attackLockTarget.x - emitter.x,
+    );
+    frame.attackLockEnd = polar(emitter, spec.laneLength, angle);
     frame.attackLocked =
       (t >= spec.firstLock && t < spec.firstRecoveryEnd) ||
       (t >= spec.secondLock && t < spec.recoveryEnd);

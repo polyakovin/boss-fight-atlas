@@ -1840,6 +1840,10 @@ test('attack lock captures a moving aim point and preserves it through each rele
   const firstRelease = blueprintFrame(id, 1.9);
   assert.equal(firstRelease.attackLockRelease, true);
   assert.equal(firstRelease.playerSafe, true);
+  assert.equal(firstRelease.primitives[2].x1, firstRelease.boss.x + 43);
+  assert.equal(firstRelease.primitives[2].y1, firstRelease.boss.y + 8);
+  assert.ok(firstRelease.primitives[6].opacity > 0, 'the crystal emitter remains visible');
+  assert.ok(firstRelease.primitives.slice(8).some((shard) => shard.opacity > 0));
   assert.equal(blueprintPointSafe(id, 1.9, firstRelease.attackLockTarget), false);
 
   const secondLock = blueprintFrame(id, 3.8);
@@ -1850,6 +1854,7 @@ test('attack lock captures a moving aim point and preserves it through each rele
   const secondRelease = blueprintFrame(id, 4.35);
   assert.equal(secondRelease.attackLockState, 'released-second');
   assert.equal(secondRelease.playerSafe, true);
+  assert.ok(secondRelease.primitives[7].opacity > 0);
   assert.match(
     renderBlueprintThumbnail(id, 'test-attack-lock'),
     /data-blueprint-preview="attack-lock"/,
