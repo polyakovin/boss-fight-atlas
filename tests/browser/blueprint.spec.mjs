@@ -324,19 +324,15 @@ test('predictive aiming freezes its forecast while the shot follows a fixed line
     'transform',
     'translate(300 620)',
   );
-  const shotX = Number(
-    await widget.locator('[data-blueprint-primitive="3"] circle').getAttribute('cx'),
-  );
+  const shotPath = widget.locator('[data-blueprint-primitive="3"] path');
+  const shotX = Number((await shotPath.getAttribute('d')).match(/^M ([\d.]+)/)[1]);
   expect(shotX).toBeGreaterThan(300);
   expect(shotX).toBeLessThan(500);
   await timeline.evaluate((element) => {
     element.value = '3800';
     element.dispatchEvent(new Event('input', { bubbles: true }));
   });
-  await expect(widget.locator('[data-blueprint-primitive="3"] circle')).toHaveAttribute(
-    'opacity',
-    '0',
-  );
+  await expect(shotPath).toHaveAttribute('opacity', '0');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

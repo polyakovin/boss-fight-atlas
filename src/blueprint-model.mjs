@@ -12753,25 +12753,55 @@ function primitivesFor(spec, frame) {
   }
   if (mode === 'predictive-aim') {
     const predicted = frame.predicted;
+    const emitter = { x: boss.x + 38, y: boss.y + 9 };
     const shotProgress = clamp((frame.time - 1.6) / 2.15);
     const shot = {
-      x: mix(boss.x, predicted.x, shotProgress),
-      y: mix(boss.y, predicted.y, shotProgress),
+      x: mix(emitter.x, predicted.x, shotProgress),
+      y: mix(emitter.y, predicted.y, shotProgress),
     };
     const live = phase === 1 && frame.time <= 3.75;
+    const heading = Math.atan2(predicted.y - emitter.y, predicted.x - emitter.x);
+    const forward = { x: Math.cos(heading), y: Math.sin(heading) };
+    const side = { x: -forward.y, y: forward.x };
+    const tip = (along, across) =>
+      `${shot.x + forward.x * along + side.x * across} ${shot.y + forward.y * along + side.y * across}`;
     return [
-      line(player.x, player.y, predicted.x, predicted.y, phase === 0 ? 0.55 : 0, 'muted', 3),
-      circle(predicted.x, predicted.y, 29, phase === 2 ? 0 : 0.72, 'signal', 2, 0.12),
+      line(player.x, player.y, predicted.x, predicted.y, phase === 0 ? 0.28 : 0, 'muted', 2),
+      circle(predicted.x, predicted.y, 29, phase === 2 ? 0 : 0.68, 'signal', 2, 0.05),
       line(
-        boss.x,
-        boss.y,
+        emitter.x,
+        emitter.y,
         predicted.x,
         predicted.y,
-        phase === 2 ? 0 : phase === 0 ? 0.36 : 0.55,
-        'signal',
-        3,
+        phase === 2 ? 0 : phase === 0 ? 0.28 : 0.08,
+        'accent',
+        2,
       ),
-      circle(shot.x, shot.y, spec.shotRadius, live ? 0.96 : 0, 'signal', 2, 0.88),
+      {
+        ...path(
+          `M ${tip(22, 0)} L ${tip(3, -12)} L ${tip(-13, -10)} L ${tip(-20, 3)} L ${tip(-8, 12)} L ${tip(8, 9)} Z`,
+          live ? 0.96 : 0,
+          'muted',
+          2,
+          0.93,
+        ),
+        x: shot.x,
+        y: shot.y,
+        radius: spec.shotRadius,
+      },
+      path(
+        `M ${predicted.x} ${predicted.y - 17} L ${predicted.x + 15} ${predicted.y} L ${predicted.x} ${predicted.y + 17} L ${predicted.x - 15} ${predicted.y} Z`,
+        phase === 2 ? 0 : 0.72,
+        'accent',
+        2,
+        0.28,
+      ),
+      path(
+        `M ${tip(20, 0)} L ${tip(0, -3)} L ${tip(-8, 12)} M ${tip(0, -3)} L ${tip(-13, -10)}`,
+        live ? 0.92 : 0,
+        'signal',
+        2,
+      ),
     ];
   }
   if (mode === 'source-track') {

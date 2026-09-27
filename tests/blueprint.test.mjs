@@ -1226,6 +1226,8 @@ test('predictive aiming commits an observable forecast and only its travelling s
   assert.equal(action.predicted.x, lock.predicted.x);
   assert.equal(action.player.x, 300);
   assert.ok(action.primitives[3].x < action.predicted.x);
+  assert.equal(action.primitives[3].type, 'path');
+  assert.ok(action.primitives[5].opacity > 0.9);
   assert.equal(blueprintPointSafe(id, 0, start.predicted), true);
   assert.equal(blueprintPointSafe(id, 3, action.predicted), true);
   assert.equal(blueprintPointSafe(id, 3, action.primitives[3]), false);
