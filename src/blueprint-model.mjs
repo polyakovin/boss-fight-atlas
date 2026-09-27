@@ -12156,34 +12156,50 @@ function primitivesFor(spec, frame) {
   }
   if (mode === 'mine') {
     const mine = point(spec.mine);
+    const throwProgress = smooth((frame.time - 0.18) / 0.62);
+    const landed = smooth((frame.time - 0.8) / 0.42);
+    const start = { x: boss.x + 34, y: boss.y + 6 };
+    const device = {
+      x: mix(start.x, mine.x, throwProgress),
+      y: mix(start.y, mine.y, throwProgress) - Math.sin(throwProgress * Math.PI) * 82,
+    };
+    const rune = (x, y) => `${device.x + x} ${device.y + y}`;
     const armedOpacity = phase === 1 ? 0.76 + 0.2 * pulse(action * 2) : 0;
     const deviceOpacity =
-      phase === 2 ? 0.72 * (1 - recover) : phase === 0 ? 0.25 + prepare * 0.75 : 1;
+      phase === 2 ? 0.72 * (1 - recover) : phase === 0 ? smooth(frame.time / 0.16) : 1;
     return [
       circle(
         mine.x,
         mine.y,
         spec.triggerRadius,
-        phase === 0 ? 0.26 + prepare * 0.38 : phase === 1 ? armedOpacity : 0.32 * (1 - recover),
+        phase === 0 ? 0.62 * landed : phase === 1 ? armedOpacity : 0.32 * (1 - recover),
         phase === 1 ? 'signal' : phase === 2 ? 'safe' : 'accent',
         phase === 1 ? 5 : 3,
-        phase === 1 ? 0.12 : 0.04,
+        phase === 1 ? 0.08 : 0,
       ),
+      {
+        ...path(
+          `M ${rune(-28, 8)} L ${rune(-24, -11)} L ${rune(-9, -19)} L ${rune(3, -27)} L ${rune(20, -13)} L ${rune(29, 6)} L ${rune(17, 21)} L ${rune(-13, 23)} Z`,
+          deviceOpacity,
+          'muted',
+          3,
+          0.94,
+        ),
+        x: device.x,
+        y: device.y,
+      },
       path(
-        `M ${mine.x} ${mine.y - 27} L ${mine.x + 25} ${mine.y - 14} L ${mine.x + 25} ${mine.y + 14} L ${mine.x} ${mine.y + 27} L ${mine.x - 25} ${mine.y + 14} L ${mine.x - 25} ${mine.y - 14} Z`,
-        deviceOpacity,
-        'muted',
-        0,
-        0.88,
-      ),
-      circle(
-        mine.x,
-        mine.y,
-        12,
+        `M ${rune(-2, -19)} L ${rune(15, -3)} L ${rune(4, 15)} L ${rune(-14, 4)} Z`,
         deviceOpacity,
         phase === 1 ? 'signal' : phase === 2 ? 'safe' : 'accent',
-        1,
-        phase === 1 ? 0.85 : 0.65,
+        2,
+        phase === 1 ? 0.94 : 0.58,
+      ),
+      path(
+        `M ${rune(-23, -10)} L ${rune(-12, -2)} M ${rune(15, -13)} L ${rune(9, -7)} M ${rune(-15, 15)} L ${rune(-5, 11)} M ${rune(15, 14)} L ${rune(10, 7)}`,
+        deviceOpacity * (phase === 1 ? 0.9 : 0.42 + 0.42 * landed),
+        phase === 2 ? 'safe' : 'signal',
+        3,
       ),
     ];
   }
