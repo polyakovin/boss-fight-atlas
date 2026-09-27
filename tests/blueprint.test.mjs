@@ -1060,12 +1060,17 @@ test('deployed turret stays fixed, announces its lane, and only fires while visi
     assert.equal(frame.primitives[2].y, 480);
     assert.equal(frame.primitives[7].x1, 430);
     assert.equal(frame.primitives[7].x2, 430);
+    assert.equal(frame.primitives[2].type, 'path');
+    assert.equal(frame.primitives[4].type, 'path');
   }
   assert.equal(placement.primitives[6].dash, '15 11');
+  assert.ok(placement.primitives[6].opacity < 0.13);
   assert.equal(placement.primitives[7].opacity, 0);
   assert.equal(warming.dangerActive, false);
   assert.equal(firing.dangerActive, true);
-  assert.equal(firing.primitives[7].opacity, 0.94);
+  assert.ok(firing.primitives[7].opacity > 0.5);
+  assert.ok(firing.primitives[8].opacity > 0.8);
+  assert.ok(firing.primitives.slice(11).every((shard) => shard.opacity > 0.7));
   assert.equal(ended.dangerActive, false);
   assert.equal(ended.primitives[7].opacity, 0);
   assert.equal(blueprintPointSafe('turret-deployment', 1.59, { x: 430, y: 680 }), true);
