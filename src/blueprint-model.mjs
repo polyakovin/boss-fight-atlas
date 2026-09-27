@@ -5343,7 +5343,6 @@ const DECORATIVE_PRIMITIVE_INDICES = Object.freeze({
   'tower-soak': [0, 1, 2],
   'entity-tether': [0, 1, 2],
   'gaze-check': [0],
-  'proximity-damage': [4, 5, 6],
   'tank-swap': [0],
   'debuff-handoff': [0],
   'ordered-targets': [0],
@@ -10673,6 +10672,9 @@ function primitivesFor(spec, frame) {
       strikePulse(frame.time, spec.firstCheck[0], 0.4),
       strikePulse(frame.time, spec.secondCheck[0], 0.4),
     );
+    const rise =
+      smooth((frame.time - spec.firstWarnAt) / 0.36) *
+      (1 - smooth((frame.time - spec.resetAt) / 0.38));
     const playerX = frame.player.x;
     const playerY = frame.player.y;
     return [
@@ -10684,43 +10686,42 @@ function primitivesFor(spec, frame) {
         0,
         0.76,
       ),
-      circle(source.x, source.y, spec.outerRadius, visible ? 0.12 : 0.03, 'safe', 0, 0.2),
-      circle(source.x, source.y, spec.innerRadius, visible ? 0.22 : 0.05, 'signal', 0, 0.22),
-      path(
-        `M ${source.x - 71} ${source.y + 6} H ${source.x + 71} L ${source.x + 53} ${source.y + 39} H ${source.x - 53} Z M ${source.x - 43} ${source.y + 39} H ${source.x + 43} V ${source.y + 101} H ${source.x - 43} Z`,
-        0.82,
-        'muted',
-        0,
-        0.73,
-      ),
-      path(
-        `M ${source.x - 45} ${source.y - 6} L ${source.x - 18} ${source.y - 24} L ${source.x + 18} ${source.y - 24} L ${source.x + 45} ${source.y - 6} Z`,
-        visible ? 0.94 : 0.4,
+      circle(source.x, source.y, spec.outerRadius, visible ? 0.24 + flash * 0.13 : 0, 'safe', 3),
+      circle(source.x, source.y, spec.innerRadius, visible ? 0.42 + flash * 0.2 : 0, 'signal', 3),
+      circle(
+        source.x,
+        source.y,
+        (spec.innerRadius + spec.outerRadius) / 2,
+        visible ? 0.27 + flash * 0.16 : 0,
         'accent',
-        0,
-        0.69,
+        2,
       ),
       path(
-        `M ${source.x - 22} ${source.y - 26} L ${source.x - 6} ${source.y - 87} L ${source.x + 6} ${source.y - 55} L ${source.x + 25} ${source.y - 93} L ${source.x + 24} ${source.y - 27} Z`,
-        visible ? 0.94 : 0.28,
-        'signal',
-        0,
-        0.76,
+        `M ${source.x - 38} ${source.y + 13} L ${source.x - 26} ${source.y - 3} L ${source.x - 9} ${source.y + 1} L ${source.x + 3} ${source.y - 9} L ${source.x + 27} ${source.y + 4} L ${source.x + 37} ${source.y + 16} L ${source.x + 15} ${source.y + 24} L ${source.x - 22} ${source.y + 23} Z`,
+        rise * 0.92,
+        'muted',
+        2,
+        0.9,
       ),
-      circle(source.x, source.y - 62, 18 + 44 * flash, flash * 0.48, tone, 0, 0.32),
       path(
-        `M ${playerX - 62} ${playerY + 15} L ${playerX - 28} ${playerY - 10} L ${playerX - 3} ${playerY + 11} L ${playerX + 26} ${playerY - 14} L ${playerX + 62} ${playerY + 17} L ${playerX + 17} ${playerY + 34} H ${playerX - 20} Z`,
-        pulse ? 0.34 + Math.min(sample / 100, 0.55) : 0,
+        `M ${source.x - 16} ${source.y + 8} L ${source.x - 8} ${source.y - 25 * rise} L ${source.x + 2} ${source.y - 47 * rise} L ${source.x + 18} ${source.y - 20 * rise} L ${source.x + 15} ${source.y + 9} Z`,
+        rise * 0.98,
+        'muted',
+        2,
+        0.94,
+      ),
+      path(
+        `M ${source.x - 7} ${source.y - 3 * rise} L ${source.x + 2} ${source.y - 39 * rise} L ${source.x + 9} ${source.y - 20 * rise} M ${source.x - 22} ${source.y + 12} L ${source.x - 11} ${source.y + 7} M ${source.x + 15} ${source.y + 11} L ${source.x + 27} ${source.y + 15}`,
+        rise * (pulse ? 0.96 : 0.68),
+        pulse ? 'signal' : 'accent',
+        3,
+      ),
+      circle(source.x, source.y - 21 * rise, 19 + 24 * flash, flash * 0.78, tone, 3),
+      path(
+        `M ${playerX - 29} ${playerY - 24} L ${playerX - 39} ${playerY - 39} L ${playerX - 35} ${playerY - 13} M ${playerX + 27} ${playerY - 28} L ${playerX + 38} ${playerY - 41} L ${playerX + 34} ${playerY - 13}`,
+        pulse ? 0.5 + Math.min(sample / 180, 0.4) : 0,
         tone,
-        0,
-        0.67,
-      ),
-      path(
-        `M ${playerX - 34} ${playerY - 97} L ${playerX - 11} ${playerY - 129} L ${playerX + 2} ${playerY - 88} Z M ${playerX + 14} ${playerY - 97} L ${playerX + 35} ${playerY - 128} L ${playerX + 38} ${playerY - 87} Z`,
-        pulse && sample > 50 ? 0.85 : 0,
-        'signal',
-        0,
-        0.8,
+        4,
       ),
     ];
   }
