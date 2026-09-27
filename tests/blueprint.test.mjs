@@ -2120,6 +2120,14 @@ test('survival phase advances on elapsed survival, clears each pulse, then resto
     'the shield is visible for the whole survival contract',
   );
   assert.ok(signal.primitives[5].opacity > 0, 'the first fixed circle previews before activation');
+  assert.ok(signal.primitives[12].opacity > 0, 'a stone seal marks the previewed circle');
+  assert.equal(signal.primitives[14].opacity, 0, 'debris waits for activation');
+
+  const firstPulse = blueprintFrame(id, 1.2);
+  const secondPulse = blueprintFrame(id, 2.2);
+  assert.ok(firstPulse.primitives[14].opacity > 0, 'the first seal ejects stone chips');
+  assert.equal(secondPulse.primitives[14].opacity, 0, 'the first seal clears before the second');
+  assert.ok(secondPulse.primitives[17].opacity > 0, 'the second seal owns its own debris');
 
   for (const [time, index] of [
     [1.2, 0],
