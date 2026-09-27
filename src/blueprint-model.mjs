@@ -12592,37 +12592,59 @@ function primitivesFor(spec, frame) {
   }
   if (mode === 'grab') {
     const target = point(spec.grabPoint);
-    const reach = phase === 0 ? prepare * 0.18 : phase === 1 ? smooth(action / 0.35) : 1 - recover;
+    const reach = phase === 0 ? prepare * 0.14 : phase === 1 ? smooth(action / 0.35) : 1 - recover;
+    const shoulder = { x: boss.x + 34, y: boss.y - 10 };
     const hand = {
-      x: mix(boss.x + 34, target.x, reach),
-      y: mix(boss.y + 18, target.y, reach),
+      x: mix(boss.x + 74, target.x, reach),
+      y: mix(boss.y + 12, target.y, reach),
     };
-    const heading = Math.atan2(hand.y - boss.y, hand.x - boss.x);
+    const heading = Math.atan2(hand.y - shoulder.y, hand.x - shoulder.x);
     const forward = { x: Math.cos(heading), y: Math.sin(heading) };
     const side = { x: -forward.y, y: forward.x };
-    const finger = (along, across) =>
-      `${hand.x + forward.x * along + side.x * across} ${hand.y + forward.y * along + side.y * across}`;
+    const elbow = {
+      x: mix(shoulder.x, hand.x, 0.46) - side.x * 10,
+      y: mix(shoulder.y, hand.y, 0.46) - side.y * 10,
+    };
+    const wrist = { x: hand.x - forward.x * 22, y: hand.y - forward.y * 22 };
+    const at = (center, along, across) =>
+      `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+    const plate = (from, to, rootWidth, tipWidth) =>
+      `M ${at(from, -5, -rootWidth)} L ${at(to, 5, -tipWidth)} L ${at(to, 5, tipWidth)} L ${at(from, -5, rootWidth)} Z`;
+    const finger = (along, across) => at(hand, along, across);
     return [
-      line(boss.x + 24, boss.y + 12, hand.x, hand.y, 0.84, 'muted', 18),
+      path(
+        `${plate(shoulder, elbow, 16, 13)} ${plate(elbow, wrist, 15, 10)}`,
+        0.98,
+        'muted',
+        3,
+        0.92,
+      ),
       {
         ...path(
-          `M ${finger(-19, -21)} L ${finger(13, -21)} L ${finger(22, 0)} L ${finger(13, 21)} L ${finger(-19, 21)} Z`,
+          `M ${finger(-22, -19)} L ${finger(8, -23)} L ${finger(20, -10)} L ${finger(20, 10)} L ${finger(8, 23)} L ${finger(-22, 19)} Z`,
+          0.98,
+          'muted',
+          3,
           0.94,
-          'accent',
-          0,
-          0.9,
         ),
         x: hand.x,
         y: hand.y,
         radius: 60,
       },
       path(
-        `M ${finger(8, -20)} L ${finger(39, -31)} L ${finger(51, -12)} L ${finger(35, -7)} L ${finger(24, -17)} Z M ${finger(8, 20)} L ${finger(39, 31)} L ${finger(51, 12)} L ${finger(35, 7)} L ${finger(24, 17)} Z`,
-        0.94,
-        'signal',
-        0,
-        0.9,
+        `M ${finger(7, -23)} L ${finger(30, -39)} L ${finger(47, -33)} L ${finger(53, -15)} L ${finger(34, -17)} L ${finger(23, -6)} Z M ${finger(7, 23)} L ${finger(30, 39)} L ${finger(47, 33)} L ${finger(53, 15)} L ${finger(34, 17)} L ${finger(23, 6)} Z`,
+        0.98,
+        'accent',
+        2,
+        0.82,
       ),
+      path(
+        `M ${at(shoulder, 6, 0)} L ${at(elbow, 0, 0)} L ${at(wrist, 0, 0)} L ${finger(7, 0)} M ${finger(21, -16)} L ${finger(40, -25)} M ${finger(21, 16)} L ${finger(40, 25)}`,
+        phase === 0 ? 0.42 + prepare * 0.4 : 0.9,
+        'signal',
+        3,
+      ),
+      circle(elbow.x, elbow.y, 7, 0.94, 'signal', 2, 0.5),
     ];
   }
   if (mode === 'burrow') {
