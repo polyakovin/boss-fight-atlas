@@ -2849,6 +2849,10 @@ test('invisibility replaces the body with bounded traces before a fixed hidden s
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="23"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(3250);
   await expect(widget).toHaveAttribute(
