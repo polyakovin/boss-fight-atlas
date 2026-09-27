@@ -9259,7 +9259,7 @@ function primitivesFor(spec, frame) {
     });
     const tokenVisible = frame.time >= spec.hitAt && frame.time < spec.capture[1];
     const ownedCount = frame.resourceStealPlayerResource;
-    const siphonOpacity = telegraph ? 0.16 + 0.24 * telegraphProgress : hitPulse * 0.62;
+    const siphonOpacity = telegraph ? 0.28 + 0.36 * telegraphProgress : hitPulse * 0.9;
     const shieldVisible = frame.resourceStealBenefitApplied ? 0.94 : 0;
     const shieldX = frame.boss.x + 78;
     const shieldY = frame.boss.y - 8;
@@ -9267,28 +9267,43 @@ function primitivesFor(spec, frame) {
       ...Array.from({ length: spec.initialResource }, (_, index) =>
         runeStone(135 + index * 58, 77, index < ownedCount ? 0.94 : 0),
       ).flat(),
-      path(
-        `M ${frame.boss.x - 36} ${frame.boss.y + 23} C ${frame.boss.x - 150} ${frame.boss.y + 150}, ${center.x - 155} ${center.y - 150}, ${center.x - 72} ${center.y - 22} L ${center.x - 39} ${center.y - 39} C ${frame.boss.x - 100} ${center.y - 172}, ${frame.boss.x - 72} ${frame.boss.y + 154}, ${frame.boss.x - 16} ${frame.boss.y + 27} Z`,
-        siphonOpacity,
-        'signal',
-        0,
-        0.68,
-      ),
-      path(
-        `M ${frame.boss.x + 32} ${frame.boss.y + 21} C ${frame.boss.x + 142} ${frame.boss.y + 146}, ${center.x + 148} ${center.y - 143}, ${center.x + 73} ${center.y - 20} L ${center.x + 37} ${center.y - 39} C ${frame.boss.x + 96} ${center.y - 167}, ${frame.boss.x + 65} ${frame.boss.y + 153}, ${frame.boss.x + 14} ${frame.boss.y + 27} Z`,
-        siphonOpacity,
-        'signal',
-        0,
-        0.68,
-      ),
+      ...[-1, 1]
+        .map((side) => {
+          const offsets = side < 0 ? [-25, -77, -107, -120, -94, -68] : [26, 62, 112, 103, 92, 69];
+          const heights = [
+            frame.boss.y + 32,
+            frame.boss.y + 112,
+            frame.boss.y + 181,
+            frame.boss.y + 256,
+            center.y - 128,
+            center.y - 45,
+          ];
+          const stones = offsets.map((offset, index) => ({
+            x: center.x + offset,
+            y: heights[index],
+          }));
+          const crack = stones
+            .map((stone, index) => `${index === 0 ? 'M' : 'L'} ${stone.x} ${stone.y}`)
+            .join(' ');
+          return [
+            path(crack, siphonOpacity, 'muted', 9),
+            path(crack, siphonOpacity * 0.75, 'signal', 2.5),
+            ...stones
+              .slice(1)
+              .map((stone) => runeStone(stone.x, stone.y, siphonOpacity, 'signal', 0.68))
+              .flat(),
+          ];
+        })
+        .flat(),
       circle(
         center.x,
         center.y,
         spec.stealRadius,
-        telegraph ? 0.45 + 0.22 * telegraphProgress : hitPulse * 0.86,
+        telegraph ? 0.44 + 0.34 * telegraphProgress : hitPulse * 0.96,
         'signal',
+        4,
         0,
-        telegraph ? 0.13 : 0.28,
+        '18 10',
       ),
       ...tokenPositions
         .map((token, index) =>
