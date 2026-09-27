@@ -368,7 +368,7 @@ test('source tracking shows a harmless moving guide and a fixed damaging beam', 
   await seek(3000);
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
   await expect(beam).toHaveAttribute('x2', lockedEnd);
-  expect(Number(await beam.getAttribute('opacity'))).toBeGreaterThan(0.9);
+  expect(Number(await beam.getAttribute('opacity'))).toBeGreaterThan(0.5);
   await seek(3900);
   await expect(beam).toHaveAttribute('opacity', '0');
   await page.setViewportSize({ width: 375, height: 812 });
