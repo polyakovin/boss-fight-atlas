@@ -2253,7 +2253,7 @@ const SPECS = {
     player: [400, 650],
     target: [365, 750],
   },
-  enrage: { mode: 'enrage', boss: [280, 350], player: [400, 650], target: [455, 735] },
+  enrage: { mode: 'enrage', boss: [280, 350], player: [400, 650], target: [400, 735] },
 };
 
 export const BLUEPRINT_MECHANIC_IDS = Object.freeze(Object.keys(SPECS));
@@ -14060,6 +14060,8 @@ function primitivesFor(spec, frame) {
   }
   const enragedState = phase === 0 ? 0.3 + prepare * 0.7 : 1;
   const enragedAttack = phase === 1 ? 1 : 0;
+  const source = { x: boss.x, y: boss.y + 49 };
+  const cracks = projectileLines(source, 5, 1, mix(150, 610, action), enragedAttack);
   return [
     path(
       'M 40 94 L 520 94 L 520 878 L 40 878 Z M 59 702 L 502 702 L 514 870 L 47 870 Z',
@@ -14076,22 +14078,70 @@ function primitivesFor(spec, frame) {
       0.58,
     ),
     path(
-      `M ${boss.x - 86} ${boss.y - 10} L ${boss.x - 106} ${boss.y - 74} L ${boss.x - 56} ${boss.y - 49} Z M ${boss.x + 86} ${boss.y - 10} L ${boss.x + 106} ${boss.y - 74} L ${boss.x + 56} ${boss.y - 49} Z M ${boss.x - 32} ${boss.y + 52} L ${boss.x - 3} ${boss.y + 98} L ${boss.x + 16} ${boss.y + 53} Z`,
+      `M ${boss.x - 43} ${boss.y - 21} L ${boss.x - 39} ${boss.y - 46} L ${boss.x - 28} ${boss.y - 29} L ${boss.x - 31} ${boss.y - 15} Z M ${boss.x + 43} ${boss.y - 21} L ${boss.x + 39} ${boss.y - 46} L ${boss.x + 28} ${boss.y - 29} L ${boss.x + 31} ${boss.y - 15} Z M ${boss.x - 14} ${boss.y + 35} L ${boss.x - 3} ${boss.y + 49} L ${boss.x + 12} ${boss.y + 35} Z`,
       enragedState,
       'signal',
-      0,
-      0.78,
+      2,
+      0.8,
     ),
     path(
-      `M ${boss.x} ${boss.y - 31} L ${boss.x + 24} ${boss.y} L ${boss.x} ${boss.y + 30} L ${boss.x - 24} ${boss.y} Z`,
+      `M ${boss.x} ${boss.y - 13} L ${boss.x + 11} ${boss.y - 1} L ${boss.x} ${boss.y + 13} L ${boss.x - 11} ${boss.y - 1} Z M ${boss.x - 5} ${boss.y - 1} L ${boss.x} ${boss.y + 6} L ${boss.x + 6} ${boss.y - 1}`,
       enragedState,
       'signal',
-      0,
-      0.82,
+      2,
+      0.85,
     ),
-    ...projectileLines(boss, 5, 1, mix(150, 610, action), enragedAttack, action * 0.8).map(
-      (projectile) => ({ ...projectile, width: 5 }),
+    ...cracks.map((crack, index) => {
+      const side = {
+        x: -(crack.y2 - crack.y1) / Math.hypot(crack.x2 - crack.x1, crack.y2 - crack.y1),
+        y: (crack.x2 - crack.x1) / Math.hypot(crack.x2 - crack.x1, crack.y2 - crack.y1),
+      };
+      const at = (progress, offset = 0) =>
+        `${mix(crack.x1, crack.x2, progress) + side.x * offset} ${mix(crack.y1, crack.y2, progress) + side.y * offset}`;
+      return {
+        ...path(
+          `M ${at(0)} L ${at(0.22, index % 2 ? 4 : -4)} L ${at(0.44, index % 2 ? -3 : 3)} L ${at(0.69, index % 2 ? 5 : -5)} L ${at(0.86, index % 2 ? -3 : 3)} L ${at(1)}`,
+          enragedAttack,
+          'signal',
+          5,
+        ),
+        dangerLane: true,
+        x1: crack.x1,
+        y1: crack.y1,
+        x2: crack.x2,
+        y2: crack.y2,
+        collisionWidth: 18,
+      };
+    }),
+    ...cracks.map((crack, index) =>
+      path(
+        `M ${crack.x2 - 10} ${crack.y2 + 2} L ${crack.x2 - 5} ${crack.y2 - 10 - (index % 3) * 3} L ${crack.x2 + 2} ${crack.y2 - 5} L ${crack.x2 + 9} ${crack.y2 + 3} Z`,
+        enragedAttack,
+        'muted',
+        2,
+        0.86,
+      ),
     ),
+    ...cracks.flatMap((crack, index) => {
+      const distance = Math.hypot(crack.x2 - crack.x1, crack.y2 - crack.y1);
+      const forward = { x: (crack.x2 - crack.x1) / distance, y: (crack.y2 - crack.y1) / distance };
+      const side = { x: -forward.y, y: forward.x };
+      return [0.33, 0.57, 0.79].map((progress, piece) => {
+        const center = {
+          x: mix(crack.x1, crack.x2, progress),
+          y: mix(crack.y1, crack.y2, progress),
+        };
+        const at = (along, across) =>
+          `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+        return path(
+          `M ${at(-11 - (piece % 2) * 3, -5)} L ${at(-2, -8)} L ${at(12, -3)} L ${at(7, 6)} L ${at(-7, 5)} Z`,
+          enragedAttack * (index % 2 ? 0.84 : 0.92),
+          'muted',
+          2,
+          0.9,
+        );
+      });
+    }),
   ];
 }
 
@@ -14746,7 +14796,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     return (
       distanceFromBoss > 90 + radius &&
       frame.primitives
-        .filter((primitive) => primitive.type === 'line')
+        .filter((primitive) => primitive.dangerLane)
         .every(
           (primitive) =>
             distanceToSegment(
@@ -14754,7 +14804,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
               { x: primitive.x1, y: primitive.y1 },
               { x: primitive.x2, y: primitive.y2 },
             ) >
-            primitive.width / 2 + radius,
+            primitive.collisionWidth / 2 + radius,
         )
     );
   throw new Error(`Missing safety rule for blueprint mode: ${mode}`);
