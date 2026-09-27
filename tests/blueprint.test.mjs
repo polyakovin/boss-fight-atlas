@@ -682,10 +682,12 @@ test('splitting projectile commits one parent, one split point, and three fragme
   assert.deepEqual(signal.player, blueprintFrame('splitting-projectile', 0).player);
   assert.equal(signal.primitives[0].type, 'path');
   assert.ok(parentFlight.primitives[0].opacity > 0.9);
-  assert.ok(parentFlight.primitives.slice(1).every((projectile) => projectile.opacity === 0));
+  assert.ok(parentFlight.primitives.slice(1, 4).every((projectile) => projectile.opacity === 0));
   assert.equal(fragments.primitives[0].opacity, 0);
-  assert.ok(fragments.primitives.slice(1).every((projectile) => projectile.opacity > 0.9));
-  assert.equal(new Set(fragments.primitives.slice(1).map((projectile) => projectile.x)).size, 3);
+  assert.ok(fragments.primitives.slice(1, 4).every((projectile) => projectile.opacity > 0.9));
+  assert.equal(new Set(fragments.primitives.slice(1, 4).map((projectile) => projectile.x)).size, 3);
+  assert.ok(signal.primitives[4].opacity > 0.5, 'the parent stone shows its fracture');
+  assert.ok(fragments.primitives.slice(5).every((facet) => facet.opacity > 0.9));
   assert.equal(
     blueprintPointSafe('splitting-projectile', 3.7, {
       x: fragments.primitives[2].x,
