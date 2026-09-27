@@ -11411,6 +11411,28 @@ function primitivesFor(spec, frame) {
     const secondSignal = frame.coordinatedDuoAttackSecondSignal;
     const interrupted = frame.coordinatedDuoAttackInterrupted;
     const linkVisible = t >= spec.leaderMove[1] && t < spec.resetAt;
+    const leaderStart = { x: leader.x, y: leader.y };
+    const followerStart = point(spec.boss);
+    const fissure = (from) => {
+      const dx = target.x - from.x;
+      const dy = target.y - from.y;
+      const distance = Math.hypot(dx, dy);
+      const sideX = (-dy / distance) * 18;
+      const sideY = (dx / distance) * 18;
+      const at = (progress, side, jitter = 0) =>
+        `${Math.round(from.x + dx * progress + sideX * side + jitter)} ${Math.round(from.y + dy * progress + sideY * side + jitter)}`;
+      return `M ${at(0, 1)} L ${at(0.19, 1, -4)} L ${at(0.4, 1, 5)} L ${at(0.62, 1, -3)} L ${at(0.82, 1, 4)} L ${at(1, 1)} L ${at(1, -1)} L ${at(0.82, -1, -5)} L ${at(0.62, -1, 3)} L ${at(0.4, -1, -4)} L ${at(0.19, -1, 5)} L ${at(0, -1)} Z`;
+    };
+    const fissureSeam = (from) =>
+      `M ${from.x} ${from.y} L ${Math.round(mix(from.x, target.x, 0.23) + 5)} ${Math.round(mix(from.y, target.y, 0.23) - 3)} L ${Math.round(mix(from.x, target.x, 0.49) - 5)} ${Math.round(mix(from.y, target.y, 0.49) + 4)} L ${Math.round(mix(from.x, target.x, 0.75) + 6)} ${Math.round(mix(from.y, target.y, 0.75) - 3)} L ${target.x} ${target.y}`;
+    const fissureChips = (from) =>
+      [0.29, 0.53, 0.76]
+        .map((progress, index) => {
+          const x = Math.round(mix(from.x, target.x, progress) + (index % 2 ? -13 : 13));
+          const y = Math.round(mix(from.y, target.y, progress) + (index % 2 ? 3 : -4));
+          return `M ${x - 11} ${y + 5} L ${x - 3} ${y - 9} L ${x + 8} ${y - 5} L ${x + 12} ${y + 7} L ${x - 3} ${y + 11} Z`;
+        })
+        .join(' ');
     return [
       path(
         'M 70 115 H 490 V 160 H 70 Z M 82 160 H 119 V 820 H 82 Z M 441 160 H 478 V 820 H 441 Z',
@@ -11500,7 +11522,7 @@ function primitivesFor(spec, frame) {
         leader.y,
         target.x,
         target.y,
-        frame.coordinatedDuoAttackLeaderActive ? 0.92 : 0,
+        frame.coordinatedDuoAttackLeaderActive ? 0.18 : 0,
         'signal',
         spec.laneHalfWidth * 2,
       ),
@@ -11509,7 +11531,7 @@ function primitivesFor(spec, frame) {
         spec.boss[1],
         target.x,
         target.y,
-        frame.coordinatedDuoAttackFollowerActive ? 0.92 : 0,
+        frame.coordinatedDuoAttackFollowerActive ? 0.18 : 0,
         'accent',
         spec.laneHalfWidth * 2,
       ),
@@ -11535,6 +11557,55 @@ function primitivesFor(spec, frame) {
         'muted',
         0,
         0.62,
+      ),
+      path(
+        fissure(leaderStart),
+        frame.coordinatedDuoAttackLeaderActive ? 0.92 : 0,
+        'muted',
+        2,
+        0.52,
+      ),
+      path(
+        fissure(followerStart),
+        frame.coordinatedDuoAttackFollowerActive ? 0.92 : 0,
+        'muted',
+        2,
+        0.52,
+      ),
+      path(
+        fissureSeam(leaderStart),
+        frame.coordinatedDuoAttackLeaderActive ? 0.94 : 0,
+        'signal',
+        4,
+      ),
+      path(
+        fissureSeam(followerStart),
+        frame.coordinatedDuoAttackFollowerActive ? 0.94 : 0,
+        'accent',
+        4,
+      ),
+      path(
+        fissureChips(leaderStart),
+        frame.coordinatedDuoAttackLeaderActive ? 0.86 : 0,
+        'muted',
+        2,
+        0.88,
+      ),
+      path(
+        fissureChips(followerStart),
+        frame.coordinatedDuoAttackFollowerActive ? 0.86 : 0,
+        'muted',
+        2,
+        0.88,
+      ),
+      path(
+        `M ${target.x - 37} ${target.y + 2} L ${target.x - 24} ${target.y - 17} L ${target.x - 6} ${target.y - 9} L ${target.x + 9} ${target.y - 20} L ${target.x + 35} ${target.y + 1} L ${target.x + 18} ${target.y + 21} L ${target.x - 19} ${target.y + 18} Z M ${target.x - 19} ${target.y + 5} L ${target.x} ${target.y - 2} L ${target.x + 13} ${target.y + 11}`,
+        frame.coordinatedDuoAttackLeaderActive || frame.coordinatedDuoAttackFollowerActive
+          ? 0.82
+          : 0,
+        'muted',
+        2,
+        0.72,
       ),
     ];
   }
