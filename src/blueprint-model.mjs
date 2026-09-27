@@ -12346,27 +12346,44 @@ function primitivesFor(spec, frame) {
     const end = point(spec.hazardEnd);
     const travel = phase === 0 ? 0 : phase === 1 ? smooth(action) : 1;
     const center = { x: mix(start.x, end.x, travel), y: mix(start.y, end.y, travel) };
-    const opacity = phase === 0 ? 0.42 + prepare * 0.3 : phase === 1 ? 0.93 : 0.68 * (1 - recover);
-    const tone = phase === 1 ? 'signal' : phase === 2 ? 'safe' : 'accent';
+    const opacity = phase === 0 ? 0.55 + prepare * 0.25 : phase === 1 ? 1 : 0.72 * (1 - recover);
     const rotation = ((center.x - start.x) / spec.hazardRadius) * 0.8;
+    const at = (angle, reach = 1) => polar(center, spec.hazardRadius * reach, angle + rotation);
+    const mark = (x, y) =>
+      `${center.x + x * Math.cos(rotation) - y * Math.sin(rotation)} ${center.y + x * Math.sin(rotation) + y * Math.cos(rotation)}`;
+    const stoneEdge = [0.04, 0.6, 1.3, 1.93, 2.54, 3.17, 3.8, 4.42, 5.06, 5.66]
+      .map((angle, index) => {
+        const vertex = at(angle, [0.96, 0.87, 1, 0.9, 0.97, 0.86, 0.99, 0.9, 0.96, 0.88][index]);
+        return `${index ? 'L' : 'M'} ${vertex.x} ${vertex.y}`;
+      })
+      .join(' ');
     const facets = Array.from({ length: 3 }, (_, index) => {
       const angle = rotation + (index * Math.PI * 2) / 3;
-      const tip = polar(center, 51, angle);
-      const left = polar(center, 27, angle - 0.43);
-      const right = polar(center, 27, angle + 0.43);
+      const tip = polar(center, 54, angle);
+      const left = polar(center, 15, angle - 0.65);
+      const right = polar(center, 22, angle + 0.54);
       return path(
-        `M ${left.x} ${left.y} L ${tip.x} ${tip.y} L ${right.x} ${right.y} Z`,
-        opacity,
+        `M ${left.x} ${left.y} L ${tip.x} ${tip.y} M ${right.x} ${right.y} L ${tip.x} ${tip.y}`,
+        opacity * 0.48,
         'muted',
-        0,
-        0.84,
+        3,
       );
     });
     return [
-      line(start.x, start.y, end.x, end.y, phase === 2 ? 0.25 * (1 - recover) : 0.48, 'muted', 6),
-      circle(center.x, center.y, spec.hazardRadius, opacity, tone, phase === 1 ? 6 : 3, 0.72),
+      line(start.x, start.y, center.x, center.y, phase === 1 ? 0.22 : 0, 'muted', 4),
+      {
+        ...path(`${stoneEdge} Z`, opacity, 'muted', 3, 0.78),
+        x: center.x,
+        y: center.y,
+        radius: spec.hazardRadius,
+      },
       ...facets,
-      circle(center.x, center.y, 17, opacity, 'accent', 2, 0.88),
+      path(
+        `M ${mark(-30, -17)} L ${mark(-11, -10)} L ${mark(-4, 10)} L ${mark(19, 2)} L ${mark(31, 19)}`,
+        opacity * (phase === 1 ? 0.95 : 0.58),
+        phase === 2 ? 'safe' : 'signal',
+        4,
+      ),
     ];
   }
   if (mode === 'converging-threats') {
