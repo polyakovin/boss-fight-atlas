@@ -12395,23 +12395,50 @@ function primitivesFor(spec, frame) {
           : spec.convergence;
     const right = spec.arenaWidth - edge;
     const opacity = phase === 0 ? 0.38 + prepare * 0.32 : phase === 1 ? 0.94 : 0.6 * (1 - recover);
-    const tone = phase === 1 ? 'signal' : phase === 2 ? 'safe' : 'accent';
+    const top = spec.threatTop;
+    const bottom = top + spec.threatHeight;
+    const leftFront = `M ${edge - 13} ${top} L ${edge} ${top + 28} L ${edge - 12} ${top + 61} L ${edge - 2} ${top + 96} L ${edge - 14} ${top + 132} L ${edge} ${top + 166} L ${edge - 10} ${top + 201} L ${edge - 4} ${bottom}`;
+    const rightFront = `M ${right + 13} ${top} L ${right} ${top + 28} L ${right + 12} ${top + 61} L ${right + 2} ${top + 96} L ${right + 14} ${top + 132} L ${right} ${top + 166} L ${right + 10} ${top + 201} L ${right + 4} ${bottom}`;
     return [
-      { ...rect(0, spec.threatTop, edge, spec.threatHeight, opacity, tone, 0.65), width: 0 },
-      { ...rect(right, spec.threatTop, edge, spec.threatHeight, opacity, tone, 0.65), width: 0 },
+      {
+        ...path(
+          `M 0 ${top} ${leftFront.replace(/^M /, 'L ')} L 0 ${bottom} Z`,
+          opacity,
+          'muted',
+          0,
+          0.76,
+        ),
+        x: 0,
+        y: top,
+        rectWidth: edge,
+        rectHeight: spec.threatHeight,
+      },
+      {
+        ...path(
+          `M ${spec.arenaWidth} ${top} ${rightFront.replace(/^M /, 'L ')} L ${spec.arenaWidth} ${bottom} Z`,
+          opacity,
+          'muted',
+          0,
+          0.76,
+        ),
+        x: right,
+        y: top,
+        rectWidth: edge,
+        rectHeight: spec.threatHeight,
+      },
+      path(leftFront, opacity * 0.83, phase === 2 ? 'safe' : 'signal', 4),
+      path(rightFront, opacity * 0.83, phase === 2 ? 'safe' : 'signal', 4),
       path(
-        `M 0 ${spec.threatTop} H ${edge} L ${edge - 18} ${spec.threatTop + 24} H 0 Z`,
-        opacity * 0.65,
+        `M ${edge - 94} ${top + 28} L ${edge - 65} ${top + 54} L ${edge - 72} ${top + 107} M ${edge - 107} ${top + 155} L ${edge - 70} ${top + 179} L ${edge - 52} ${bottom - 20}`,
+        opacity * 0.4,
         'muted',
-        0,
-        0.78,
+        4,
       ),
       path(
-        `M ${right} ${spec.threatTop} H ${spec.arenaWidth} V ${spec.threatTop + 24} H ${right + 18} Z`,
-        opacity * 0.65,
+        `M ${right + 94} ${top + 28} L ${right + 65} ${top + 54} L ${right + 72} ${top + 107} M ${right + 107} ${top + 155} L ${right + 70} ${top + 179} L ${right + 52} ${bottom - 20}`,
+        opacity * 0.4,
         'muted',
-        0,
-        0.78,
+        4,
       ),
     ];
   }
