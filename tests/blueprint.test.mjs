@@ -509,9 +509,20 @@ test('rule-specific commitments stay visible through the response and recovery',
   assert.ok(recoveringTrail[0].opacity < recoveringTrail.at(-1).opacity);
 
   const compressedArena = blueprintFrame('shrinking-safe-area', 5.2).primitives;
-  assert.equal(compressedArena[0].radius, 150);
-  assert.equal(compressedArena[0].opacity, 1);
+  assert.ok(compressedArena[0].radius > 150 && compressedArena[0].radius < 320);
+  assert.ok(compressedArena[0].opacity < 0.3);
   assert.equal(compressedArena[1].width, 0);
+  assert.equal(compressedArena.slice(2).length, 40);
+  for (let step = 160; step <= 430; step += 1)
+    assert.equal(blueprintFrame('shrinking-safe-area', step / 100).playerSafe, true);
+  for (let step = 430; step <= 599; step += 1) {
+    const frame = blueprintFrame('shrinking-safe-area', step / 100);
+    const distance = Math.hypot(frame.player.x - 280, frame.player.y - 500);
+    assert.ok(
+      distance + 24 < frame.primitives[1].radius,
+      `player crosses the receding wall at ${step / 100}s`,
+    );
+  }
 
   const enragedRecovery = blueprintFrame('enrage', 5.2);
   assert.equal(enragedRecovery.bossScale, 1.1);
