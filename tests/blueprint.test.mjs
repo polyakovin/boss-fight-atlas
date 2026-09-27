@@ -2186,6 +2186,7 @@ test('teleport reveals one destination, removes transit collision, and fixes its
   assert.equal(absent.teleportAbsent, true);
   assert.equal(absent.bossVisible, 0);
   assert.equal(absent.dangerActive, false);
+  assert.equal(absent.primitives[2].opacity, 0, 'the origin seal vanishes with the boss');
   assert.equal(blueprintPointSafe(id, 1.2, { x: 270, y: 360 }), true);
 
   const followUpTell = blueprintFrame(id, 1.9);
@@ -2197,6 +2198,9 @@ test('teleport reveals one destination, removes transit collision, and fixes its
   assert.equal(active.teleportFollowUpActive, true);
   assert.equal(active.playerSafe, true);
   assert.ok(active.primitives[6].opacity > 0, 'the same fixed lane becomes solid');
+  assert.equal(active.primitives[2].opacity, 0, 'the departure mark clears after relocation');
+  assert.ok(active.primitives[10].opacity > 0.9, 'stone fissure marks the active strike');
+  assert.ok(active.primitives[11].opacity > 0, 'broken stones travel with the fissure');
   assert.equal(blueprintPointSafe(id, 2.5, { x: 390, y: 610 }), false);
 
   const punish = blueprintFrame(id, 3.55);

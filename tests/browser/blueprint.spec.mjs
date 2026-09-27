@@ -1953,6 +1953,10 @@ test('teleport exposes its destination before absence and activates only the fix
   await expect(widget).toHaveAttribute('data-blueprint-teleport', 'absent');
   await expect(widget).toHaveAttribute('data-blueprint-teleport-absent', 'true');
   await expect(widget.locator('[data-blueprint-boss]')).toHaveAttribute('opacity', '0');
+  await expect(widget.locator('[data-blueprint-primitive="2"] path')).toHaveAttribute(
+    'opacity',
+    '0',
+  );
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
 
   await seek(1900);
@@ -1971,6 +1975,14 @@ test('teleport exposes its destination before absence and activates only the fix
   await expect(widget).toHaveAttribute('data-blueprint-teleport-follow-up', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
   await expect(widget.locator('[data-blueprint-primitive="6"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="2"] path')).toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="10"] path')).not.toHaveAttribute(
     'opacity',
     '0',
   );
