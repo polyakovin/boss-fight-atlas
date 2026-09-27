@@ -858,21 +858,27 @@ test('pulse beam keeps one lane, synchronizes collision, and crosses only during
 
   assert.deepEqual(signal.player, blueprintFrame('pulse-beam', 0).player);
   for (const frame of [signal, firstPulse, pause, secondPulse, thirdPulse]) {
-    assert.equal(frame.primitives[0].x1, 150);
-    assert.equal(frame.primitives[0].y1, 340);
+    assert.equal(frame.primitives[0].x1, 188);
+    assert.equal(frame.primitives[0].y1, 348);
     assert.equal(frame.primitives[0].x2, 500);
     assert.equal(frame.primitives[0].y2, 700);
   }
   assert.equal(firstPulse.dangerActive, true);
-  assert.equal(firstPulse.primitives[1].opacity, 1);
+  assert.equal(firstPulse.playerSafe, true);
+  assert.ok(firstPulse.primitives[1].opacity > 0.5);
+  assert.ok(firstPulse.primitives[4].opacity > 0.9);
+  assert.equal(firstPulse.primitives.slice(5).filter((shard) => shard.opacity > 0).length, 6);
   assert.equal(pause.dangerActive, false);
   assert.equal(pause.primitives[1].opacity, 0);
   assert.notDeepEqual(pause.player, signal.player);
   assert.equal(secondPulse.dangerActive, true);
-  assert.equal(secondPulse.primitives[1].opacity, 1);
+  assert.ok(secondPulse.primitives[1].opacity > 0.5);
   assert.equal(thirdPulse.dangerActive, true);
   assert.equal(blueprintPointSafe('pulse-beam', 3, { x: 325, y: 520 }), false);
   assert.equal(secondPulse.playerSafe, true);
+  for (let step = 160; step <= 430; step += 1) {
+    assert.equal(blueprintFrame('pulse-beam', step / 100).playerSafe, true);
+  }
 });
 
 test('chain explosions keep a fixed order, damage one live node, and let the player follow the wake', () => {
