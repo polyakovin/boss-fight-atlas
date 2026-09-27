@@ -2385,6 +2385,35 @@ const path = (data, opacity = 1, tone = 'signal', width = 5, fill = 0, dash = ''
   fill,
   dash,
 });
+const stoneLaneRidge = (start, end, halfWidth, opacity) => {
+  const x = (progress) => mix(start[0], end[0], progress);
+  const y = start[1];
+  return path(
+    `M ${x(0)} ${y - halfWidth + 3} L ${x(0.13)} ${y - halfWidth} L ${x(0.27)} ${y - halfWidth + 6} L ${x(0.42)} ${y - halfWidth + 1} L ${x(0.59)} ${y - halfWidth + 5} L ${x(0.75)} ${y - halfWidth} L ${x(0.9)} ${y - halfWidth + 6} L ${x(1)} ${y - halfWidth + 4} L ${x(1)} ${y + halfWidth - 5} L ${x(0.87)} ${y + halfWidth} L ${x(0.72)} ${y + halfWidth - 6} L ${x(0.55)} ${y + halfWidth - 1} L ${x(0.39)} ${y + halfWidth - 6} L ${x(0.23)} ${y + halfWidth} L ${x(0.1)} ${y + halfWidth - 5} L ${x(0)} ${y + halfWidth - 2} Z`,
+    opacity,
+    'muted',
+    2,
+    0.91,
+  );
+};
+const stoneGauntlet = (boss, thrust, opacity = 1) => {
+  const fistX = boss.x + 44 + thrust * 19;
+  return [
+    path(
+      `M ${boss.x + 27} ${boss.y - 15} L ${fistX - 8} ${boss.y - 20} L ${fistX + 10} ${boss.y - 13} L ${fistX + 15} ${boss.y + 5} L ${fistX - 1} ${boss.y + 17} L ${boss.x + 27} ${boss.y + 14} Z`,
+      opacity,
+      'muted',
+      2,
+      0.94,
+    ),
+    path(
+      `M ${fistX - 6} ${boss.y - 15} L ${fistX + 7} ${boss.y - 9} L ${fistX + 10} ${boss.y + 4} M ${fistX} ${boss.y - 2} L ${fistX + 7} ${boss.y - 9}`,
+      opacity * 0.84,
+      'accent',
+      2,
+    ),
+  ];
+};
 const arcPath = (center, radius, from, to) => {
   const start = polar(center, radius, from);
   const end = polar(center, radius, to);
@@ -6316,6 +6345,13 @@ function primitivesFor(spec, frame) {
     const inactiveFlash =
       frame.time >= spec.active[1] ? Math.max(0, 1 - (frame.time - spec.active[1]) / 0.34) : 0;
     const laneWidth = spec.laneEnd[0] - spec.laneStart[0];
+    const thrust = startup
+      ? 0.18 + 0.3 * smooth((frame.time - spec.startup[0]) / (spec.startup[1] - spec.startup[0]))
+      : activeWindow
+        ? 1
+        : inactiveMotion
+          ? mix(1, 0.18, smooth((frame.time - spec.active[1]) / 0.72))
+          : 0.18;
     return [
       path('M 36 94 H 524 V 878 H 36 Z M 57 240 H 503 V 878 H 57 Z', 0.36, 'muted', 0, 0.56),
       path(
@@ -6347,7 +6383,7 @@ function primitivesFor(spec, frame) {
         spec.laneHalfWidth * 2,
         activeWindow ? 0.94 : 0,
         'signal',
-        0.34,
+        0.12,
       ),
       line(
         spec.laneStart[0],
@@ -6388,6 +6424,19 @@ function primitivesFor(spec, frame) {
         0,
         '7 7',
       ),
+      stoneLaneRidge(
+        spec.laneStart,
+        spec.laneEnd,
+        spec.laneHalfWidth,
+        activeWindow ? 0.96 : inactiveMotion ? 0.32 : 0,
+      ),
+      path(
+        `M ${spec.laneStart[0] + 12} ${spec.laneStart[1] - 3} L ${spec.laneStart[0] + 63} ${spec.laneStart[1] + 6} L ${spec.laneStart[0] + 111} ${spec.laneStart[1] - 5} L ${spec.laneStart[0] + 161} ${spec.laneStart[1] + 4} L ${spec.laneEnd[0] - 13} ${spec.laneEnd[1] - 2}`,
+        activeWindow ? 0.96 : 0,
+        'signal',
+        3,
+      ),
+      ...stoneGauntlet(boss, thrust),
     ];
   }
   if (mode === 'recovery') {
