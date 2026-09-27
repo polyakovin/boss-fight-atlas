@@ -14005,7 +14005,7 @@ function primitivesFor(spec, frame) {
   }
   if (mode === 'phase') {
     const changed = phase === 0 ? prepare * 0.3 : phase === 1 ? 1 : 1 - recover * 0.65;
-    const gateTop = mix(680, 650, changed);
+    const gateTop = mix(680, 630, changed);
     return [
       path(
         'M 38 94 H 522 V 878 H 38 Z M 62 120 H 498 V 637 H 62 Z M 62 713 H 498 V 878 H 62 Z',
@@ -14029,32 +14029,31 @@ function primitivesFor(spec, frame) {
         0.66,
       ),
       path(
-        `M 54 ${gateTop} H 506 V 710 H 54 Z M 63 ${gateTop + 5} H 497 V ${gateTop + 11} H 63 Z`,
-        0.28 + changed * 0.64,
-        'signal',
-        0,
-        0.72,
+        `M 54 710 L 54 ${gateTop + 15} L 83 ${gateTop + 12} L 105 ${gateTop} L 129 ${gateTop + 14} L 161 ${gateTop + 8} L 190 ${gateTop + 19} L 219 ${gateTop + 7} L 247 ${gateTop + 13} L 276 ${gateTop + 2} L 307 ${gateTop + 17} L 336 ${gateTop + 9} L 367 ${gateTop + 18} L 399 ${gateTop + 4} L 425 ${gateTop + 13} L 460 ${gateTop + 7} L 506 ${gateTop + 17} L 506 710 Z`,
+        0.18 + changed * 0.57,
+        'muted',
+        2,
+        0.85,
       ),
       path(
-        'M 164 211 L 180 235 L 164 259 L 148 235 Z M 396 211 L 412 235 L 396 259 L 380 235 Z M 280 162 L 310 194 L 280 226 L 250 194 Z',
-        0.18 + changed * 0.55,
+        `M 82 ${gateTop + 13} L 101 ${gateTop + 27} L 93 ${gateTop + 48} M 160 ${gateTop + 9} L 175 ${gateTop + 30} L 166 ${gateTop + 56} M 245 ${gateTop + 13} L 256 ${gateTop + 38} L 246 ${gateTop + 62} M 336 ${gateTop + 10} L 323 ${gateTop + 33} L 340 ${gateTop + 59} M 425 ${gateTop + 14} L 440 ${gateTop + 37} L 428 ${gateTop + 62}`,
+        0.2 + changed * 0.72,
         'signal',
-        0,
-        0.7,
+        3,
       ),
       path(
-        `M ${boss.x} ${boss.y - 33} L ${boss.x + 23} ${boss.y} L ${boss.x} ${boss.y + 32} L ${boss.x - 23} ${boss.y} Z`,
+        `M ${boss.x} ${boss.y - 13} L ${boss.x + 11} ${boss.y} L ${boss.x} ${boss.y + 13} L ${boss.x - 11} ${boss.y} Z`,
         0.13 + changed * 0.72,
         'signal',
-        0,
+        2,
         0.78,
       ),
       path(
-        'M 338 753 L 365 728 L 392 753 L 365 778 Z M 355 752 L 365 741 L 375 752 L 365 763 Z',
+        'M 340 772 L 344 745 L 356 736 L 367 741 L 378 733 L 390 748 L 393 773 Z M 355 755 L 366 744 L 377 755 L 366 766 Z',
         0.25 + changed * 0.42,
         'safe',
-        0,
-        0.46,
+        2,
+        0.58,
       ),
     ];
   }
@@ -14788,7 +14787,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     return (
       value.x + radius < 55 ||
       value.x - radius > 505 ||
-      value.y + radius < 650 ||
+      value.y + radius < 630 ||
       value.y - radius > 710
     );
   }

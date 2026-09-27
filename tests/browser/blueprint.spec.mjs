@@ -4051,6 +4051,25 @@ test('moveset shapeshifting exposes complete ordered package handoffs', async ({
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+test('fight phase raises a fractured stone ridge while the player clears it', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('en/mechanics/fight-phase/');
+  const widget = page.locator('[data-blueprint-demo]');
+  const timeline = widget.locator('[data-blueprint-timeline]');
+  const ridge = widget.locator('[data-blueprint-primitive="3"] path');
+  const initialShape = await ridge.getAttribute('d');
+  await timeline.evaluate((input) => {
+    input.value = '3100';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await expect(ridge).not.toHaveAttribute('d', initialShape);
+  await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
+  await expect(widget.locator('[data-blueprint-primitive="5"] path')).toHaveAttribute(
+    'opacity',
+    '0.85',
+  );
+});
+
 test('enrage fills the forge and keeps its core lit after the volley', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('en/mechanics/enrage/');
