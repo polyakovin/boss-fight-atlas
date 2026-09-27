@@ -650,9 +650,12 @@ test('crossfire commits two opposing sources and clears their shared intersectio
 
   assert.deepEqual(signal.player, blueprintFrame('crossfire', 0).player);
   assert.deepEqual(
-    signal.primitives.map((projectile) => projectile.x),
+    signal.primitives.slice(0, 2).map((projectile) => projectile.x),
     [90, 470],
   );
+  assert.equal(intersection.primitives.length, 6);
+  assert.ok(intersection.primitives.slice(2, 4).every((facet) => facet.opacity > 0));
+  assert.ok(signal.primitives.slice(4).every((guide) => guide.opacity > 0));
   const separation = (frame) => Math.abs(frame.primitives[0].x - frame.primitives[1].x);
   assert.ok(separation(intersection) < separation(beforeCross));
   assert.ok(separation(intersection) < separation(afterCross));
