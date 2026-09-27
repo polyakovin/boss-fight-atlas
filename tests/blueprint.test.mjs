@@ -966,20 +966,21 @@ test('moving hazard carries its visible radius along a fixed lane while the play
   const middle = blueprintFrame('moving-hazard', 3);
   const late = blueprintFrame('moving-hazard', 3.9);
   const recovery = blueprintFrame('moving-hazard', 5.2);
-  const circles = [signal, early, middle, late, recovery].map((frame) => frame.primitives[1]);
+  const stones = [signal, early, middle, late, recovery].map((frame) => frame.primitives[1]);
 
   assert.deepEqual(
-    circles.map(({ radius }) => radius),
+    stones.map(({ radius }) => radius),
     [72, 72, 72, 72, 72],
   );
-  assert.equal(circles[0].x, 105);
-  assert.ok(circles[0].x < circles[1].x && circles[1].x < circles[2].x);
-  assert.ok(circles[2].x < circles[3].x && circles[3].x <= circles[4].x);
-  assert.ok(circles.every(({ y }) => y === 620));
+  assert.equal(stones[0].x, 105);
+  assert.ok(stones[0].x < stones[1].x && stones[1].x < stones[2].x);
+  assert.ok(stones[2].x < stones[3].x && stones[3].x <= stones[4].x);
+  assert.ok(stones.every(({ y }) => y === 620));
+  assert.ok(stones.every(({ type, tone }) => type === 'path' && tone === 'muted'));
   assert.notEqual(early.primitives[2].data, middle.primitives[2].data);
   assert.equal(blueprintPointSafe('moving-hazard', 1.59, { x: 105, y: 620 }), true);
-  assert.equal(blueprintPointSafe('moving-hazard', 3, { x: circles[2].x, y: 620 }), false);
-  assert.equal(blueprintPointSafe('moving-hazard', 3, { x: circles[2].x, y: 503 }), true);
+  assert.equal(blueprintPointSafe('moving-hazard', 3, { x: stones[2].x, y: 620 }), false);
+  assert.equal(blueprintPointSafe('moving-hazard', 3, { x: stones[2].x, y: 503 }), true);
   assert.equal(middle.playerSafe, true);
   assert.equal(blueprintPointSafe('moving-hazard', 5.2, { x: 485, y: 620 }), true);
   assert.ok(middle.player.y < signal.player.y, 'player must move out of the moving lane');
