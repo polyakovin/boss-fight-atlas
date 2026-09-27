@@ -12197,21 +12197,35 @@ function primitivesFor(spec, frame) {
     const orbitRadius = phase === 2 ? mix(spec.orbitRadius, 78, recover) : spec.orbitRadius;
     const rotation = spec.startAngle + spec.rotation * action + (phase === 2 ? recover * 0.4 : 0);
     const projectileOpacity = phase === 0 ? 0.54 + prepare * 0.34 : phase === 1 ? 1 : 1 - recover;
-    const projectiles = Array.from({ length: spec.projectileCount }, (_, index) =>
-      polar(boss, orbitRadius, rotation + (index * Math.PI * 2) / spec.projectileCount),
-    );
-    return projectiles.map((projectile) => ({
-      ...path(
-        `M ${projectile.x - 16} ${projectile.y - 8} L ${projectile.x - 3} ${projectile.y - 17} L ${projectile.x + 15} ${projectile.y - 11} L ${projectile.x + 17} ${projectile.y + 5} L ${projectile.x + 3} ${projectile.y + 17} L ${projectile.x - 15} ${projectile.y + 10} Z`,
-        projectileOpacity,
-        'signal',
-        0,
-        0.9,
-      ),
-      x: projectile.x,
-      y: projectile.y,
-      radius: 18,
-    }));
+    const stones = Array.from({ length: spec.projectileCount }, (_, index) => {
+      const angle = rotation + (index * Math.PI * 2) / spec.projectileCount;
+      const projectile = polar(boss, orbitRadius, angle);
+      const tangent = { x: -Math.sin(angle), y: Math.cos(angle) };
+      const radial = { x: Math.cos(angle), y: Math.sin(angle) };
+      const at = (along, across) =>
+        `${projectile.x + tangent.x * along + radial.x * across} ${projectile.y + tangent.y * along + radial.y * across}`;
+      return {
+        body: {
+          ...path(
+            `M ${at(18, 0)} L ${at(6, -14)} L ${at(-10, -12)} L ${at(-17, -1)} L ${at(-9, 14)} L ${at(8, 12)} Z`,
+            projectileOpacity,
+            'muted',
+            2,
+            0.94,
+          ),
+          x: projectile.x,
+          y: projectile.y,
+          radius: 18,
+        },
+        facet: path(
+          `M ${at(18, 0)} L ${at(0, -3)} L ${at(-9, 14)} M ${at(0, -3)} L ${at(-10, -12)}`,
+          projectileOpacity * 0.9,
+          'signal',
+          2,
+        ),
+      };
+    });
+    return [...stones.map(({ body }) => body), ...stones.map(({ facet }) => facet)];
   }
   if (mode === 'pulse-beam') {
     const beamStart = point(spec.beamStart);
@@ -13549,10 +13563,12 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
     return Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius;
   }
   if (mode === 'orbiting-projectiles')
-    return frame.primitives.every(
-      (projectile) =>
-        Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
-    );
+    return frame.primitives
+      .filter((projectile) => projectile.radius > 0)
+      .every(
+        (projectile) =>
+          Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
+      );
   if (mode === 'pulse-beam')
     return distanceToSegment(value, point(spec.beamStart), point(spec.beamEnd)) > 17 + radius;
   if (mode === 'chain-explosions') {

@@ -803,23 +803,26 @@ test('orbiting projectiles preserve radius, spacing, and a moving gap through co
 
   assert.deepEqual(signal.player, blueprintFrame('orbiting-projectiles', 0).player);
   assert.ok(
-    active.primitives.every((projectile) => projectile.type === 'path' && projectile.radius === 18),
+    active.primitives
+      .slice(0, 5)
+      .every((projectile) => projectile.type === 'path' && projectile.radius === 18),
   );
   for (const frame of [signal, early, active, late]) {
-    const distances = frame.primitives.map((projectile) =>
-      Math.hypot(projectile.x - frame.boss.x, projectile.y - frame.boss.y),
-    );
+    const distances = frame.primitives
+      .slice(0, 5)
+      .map((projectile) => Math.hypot(projectile.x - frame.boss.x, projectile.y - frame.boss.y));
     assert.ok(distances.every((distance) => Math.abs(distance - 170) < 0.001));
   }
-  const angles = active.primitives.map((projectile) =>
-    Math.atan2(projectile.y - active.boss.y, projectile.x - active.boss.x),
-  );
+  const angles = active.primitives
+    .slice(0, 5)
+    .map((projectile) => Math.atan2(projectile.y - active.boss.y, projectile.x - active.boss.x));
   const wrappedSteps = angles.map((angle, index) => {
     const next = angles[(index + 1) % angles.length];
     return (next - angle + Math.PI * 2) % (Math.PI * 2);
   });
   assert.ok(wrappedSteps.every((step) => Math.abs(step - (Math.PI * 2) / 5) < 0.001));
   assert.notDeepEqual(early.player, active.player);
+  assert.ok(active.primitives.slice(5).every((facet) => facet.opacity > 0.8));
   assert.equal(
     blueprintPointSafe('orbiting-projectiles', 3, {
       x: active.primitives[2].x,
