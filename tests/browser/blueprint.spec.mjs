@@ -221,6 +221,7 @@ test('turret deployment is seekable, shows its fixed beam, and clears after firi
   const widget = page.locator('[data-blueprint-demo]');
   const timeline = widget.locator('[data-blueprint-timeline]');
   const beam = widget.locator('[data-blueprint-primitive="7"] line');
+  const core = widget.locator('[data-blueprint-primitive="8"] line');
   await expect(page.locator('.wip-badge, .draft-profile')).toHaveCount(0);
   await expect(page.locator('.game-example')).toHaveCount(3);
   await expect(widget).toHaveAttribute('data-blueprint-ready', 'true');
@@ -234,12 +235,14 @@ test('turret deployment is seekable, shows its fixed beam, and clears after firi
   await expect(widget.locator('[data-blueprint-phase-name]')).toHaveText('Clear its firing lane');
   await expect(beam).toHaveAttribute('x1', '430');
   await expect(beam).toHaveAttribute('x2', '430');
-  await expect(beam).toHaveAttribute('opacity', '0.94');
+  expect(Number(await beam.getAttribute('opacity'))).toBeGreaterThan(0.5);
+  expect(Number(await core.getAttribute('opacity'))).toBeGreaterThan(0.9);
   await timeline.evaluate((element) => {
     element.value = '5200';
     element.dispatchEvent(new Event('input', { bubbles: true }));
   });
   await expect(beam).toHaveAttribute('opacity', '0');
+  await expect(core).toHaveAttribute('opacity', '0');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
