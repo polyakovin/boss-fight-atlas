@@ -12249,26 +12249,34 @@ function primitivesFor(spec, frame) {
   if (mode === 'chain-explosions') {
     const centers = spec.blastCenters.map(point);
     const activeIndex = phase === 1 ? chainExplosionIndex(action) : -1;
-    const pathOpacity =
-      phase === 0 ? 0.34 + prepare * 0.46 : phase === 1 ? 0.3 : 0.3 * (1 - recover);
     const chainPath = centers
       .map((center, index) => `${index ? 'L' : 'M'} ${center.x} ${center.y}`)
       .join(' ');
+    const stoneOpacity = (index) =>
+      phase === 0
+        ? 0.55 + prepare * 0.32
+        : phase === 1
+          ? index === activeIndex
+            ? 1
+            : action > CHAIN_EXPLOSION_WINDOWS[index][1]
+              ? 0.32
+              : 0.72
+          : 0.42 * (1 - recover);
     return [
-      path(chainPath, pathOpacity * 0.7, 'muted', 3),
+      path(chainPath, 0, 'muted', 3),
       ...centers.map((center, index) => {
         const elapsed = phase === 1 && action > CHAIN_EXPLOSION_WINDOWS[index][1];
         const current = index === activeIndex;
         const opacity =
           phase === 0
-            ? 0.4 + prepare * 0.42
+            ? 0.22 + prepare * 0.22
             : phase === 1
               ? current
                 ? 1
                 : elapsed
-                  ? 0.42
-                  : 0.58
-              : 0.34 * (1 - recover);
+                  ? 0.12
+                  : 0.25
+              : 0.1 * (1 - recover);
         return circle(
           center.x,
           center.y,
@@ -12276,20 +12284,42 @@ function primitivesFor(spec, frame) {
           opacity,
           current ? 'signal' : elapsed ? 'safe' : 'accent',
           current ? 4 : 2,
-          current ? 0.62 : elapsed ? 0.08 : 0.05,
+          current ? 0.12 : 0,
         );
       }),
       ...centers.map((center, index) => {
-        const elapsed = phase === 1 && action > CHAIN_EXPLOSION_WINDOWS[index][1];
-        const current = index === activeIndex;
         return path(
-          `M ${center.x} ${center.y - 18} L ${center.x + 16} ${center.y - 9} L ${center.x + 16} ${center.y + 9} L ${center.x} ${center.y + 18} L ${center.x - 16} ${center.y + 9} L ${center.x - 16} ${center.y - 9} Z`,
-          phase === 2 ? 0.24 * (1 - recover) : current ? 1 : 0.66,
-          current ? 'signal' : elapsed ? 'safe' : 'accent',
-          0,
-          current ? 0.9 : 0.72,
+          `M ${center.x - 19} ${center.y - 7} L ${center.x - 5} ${center.y - 20} L ${center.x + 13} ${center.y - 16} L ${center.x + 21} ${center.y + 4} L ${center.x + 8} ${center.y + 20} L ${center.x - 14} ${center.y + 16} L ${center.x - 22} ${center.y + 3} Z`,
+          stoneOpacity(index),
+          'muted',
+          2,
+          0.9,
         );
       }),
+      ...centers.map((center, index) =>
+        path(
+          `M ${center.x - 10} ${center.y - 5} L ${center.x + 1} ${center.y + 2} L ${center.x + 10} ${center.y - 10} M ${center.x + 1} ${center.y + 2} L ${center.x + 8} ${center.y + 12}`,
+          stoneOpacity(index) * 0.88,
+          index === activeIndex ? 'signal' : 'accent',
+          2.5,
+        ),
+      ),
+      ...centers.flatMap((center, index) =>
+        [0, 1, 2, 3].map((piece) => {
+          const angle = (piece * Math.PI * 2) / 4 + index * 0.23;
+          const shard = polar(center, 38 + (piece % 2) * 9, angle);
+          const tip = polar(shard, 15, angle);
+          const sideA = polar(shard, 9, angle + 1.72);
+          const sideB = polar(shard, 9, angle - 1.72);
+          return path(
+            `M ${tip.x} ${tip.y} L ${sideA.x} ${sideA.y} L ${center.x + Math.cos(angle) * 20} ${center.y + Math.sin(angle) * 20} L ${sideB.x} ${sideB.y} Z`,
+            index === activeIndex ? 0.96 : 0,
+            piece % 2 ? 'signal' : 'muted',
+            1.5,
+            0.86,
+          );
+        }),
+      ),
     ];
   }
   if (mode === 'mine') {
