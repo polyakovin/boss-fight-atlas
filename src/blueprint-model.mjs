@@ -12934,8 +12934,19 @@ function primitivesFor(spec, frame) {
     const elapsed = frame.time - spec.release;
     const progress = clamp(elapsed / spec.flight);
     const visible = elapsed >= 0 && elapsed <= spec.flight;
+    const shotY = mix(spec.emitterY, spec.shotEndY, progress);
     return [
-      line(spec.lanes[0] - 28, spec.emitterY, spec.lanes[2] + 28, spec.emitterY, 0.82, 'muted', 17),
+      path(
+        spec.lanes
+          .map(
+            (x, index) =>
+              `M ${x - 26} ${spec.emitterY + 14 + index * 2} L ${x - 5} ${spec.emitterY + 10} L ${x + 23} ${spec.emitterY + 14 - index} M ${x + 9} ${spec.emitterY + 12} L ${x + 16} ${spec.emitterY + 20}`,
+          )
+          .join(' '),
+        phase === 2 ? 0.42 * (1 - recover) : 0.52,
+        'muted',
+        3,
+      ),
       ...spec.lanes.map((x) =>
         line(
           x,
@@ -12948,17 +12959,40 @@ function primitivesFor(spec, frame) {
         ),
       ),
       ...spec.lanes.map((x) =>
-        circle(x, spec.emitterY, 14, phase === 0 ? 0.65 + prepare * 0.28 : 0.35, 'accent', 2, 0.74),
+        path(
+          `M ${x - 20} ${spec.emitterY + 10} L ${x - 15} ${spec.emitterY - 8} L ${x - 5} ${spec.emitterY - 15} L ${x + 4} ${spec.emitterY - 10} L ${x + 13} ${spec.emitterY - 16} L ${x + 19} ${spec.emitterY + 8} Z`,
+          phase === 0 ? 0.68 + prepare * 0.26 : 0.68,
+          'muted',
+          2,
+          0.87,
+        ),
       ),
-      ...spec.lanes.map((x) =>
-        circle(
-          x,
-          mix(spec.emitterY, spec.shotEndY, progress),
-          spec.shotRadius,
+      ...spec.lanes.map((x) => ({
+        ...path(
+          `M ${x} ${shotY + 22} L ${x - 14} ${shotY + 3} L ${x - 10} ${shotY - 8} L ${x - 3} ${shotY - 16} L ${x + 5} ${shotY - 11} L ${x + 12} ${shotY - 17} L ${x + 15} ${shotY + 2} Z`,
           visible ? 0.98 : 0,
+          'muted',
+          2,
+          0.94,
+        ),
+        x,
+        y: shotY,
+        radius: spec.shotRadius,
+      })),
+      ...spec.lanes.map((x) =>
+        path(
+          `M ${x} ${shotY + 20} L ${x + 2} ${shotY - 7} L ${x + 12} ${shotY - 16} M ${x + 2} ${shotY - 7} L ${x - 11} ${shotY + 2}`,
+          visible ? 0.96 : 0,
           'signal',
           2,
-          0.88,
+        ),
+      ),
+      ...spec.lanes.map((x) =>
+        path(
+          `M ${x - 7} ${spec.emitterY - 8} L ${x + 2} ${spec.emitterY - 5} L ${x + 7} ${spec.emitterY + 6}`,
+          phase === 0 ? 0.45 + prepare * 0.46 : 0.3,
+          'accent',
+          2,
         ),
       ),
     ];

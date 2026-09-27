@@ -420,7 +420,7 @@ test('volley releases three parallel bolts on one beat and clears its outside ro
   const widget = page.locator('[data-blueprint-demo]');
   const timeline = widget.locator('[data-blueprint-timeline]');
   const shots = [7, 8, 9].map((index) =>
-    widget.locator(`[data-blueprint-primitive="${index}"] circle`),
+    widget.locator(`[data-blueprint-primitive="${index}"] path`),
   );
   const seek = (milliseconds) =>
     timeline.evaluate((element, value) => {
@@ -438,12 +438,14 @@ test('volley releases three parallel bolts on one beat and clears its outside ro
   for (const shot of shots) expect(Number(await shot.getAttribute('opacity'))).toBeGreaterThan(0.9);
   await seek(2800);
   const positions = await Promise.all(
-    shots.map(async (shot) => ({
-      x: await shot.getAttribute('cx'),
-      y: await shot.getAttribute('cy'),
-    })),
+    shots.map((shot) =>
+      shot.evaluate((element) => {
+        const bounds = element.getBBox();
+        return { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
+      }),
+    ),
   );
-  expect(positions.map(({ x }) => x)).toEqual(['190', '280', '370']);
+  positions.forEach(({ x }, index) => expect(Math.abs(x - [190, 280, 370][index])).toBeLessThan(2));
   expect(new Set(positions.map(({ y }) => y)).size).toBe(1);
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
   await seek(3510);
