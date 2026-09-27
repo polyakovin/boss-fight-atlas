@@ -13412,22 +13412,44 @@ function primitivesFor(spec, frame) {
       [355, 540],
       [400, 600],
     ];
+    const at = (x, y, index, dx, dy) => {
+      const angle = index * 0.44;
+      return `${x + dx * Math.cos(angle) - dy * Math.sin(angle)} ${y + dx * Math.sin(angle) + dy * Math.cos(angle)}`;
+    };
     const residues = trailPoints.map(([x, y], index) => {
       const placed = clamp(action * trailPoints.length - index);
       const expiresOldestFirst = clamp(1 - recover * trailPoints.length + index);
       const opacity = phase === 0 ? 0 : phase === 1 ? placed : expiresOldestFirst;
-      return circle(x, y, 34, opacity, 'signal', 1, 0.78);
+      const outline = Array.from({ length: 9 }, (_, corner) => {
+        const angle = (corner * Math.PI * 2) / 9;
+        const reach = 34 * [0.96, 0.82, 1, 0.89, 0.95, 0.86, 0.98, 0.9, 0.94][(corner + index) % 9];
+        return at(x, y, index, Math.cos(angle) * reach, Math.sin(angle) * reach);
+      });
+      return {
+        ...path(`M ${outline.join(' L ')} Z`, opacity, 'signal', 2, 0.09),
+        x,
+        y,
+        radius: 34,
+      };
     });
     return [
-      path('M 175 280 Q 230 410 330 500 T 410 610', preview * 0.55, 'accent', 3),
+      path('M 175 280 Q 230 410 330 500 T 410 610', 0, 'accent', 3),
       ...residues,
       ...trailPoints.map(([x, y], index) =>
         path(
-          `M ${x - 20} ${y - 3} L ${x - 7} ${y - 21} L ${x + 10} ${y - 12} L ${x + 21} ${y + 12} L ${x - 10} ${y + 19} Z`,
-          residues[index].opacity * 0.85,
+          `M ${at(x, y, index, -25, -8)} L ${at(x, y, index, -9, -25)} L ${at(x, y, index, 7, -20)} L ${at(x, y, index, 25, -4)} L ${at(x, y, index, 18, 17)} L ${at(x, y, index, -12, 22)} L ${at(x, y, index, -27, 6)} Z`,
+          residues[index].opacity * 0.82,
           'muted',
-          0,
-          0.68,
+          2,
+          0.5,
+        ),
+      ),
+      ...trailPoints.map(([x, y], index) =>
+        path(
+          `M ${at(x, y, index, -19, -6)} L ${at(x, y, index, -4, -2)} L ${at(x, y, index, 5, -17)} M ${at(x, y, index, -4, -2)} L ${at(x, y, index, 4, 10)} L ${at(x, y, index, 18, 15)}`,
+          residues[index].opacity * 0.86,
+          'signal',
+          2.5,
         ),
       ),
     ];
@@ -14400,7 +14422,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
   if (mode === 'lingering') return Math.hypot(value.x - 360, value.y - 620) > 105 + radius;
   if (mode === 'trail')
     return frame.primitives
-      .filter((primitive) => primitive.type === 'circle' && primitive.opacity > 0.15)
+      .filter((primitive) => primitive.radius === 34 && primitive.opacity > 0.15)
       .every(
         (primitive) =>
           Math.hypot(value.x - primitive.x, value.y - primitive.y) > primitive.radius + radius,
