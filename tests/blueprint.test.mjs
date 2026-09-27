@@ -899,6 +899,9 @@ test('chain explosions keep a fixed order, damage one live node, and let the pla
   assert.equal(gap.dangerActive, false);
   assert.equal(third.dangerActive, true);
   assert.equal(third.primitives[3].radius, blueprintSpec('chain-explosions').blastRadius);
+  assert.equal(third.primitives[0].opacity, 0, 'the stones need no line connecting them');
+  assert.ok(third.primitives.slice(6, 11).every((stone) => stone.tone === 'muted'));
+  assert.equal(third.primitives.slice(16).filter((shard) => shard.opacity > 0).length, 4);
   assert.equal(
     third.primitives.slice(1, 6).filter((primitive) => primitive.tone === 'signal').length,
     1,
