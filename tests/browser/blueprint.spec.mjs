@@ -381,7 +381,7 @@ test('burst fire shows three separate shots from one locked source', async ({ pa
   const widget = page.locator('[data-blueprint-demo]');
   const timeline = widget.locator('[data-blueprint-timeline]');
   const shots = [2, 3, 4].map((index) =>
-    widget.locator(`[data-blueprint-primitive="${index}"] circle`),
+    widget.locator(`[data-blueprint-primitive="${index}"] path`),
   );
   const seek = (milliseconds) =>
     timeline.evaluate((element, value) => {
