@@ -443,9 +443,12 @@ test('every damaging promoted animation derives safety from its own active geome
 
 test('lock, destruction, and recovery are expressed by their own geometry', () => {
   const lockStart = blueprintFrame('target-lock', 0.8);
+  const lockCommitted = blueprintFrame('target-lock', 1.6);
   const lockAction = blueprintFrame('target-lock', 3);
-  assert.equal(lockStart.primitives[0].x, lockAction.primitives[0].x);
-  assert.equal(lockStart.primitives[0].y, lockAction.primitives[0].y);
+  assert.equal(lockStart.primitives[0].x, lockStart.player.x);
+  assert.equal(lockStart.primitives[0].y, lockStart.player.y);
+  assert.equal(lockCommitted.primitives[0].x, lockAction.primitives[0].x);
+  assert.equal(lockCommitted.primitives[0].y, lockAction.primitives[0].y);
   assert.notDeepEqual(lockStart.player, lockAction.player);
 
   const platformFrame = blueprintFrame('platform-destruction', 3.4);
@@ -527,11 +530,22 @@ test('scanning beam leaves the player clear throughout its committed sweep', () 
 test('target lock commits before the marked player leaves', () => {
   const start = blueprintFrame('target-lock', 0);
   const beforeCommit = blueprintFrame('target-lock', 1.59);
+  const committed = blueprintFrame('target-lock', 1.6);
   const afterCommit = blueprintFrame('target-lock', 2.8);
-  assert.deepEqual(beforeCommit.player, start.player);
+  const impact = blueprintFrame('target-lock', 3);
+  const cleared = blueprintFrame('target-lock', 3.34);
+  assert.notDeepEqual(beforeCommit.player, start.player);
+  assert.equal(beforeCommit.primitives[0].x, beforeCommit.player.x);
+  assert.equal(beforeCommit.primitives[0].y, beforeCommit.player.y);
+  assert.equal(committed.dangerActive, false);
   assert.notDeepEqual(afterCommit.player, start.player);
-  assert.equal(beforeCommit.primitives[0].x, afterCommit.primitives[0].x);
-  assert.equal(beforeCommit.primitives[0].y, afterCommit.primitives[0].y);
+  assert.ok(Math.abs(committed.primitives[0].x - afterCommit.primitives[0].x) < 1);
+  assert.ok(Math.abs(committed.primitives[0].y - afterCommit.primitives[0].y) < 1);
+  assert.equal(impact.dangerActive, true);
+  assert.equal(impact.playerSafe, true);
+  assert.equal(cleared.dangerActive, false);
+  assert.equal(blueprintPointSafe('target-lock', 3, { x: 390, y: 620 }), false);
+  assert.equal(blueprintPointSafe('target-lock', 3.34, { x: 390, y: 620 }), true);
 });
 
 test('telegraph sends stone shards through the announced cone and clears on recovery', () => {

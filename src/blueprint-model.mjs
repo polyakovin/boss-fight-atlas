@@ -2217,8 +2217,11 @@ const SPECS = {
   'target-lock': {
     mode: 'target-lock',
     boss: [180, 250],
-    player: [390, 620],
+    player: [315, 570],
+    lockPoint: [390, 620],
     target: [465, 735],
+    radius: 45,
+    impact: [2.95, 3.34],
   },
   'attack-combination': {
     mode: 'combo',
@@ -13014,12 +13017,71 @@ function primitivesFor(spec, frame) {
         0.7,
       ),
     ];
-  if (mode === 'target-lock')
+  if (mode === 'target-lock') {
+    const locked = point(spec.lockPoint);
+    const mark = phase === 0 ? player : locked;
+    const drop = smooth((frame.time - 2.36) / (spec.impact[0] - 2.36));
+    const spearY = mix(mark.y - 91, mark.y - 17, drop);
+    const impact = frame.dangerActive ? 1 : 0;
+    const expired = smooth((frame.time - spec.impact[1]) / 0.28);
+    const acquire = smooth(frame.time / 0.24);
+    const ringOpacity =
+      phase === 0
+        ? (0.38 + prepare * 0.36) * acquire
+        : frame.time < spec.impact[0]
+          ? 0.76
+          : impact
+            ? 0.96
+            : 0.44 * (1 - expired);
     return [
-      circle(390, 620, mix(78, 38, prepare), phase === 0 ? 0.8 : active, 'signal', 3, 0.11),
-      line(boss.x, boss.y, 390, 620, phase === 0 ? preview : active, 'accent', 3),
-      path('M 390 602 L 402 620 L 390 638 L 378 620 Z', active, 'signal', 0, 0.78),
+      circle(
+        mark.x,
+        mark.y,
+        phase === 0 ? mix(76, spec.radius, prepare) : spec.radius,
+        ringOpacity,
+        impact ? 'signal' : 'accent',
+        impact ? 5 : 3,
+        impact ? 0.16 : 0.04,
+      ),
+      line(
+        boss.x + 4,
+        boss.y - 20,
+        mark.x,
+        mark.y,
+        phase === 0 ? (0.35 + prepare * 0.3) * acquire : 0,
+        'accent',
+        3,
+      ),
+      path(
+        `M ${mark.x} ${spearY - 26} L ${mark.x + 15} ${spearY - 8} L ${mark.x + 9} ${spearY + 15} L ${mark.x} ${spearY + 29} L ${mark.x - 12} ${spearY - 5} Z`,
+        phase === 0
+          ? (0.54 + prepare * 0.42) * acquire
+          : frame.time < spec.impact[1]
+            ? 0.96
+            : 0.72 * (1 - expired),
+        'muted',
+        2,
+        0.92,
+      ),
+      path(
+        `M ${mark.x} ${spearY - 21} L ${mark.x + 7} ${spearY - 5} L ${mark.x} ${spearY + 18} M ${mark.x - 7} ${spearY - 2} L ${mark.x} ${spearY + 18}`,
+        phase === 0
+          ? (0.5 + prepare * 0.42) * acquire
+          : frame.time < spec.impact[1]
+            ? 0.92
+            : 0.56 * (1 - expired),
+        impact ? 'signal' : 'accent',
+        3,
+      ),
+      path(
+        `M ${mark.x - 38} ${mark.y + 12} L ${mark.x - 22} ${mark.y - 5} L ${mark.x - 15} ${mark.y + 13} Z M ${mark.x + 16} ${mark.y + 10} L ${mark.x + 32} ${mark.y - 12} L ${mark.x + 39} ${mark.y + 9} Z M ${mark.x - 8} ${mark.y + 13} L ${mark.x + 3} ${mark.y - 7} L ${mark.x + 10} ${mark.y + 13} Z`,
+        impact * 0.88,
+        'muted',
+        2,
+        0.9,
+      ),
     ];
+  }
   if (mode === 'combo') {
     const angle =
       phase === 0
@@ -13841,7 +13903,10 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
   }
   if (mode === 'knockback')
     return value.x >= 24 + radius && value.x <= 536 - radius && value.y <= 910 - radius;
-  if (mode === 'target-lock') return Math.hypot(value.x - 390, value.y - 620) > 45 + radius;
+  if (mode === 'target-lock')
+    return (
+      Math.hypot(value.x - spec.lockPoint[0], value.y - spec.lockPoint[1]) > spec.radius + radius
+    );
   if (mode === 'combo') {
     const wave = frame.primitives[1];
     return (
@@ -14184,6 +14249,20 @@ export function blueprintFrame(id, time) {
     x: mix(mix(startPlayer.x, targetPlayer.x, responseProgress), startPlayer.x, returnProgress),
     y: mix(mix(startPlayer.y, targetPlayer.y, responseProgress), startPlayer.y, returnProgress),
   };
+  if (spec.mode === 'target-lock') {
+    const locked = point(spec.lockPoint);
+    const track = smooth(t / BLUEPRINT_PHASE_ENDS[0]);
+    const escape = smooth(action / 0.45);
+    player =
+      phase === 0
+        ? { x: mix(startPlayer.x, locked.x, track), y: mix(startPlayer.y, locked.y, track) }
+        : phase === 1
+          ? { x: mix(locked.x, targetPlayer.x, escape), y: mix(locked.y, targetPlayer.y, escape) }
+          : {
+              x: mix(targetPlayer.x, startPlayer.x, returnProgress),
+              y: mix(targetPlayer.y, startPlayer.y, returnProgress),
+            };
+  }
   if (spec.mode === 'pull' && phase === 1) {
     const dragged = smooth(action);
     player = {
@@ -16147,137 +16226,132 @@ export function blueprintFrame(id, time) {
   const dangerActive =
     spec.mode === 'spiral'
       ? spiralShots(boss, t).some((shot) => shot.active)
-      : spec.mode === 'marked'
+      : spec.mode === 'target-lock'
         ? t >= spec.impact[0] && t < spec.impact[1]
-        : spec.mode === 'landing'
-          ? phase === 1 && action >= 0.49 && action <= 0.64
-          : spec.mode === 'pulse-beam'
-            ? phase === 1 && pulseBeamIndex(action) >= 0
-            : spec.mode === 'chain-explosions'
-              ? phase === 1 && chainExplosionIndex(action) >= 0
-              : spec.mode === 'turret-deployment'
-                ? phase === 1 && action >= 0.2 && action <= 0.88
-                : spec.mode === 'threat-generator'
-                  ? GENERATOR_RELEASES.some(
-                      (release) => t >= release && t <= release + GENERATOR_FLIGHT,
-                    )
-                  : spec.mode === 'predictive-aim'
-                    ? phase === 1 && t <= 3.75
-                    : spec.mode === 'source-track'
-                      ? phase === 1 && t >= 2.4 && t <= 3.8
-                      : spec.mode === 'burst-fire'
-                        ? spec.releases.some(
-                            (release) => t >= release && t <= release + spec.flight,
-                          )
-                        : spec.mode === 'volley'
-                          ? t >= spec.release && t <= spec.release + spec.flight
-                          : spec.mode === 'delayed-activation'
-                            ? t >= spec.activatesAt && t < spec.expiresAt
-                            : spec.mode === 'speed-change'
-                              ? t >= BLUEPRINT_PHASE_ENDS[0] && t < spec.finishAt
-                              : spec.mode === 'limited-spread'
-                                ? spec.releases.some(
-                                    (release) => t >= release && t < release + spec.flight,
-                                  )
-                                : spec.mode === 'directional-shield'
-                                  ? t >= BLUEPRINT_PHASE_ENDS[0] && t < spec.guardEnd
-                                  : spec.mode === 'damage-type-resistance' ||
-                                      spec.mode === 'situational-immunity'
-                                    ? phase === 1
-                                    : spec.mode === 'part-break'
-                                      ? t >= spec.firstShot[0] && t < spec.firstShot[1]
-                                      : spec.mode === 'attack-reflection'
-                                        ? t >= spec.reflected[0] && t < spec.reflected[1]
-                                        : spec.mode === 'counter-stance'
-                                          ? t >= spec.riposte[0] && t < spec.riposte[1]
-                                          : spec.mode === 'absorption-power-up'
-                                            ? t >= spec.shockwave[0] && t < spec.shockwave[1]
-                                            : spec.mode === 'interruptible-wind-up'
-                                              ? t >= spec.release[0] && t < spec.release[1]
-                                              : spec.mode === 'loadout-adaptation'
-                                                ? (t >= spec.reachAttack[0] &&
-                                                    t < spec.reachAttack[1]) ||
-                                                  (t >= spec.burstAttack[0] &&
-                                                    t < spec.burstAttack[1])
-                                                : spec.mode === 'wind-up'
-                                                  ? (t >= spec.firstRelease[0] &&
-                                                      t < spec.firstRelease[1]) ||
-                                                    (t >= spec.secondRelease[0] &&
-                                                      t < spec.secondRelease[1])
-                                                  : spec.mode === 'attack-lock'
+        : spec.mode === 'marked'
+          ? t >= spec.impact[0] && t < spec.impact[1]
+          : spec.mode === 'landing'
+            ? phase === 1 && action >= 0.49 && action <= 0.64
+            : spec.mode === 'pulse-beam'
+              ? phase === 1 && pulseBeamIndex(action) >= 0
+              : spec.mode === 'chain-explosions'
+                ? phase === 1 && chainExplosionIndex(action) >= 0
+                : spec.mode === 'turret-deployment'
+                  ? phase === 1 && action >= 0.2 && action <= 0.88
+                  : spec.mode === 'threat-generator'
+                    ? GENERATOR_RELEASES.some(
+                        (release) => t >= release && t <= release + GENERATOR_FLIGHT,
+                      )
+                    : spec.mode === 'predictive-aim'
+                      ? phase === 1 && t <= 3.75
+                      : spec.mode === 'source-track'
+                        ? phase === 1 && t >= 2.4 && t <= 3.8
+                        : spec.mode === 'burst-fire'
+                          ? spec.releases.some(
+                              (release) => t >= release && t <= release + spec.flight,
+                            )
+                          : spec.mode === 'volley'
+                            ? t >= spec.release && t <= spec.release + spec.flight
+                            : spec.mode === 'delayed-activation'
+                              ? t >= spec.activatesAt && t < spec.expiresAt
+                              : spec.mode === 'speed-change'
+                                ? t >= BLUEPRINT_PHASE_ENDS[0] && t < spec.finishAt
+                                : spec.mode === 'limited-spread'
+                                  ? spec.releases.some(
+                                      (release) => t >= release && t < release + spec.flight,
+                                    )
+                                  : spec.mode === 'directional-shield'
+                                    ? t >= BLUEPRINT_PHASE_ENDS[0] && t < spec.guardEnd
+                                    : spec.mode === 'damage-type-resistance' ||
+                                        spec.mode === 'situational-immunity'
+                                      ? phase === 1
+                                      : spec.mode === 'part-break'
+                                        ? t >= spec.firstShot[0] && t < spec.firstShot[1]
+                                        : spec.mode === 'attack-reflection'
+                                          ? t >= spec.reflected[0] && t < spec.reflected[1]
+                                          : spec.mode === 'counter-stance'
+                                            ? t >= spec.riposte[0] && t < spec.riposte[1]
+                                            : spec.mode === 'absorption-power-up'
+                                              ? t >= spec.shockwave[0] && t < spec.shockwave[1]
+                                              : spec.mode === 'interruptible-wind-up'
+                                                ? t >= spec.release[0] && t < spec.release[1]
+                                                : spec.mode === 'loadout-adaptation'
+                                                  ? (t >= spec.reachAttack[0] &&
+                                                      t < spec.reachAttack[1]) ||
+                                                    (t >= spec.burstAttack[0] &&
+                                                      t < spec.burstAttack[1])
+                                                  : spec.mode === 'wind-up'
                                                     ? (t >= spec.firstRelease[0] &&
                                                         t < spec.firstRelease[1]) ||
                                                       (t >= spec.secondRelease[0] &&
                                                         t < spec.secondRelease[1])
-                                                    : spec.mode === 'active-phase'
-                                                      ? t >= spec.active[0] && t < spec.active[1]
-                                                      : spec.mode === 'recovery'
+                                                    : spec.mode === 'attack-lock'
+                                                      ? (t >= spec.firstRelease[0] &&
+                                                          t < spec.firstRelease[1]) ||
+                                                        (t >= spec.secondRelease[0] &&
+                                                          t < spec.secondRelease[1])
+                                                      : spec.mode === 'active-phase'
                                                         ? t >= spec.active[0] && t < spec.active[1]
-                                                        : spec.mode === 'survival-phase'
-                                                          ? spec.hazards.some(
-                                                              ({ active }) =>
-                                                                t >= active[0] && t < active[1],
-                                                            )
-                                                          : spec.mode === 'teleport'
-                                                            ? t >= spec.active[0] &&
-                                                              t < spec.active[1]
-                                                            : spec.mode === 'boundary-attack'
+                                                        : spec.mode === 'recovery'
+                                                          ? t >= spec.active[0] &&
+                                                            t < spec.active[1]
+                                                          : spec.mode === 'survival-phase'
+                                                            ? spec.hazards.some(
+                                                                ({ active }) =>
+                                                                  t >= active[0] && t < active[1],
+                                                              )
+                                                            : spec.mode === 'teleport'
                                                               ? t >= spec.active[0] &&
                                                                 t < spec.active[1]
-                                                              : spec.mode === 'forced-scrolling'
+                                                              : spec.mode === 'boundary-attack'
                                                                 ? t >= spec.active[0] &&
                                                                   t < spec.active[1]
-                                                                : spec.mode === 'chase-herding'
-                                                                  ? false
-                                                                  : spec.mode === 'escape-phase'
+                                                                : spec.mode === 'forced-scrolling'
+                                                                  ? t >= spec.active[0] &&
+                                                                    t < spec.active[1]
+                                                                  : spec.mode === 'chase-herding'
                                                                     ? false
-                                                                    : spec.mode ===
-                                                                        'relocated-arena'
+                                                                    : spec.mode === 'escape-phase'
                                                                       ? false
                                                                       : spec.mode ===
-                                                                          'control-mode-shift'
-                                                                        ? t >= spec.wave[0] &&
-                                                                          t < spec.wave[1]
+                                                                          'relocated-arena'
+                                                                        ? false
                                                                         : spec.mode ===
-                                                                            'boss-as-terrain'
-                                                                          ? t >= spec.shake[0] &&
-                                                                            t < spec.shake[1]
+                                                                            'control-mode-shift'
+                                                                          ? t >= spec.wave[0] &&
+                                                                            t < spec.wave[1]
                                                                           : spec.mode ===
-                                                                              'cover-line-of-sight'
-                                                                            ? t >= spec.beam[0] &&
-                                                                              t < spec.beam[1]
+                                                                              'boss-as-terrain'
+                                                                            ? t >= spec.shake[0] &&
+                                                                              t < spec.shake[1]
                                                                             : spec.mode ===
-                                                                                'forced-inertia'
-                                                                              ? t >=
-                                                                                  spec.slide[0] &&
-                                                                                t < spec.slide[1]
+                                                                                'cover-line-of-sight'
+                                                                              ? t >= spec.beam[0] &&
+                                                                                t < spec.beam[1]
                                                                               : spec.mode ===
-                                                                                  'wraparound-projectile'
+                                                                                  'forced-inertia'
                                                                                 ? t >=
-                                                                                    spec.releaseAt &&
-                                                                                  t <
-                                                                                    spec
-                                                                                      .secondPass[1]
+                                                                                    spec.slide[0] &&
+                                                                                  t < spec.slide[1]
                                                                                 : spec.mode ===
-                                                                                    'beat-synced-attack'
-                                                                                  ? spec.hits.some(
-                                                                                      (hit) =>
-                                                                                        Math.abs(
-                                                                                          t - hit,
-                                                                                        ) <=
-                                                                                        spec.attackDuration /
-                                                                                          2,
-                                                                                    )
+                                                                                    'wraparound-projectile'
+                                                                                  ? t >=
+                                                                                      spec.releaseAt &&
+                                                                                    t <
+                                                                                      spec
+                                                                                        .secondPass[1]
                                                                                   : spec.mode ===
-                                                                                      'secondary-cues-invisibility'
-                                                                                    ? t >=
-                                                                                        spec
-                                                                                          .attack[0] &&
-                                                                                      t <
-                                                                                        spec
-                                                                                          .attack[1]
+                                                                                      'beat-synced-attack'
+                                                                                    ? spec.hits.some(
+                                                                                        (hit) =>
+                                                                                          Math.abs(
+                                                                                            t - hit,
+                                                                                          ) <=
+                                                                                          spec.attackDuration /
+                                                                                            2,
+                                                                                      )
                                                                                     : spec.mode ===
-                                                                                        'sound-detection'
+                                                                                        'secondary-cues-invisibility'
                                                                                       ? t >=
                                                                                           spec
                                                                                             .attack[0] &&
@@ -16285,15 +16359,23 @@ export function blueprintFrame(id, time) {
                                                                                           spec
                                                                                             .attack[1]
                                                                                       : spec.mode ===
-                                                                                          'player-controlled-boss'
+                                                                                          'sound-detection'
                                                                                         ? t >=
                                                                                             spec
-                                                                                              .active[0] &&
+                                                                                              .attack[0] &&
                                                                                           t <
                                                                                             spec
-                                                                                              .active[1]
-                                                                                        : phase ===
-                                                                                          1;
+                                                                                              .attack[1]
+                                                                                        : spec.mode ===
+                                                                                            'player-controlled-boss'
+                                                                                          ? t >=
+                                                                                              spec
+                                                                                                .active[0] &&
+                                                                                            t <
+                                                                                              spec
+                                                                                                .active[1]
+                                                                                          : phase ===
+                                                                                            1;
   const frame = {
     id,
     mode: spec.mode,
