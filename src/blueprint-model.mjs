@@ -6894,25 +6894,23 @@ function primitivesFor(spec, frame) {
         0.46,
       ),
       path(
-        'M 54 748 L 150 664 L 255 552 L 365 625 L 451 593 L 512 649 L 506 751 L 442 681 L 354 703 L 268 630 L 165 744 L 62 826 Z',
-        0.56,
+        'M 64 798 L 157 704 L 253 588 L 356 660 L 443 637 L 503 685 M 78 809 L 169 720 L 266 608 L 354 678 L 442 656 L 492 700',
+        0.46,
         'muted',
-        0,
-        0.64,
+        5,
       ),
       path(
-        'M 70 748 L 170 667 L 239 487 L 352 463 L 382 520 L 272 555 L 209 719 L 95 791 Z',
-        signalVisible || chasing ? 0.42 : 0.24,
+        'M 83 770 L 178 688 L 242 501 L 345 486 M 101 780 L 195 701 L 258 515 L 361 499',
+        signalVisible || chasing ? 0.52 : 0.18,
         'safe',
-        0,
-        0.38,
+        4,
       ),
       path(
         'M 393 545 L 414 545 L 418 688 L 391 688 Z M 480 545 L 502 545 L 503 688 L 476 688 Z M 391 682 L 503 682 L 493 707 L 402 707 Z',
         frame.time >= spec.signal[0] ? 0.82 : 0.3,
-        captured ? 'safe' : 'accent',
-        0,
-        0.74,
+        'muted',
+        2,
+        0.68,
       ),
       path(
         'M 414 618 L 445 595 L 478 618 L 445 646 Z',
@@ -6925,11 +6923,11 @@ function primitivesFor(spec, frame) {
       circle(frame.boss.x, frame.boss.y, spec.distanceBand[1], outerOpacity, 'accent', 3, 0.015),
       ...spec.checkpoints.map(([x, y], index) =>
         path(
-          `M ${x - 22} ${y + 5} L ${x} ${y - 17} L ${x + 22} ${y + 5} L ${x} ${y + 20} Z`,
+          `M ${x - 23} ${y + 3} L ${x - 9} ${y - 14} L ${x + 8} ${y - 11} L ${x + 21} ${y + 4} L ${x + 6} ${y + 18} L ${x - 16} ${y + 14} Z M ${x - 6} ${y - 4} L ${x + 5} ${y + 8} L ${x + 14} ${y + 3}`,
           signalVisible || chasing || captured ? 0.68 : 0.18,
           chaseProgress >= (index + 1) / spec.checkpoints.length ? 'safe' : 'accent',
-          0,
-          0.7,
+          2,
+          0.62,
         ),
       ),
       path(
@@ -6946,6 +6944,12 @@ function primitivesFor(spec, frame) {
         'safe',
         0,
         0.85,
+      ),
+      path(
+        `M ${frame.boss.x - 36} ${frame.boss.y + 43} L ${frame.boss.x - 13} ${frame.boss.y + 35} L ${frame.boss.x + 4} ${frame.boss.y + 49} L ${frame.boss.x + 28} ${frame.boss.y + 38} M ${frame.boss.x - 10} ${frame.boss.y + 40} L ${frame.boss.x - 21} ${frame.boss.y + 58} M ${frame.boss.x + 9} ${frame.boss.y + 47} L ${frame.boss.x + 21} ${frame.boss.y + 61}`,
+        chasing ? 0.65 : 0,
+        'accent',
+        3,
       ),
     ];
   }

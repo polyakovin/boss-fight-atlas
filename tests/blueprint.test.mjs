@@ -2331,6 +2331,7 @@ test('chase herding keeps a readable distance band, a bounded intercept, and a c
   assert.equal(pursuit.playerSafe, true);
   assert.equal(pursuit.dangerActive, false);
   assert.ok(pursuit.chaseDistance > 68 && pursuit.chaseDistance < 185);
+  assert.ok(pursuit.primitives[14].opacity > 0, 'the stone boss cracks the floor during pursuit');
 
   const intercept = blueprintFrame(id, 3.1);
   assert.equal(intercept.chaseIntercepted, true);
@@ -2340,6 +2341,7 @@ test('chase herding keeps a readable distance band, a bounded intercept, and a c
   assert.equal(captured.chaseCaptured, true);
   assert.equal(captured.dangerActive, false);
   assert.ok(captured.primitives[4].opacity > 0.8, 'the capture rune changes state');
+  assert.equal(captured.primitives[14].opacity, 0, 'the pursuit fractures stop at capture');
 
   const punish = blueprintFrame(id, 4.72);
   assert.equal(punish.punishStrike, true);
