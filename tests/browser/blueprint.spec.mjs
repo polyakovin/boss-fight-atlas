@@ -1606,12 +1606,20 @@ test('active phase separates startup, live collision, harmless follow-through, a
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="10"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(2500);
   await expect(widget).toHaveAttribute('data-blueprint-active-phase', 'follow-through');
   await expect(widget).toHaveAttribute('data-blueprint-hitbox-active', 'false');
   await expect(widget).toHaveAttribute('data-blueprint-follow-through', 'true');
   await expect(widget.locator('[data-blueprint-primitive="5"] line')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await expect(widget.locator('[data-blueprint-primitive="11"] path')).toHaveAttribute(
     'opacity',
     '0',
   );
