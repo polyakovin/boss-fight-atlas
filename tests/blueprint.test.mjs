@@ -881,6 +881,20 @@ test('pulse beam keeps one lane, synchronizes collision, and crosses only during
   }
 });
 
+test('lingering hazard grows from a thrown stone into a fractured danger patch', () => {
+  const thrown = blueprintFrame('lingering-hazard', 0.4);
+  const active = blueprintFrame('lingering-hazard', 3);
+  const faded = blueprintFrame('lingering-hazard', 5.9);
+  assert.ok(thrown.primitives[6].opacity > 0.8);
+  assert.equal(active.primitives[0].type, 'path');
+  assert.equal(active.primitives[0].radius, 105);
+  assert.ok(active.primitives.slice(2, 6).every((stone) => stone.opacity > 0.8));
+  assert.equal(active.primitives[6].opacity, 0);
+  assert.equal(blueprintPointSafe('lingering-hazard', 3, { x: 360, y: 620 }), false);
+  assert.equal(active.playerSafe, true);
+  assert.ok(faded.primitives[0].opacity < active.primitives[0].opacity);
+});
+
 test('shockwave carries stone fragments at its damaging front while the player outruns it', () => {
   const active = blueprintFrame('shockwave', 3);
   const wave = active.primitives[0];
