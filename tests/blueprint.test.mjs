@@ -478,7 +478,7 @@ test('lock, destruction, and recovery are expressed by their own geometry', () =
 
 test('rule-specific commitments stay visible through the response and recovery', () => {
   const ring = blueprintFrame('ring-volley', 3);
-  assert.equal(ring.primitives.length, 32);
+  assert.equal(ring.primitives.length, 64);
   assert.ok(ring.primitives.every((projectile) => projectile.type === 'path'));
   assert.ok(ring.primitives.some((projectile) => projectile.opacity === 0));
 
@@ -723,12 +723,14 @@ test('spiral barrage emits discrete arms and leaves a complete safe route', () =
 test('ring volley expands its individual stones around a fixed full-body gap', () => {
   const signal = blueprintFrame('ring-volley', 1.6);
   const active = blueprintFrame('ring-volley', 3);
-  assert.equal(active.primitives.length, 32);
+  assert.equal(active.primitives.length, 64);
   assert.ok(active.primitives[0].x > signal.primitives[0].x);
   assert.deepEqual(
-    signal.primitives.map((projectile) => projectile.opacity === 0),
-    active.primitives.map((projectile) => projectile.opacity === 0),
+    signal.primitives.slice(0, 32).map((projectile) => projectile.opacity === 0),
+    active.primitives.slice(0, 32).map((projectile) => projectile.opacity === 0),
   );
+  assert.equal(active.primitives[0].radius, 18);
+  assert.ok(active.primitives[32].opacity > 0, 'the first stone carries a visible crystal facet');
   for (let step = 160; step <= 430; step += 1) {
     assert.equal(blueprintFrame('ring-volley', step / 100).playerSafe, true);
   }

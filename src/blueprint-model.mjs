@@ -12770,28 +12770,43 @@ function primitivesFor(spec, frame) {
   }
   if (mode === 'fan') return projectileLines(boss, 7, 0.78, 610 * action, active);
   if (mode === 'ring') {
-    const radius = mix(70, 390, action);
+    const radius = mix(96, 390, action);
     const gapCenter = Math.atan2(690 - boss.y, 440 - boss.x);
-    return Array.from({ length: 32 }, (_, index) => {
+    const shards = Array.from({ length: 32 }, (_, index) => {
       const angle = (index * Math.PI * 2) / 32;
       const center = polar(boss, radius, angle);
       const forward = { x: Math.cos(angle), y: Math.sin(angle) };
       const side = { x: -forward.y, y: forward.x };
       const tip = (along, across) =>
         `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+      const opacity = Math.abs(angleDifference(angle, gapCenter)) > 0.28 ? active : 0;
       return {
         ...path(
-          `M ${tip(16, 0)} L ${tip(-8, 10)} L ${tip(-14, 0)} L ${tip(-8, -10)} Z`,
-          Math.abs(angleDifference(angle, gapCenter)) > 0.28 ? active : 0,
-          'signal',
-          0,
-          0.9,
+          `M ${tip(18, 0)} L ${tip(5, -8)} L ${tip(-6, -11)} L ${tip(-16, -4)} L ${tip(-9, 4)} L ${tip(-14, 10)} L ${tip(6, 8)} Z`,
+          opacity,
+          'muted',
+          2,
+          0.92,
         ),
         x: center.x,
         y: center.y,
-        radius: 15,
+        radius: 18,
       };
     });
+    const facets = shards.map((shard, index) => {
+      const angle = (index * Math.PI * 2) / 32;
+      const forward = { x: Math.cos(angle), y: Math.sin(angle) };
+      const side = { x: -forward.y, y: forward.x };
+      const tip = (along, across) =>
+        `${shard.x + forward.x * along + side.x * across} ${shard.y + forward.y * along + side.y * across}`;
+      return path(
+        `M ${tip(15, 0)} L ${tip(-4, -5)} L ${tip(-12, -3)} M ${tip(15, 0)} L ${tip(1, 6)}`,
+        shard.opacity * 0.94,
+        'signal',
+        2,
+      );
+    });
+    return [...shards, ...facets];
   }
   if (mode === 'spiral')
     return spiralShots(boss, frame.time).map((shot) => {
@@ -13459,7 +13474,7 @@ function pointClearsThreat(spec, frame, value, radius = BLUEPRINT_PLAYER_RADIUS)
   if (mode === 'burrow') return Math.hypot(value.x - 420, value.y - 590) > 78 + radius;
   if (mode === 'ring')
     return frame.primitives
-      .filter((projectile) => projectile.opacity > 0)
+      .filter((projectile) => projectile.opacity > 0 && projectile.radius > 0)
       .every(
         (projectile) =>
           Math.hypot(value.x - projectile.x, value.y - projectile.y) > projectile.radius + radius,
