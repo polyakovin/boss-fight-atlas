@@ -484,6 +484,9 @@ test('rule-specific commitments stay visible through the response and recovery',
 
   const homing = blueprintFrame('homing-projectile', 4.15);
   const homingHead = homing.primitives[1];
+  assert.equal(homingHead.type, 'path');
+  assert.equal(homingHead.radius, 22);
+  assert.ok(homing.primitives[2].opacity > 0.9);
   assert.ok(Math.hypot(homingHead.x - homing.player.x, homingHead.y - homing.player.y) > 80);
   assert.ok(homingHead.y > 650, 'homing projectile should continue straight after tracking ends');
 
