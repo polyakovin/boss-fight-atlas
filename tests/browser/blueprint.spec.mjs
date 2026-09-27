@@ -4311,6 +4311,16 @@ test('action-reactive punish locks one response and preserves the committed reco
   await expect(widget).toHaveAttribute('data-blueprint-action-reactive-punish-committed', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-action-reactive-punish-projectile', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-outcome', 'safe');
+  await expect(widget.locator('[data-blueprint-primitive="7"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
+  await seek(3300);
+  await expect(widget).toHaveAttribute('data-blueprint-action-reactive-punish', 'ordinary-attack');
+  await expect(widget.locator('[data-blueprint-primitive="14"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
   await seek(4200);
   await expect(widget).toHaveAttribute('data-blueprint-action-reactive-punish-safe-window', 'true');
   await expect(widget).toHaveAttribute('data-blueprint-action-reactive-punish-safe-action', 'true');

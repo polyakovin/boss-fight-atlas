@@ -4522,6 +4522,11 @@ test('action-reactive punish observes committed state once and preserves a boss-
   assert.equal(projectile.actionReactivePunishCommitted, true);
   assert.equal(blueprintPointSafe(id, 1.55, projectile.player), true);
   assert.equal(blueprintPointSafe(id, 1.55, projectile.actionReactivePunishProjectile), false);
+  assert.equal(projectile.primitives[6].tone, 'muted', 'the reply is a carved stone dart');
+  assert.ok(projectile.primitives[7].opacity > 0, 'a rune marks the dart in flight');
+  const ordinaryAttack = blueprintFrame(id, 3.3);
+  assert.ok(ordinaryAttack.primitives[8].opacity > 0, 'the boss raises a stone ridge');
+  assert.ok(ordinaryAttack.primitives[14].opacity > 0, 'the ridge cracks during the strike');
   const opening = blueprintFrame(id, 4.2);
   assert.equal(opening.actionReactivePunishSafeWindow, true);
   assert.equal(opening.actionReactivePunishSafeActionActive, true);
