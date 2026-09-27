@@ -12504,38 +12504,93 @@ function primitivesFor(spec, frame) {
     const shotOpacity = frame.dangerActive ? 0.94 : 0;
     const travel = phase === 0 ? smooth(prepare / 0.7) : 1;
     const capsule = {
-      x: mix(boss.x, turret.x, travel),
-      y: mix(boss.y, turret.y, travel),
+      x: mix(boss.x + 38, turret.x, travel),
+      y: mix(boss.y + 12, turret.y, travel) - Math.sin(travel * Math.PI) * 65,
     };
     return [
+      path(`M ${boss.x + 38} ${boss.y + 12} L ${turret.x} ${turret.y}`, 0, 'accent', 3),
       path(
-        `M ${boss.x} ${boss.y} L ${turret.x} ${turret.y}`,
-        phase === 0 ? 0.38 + prepare * 0.2 : 0,
-        'accent',
-        3,
-      ),
-      circle(capsule.x, capsule.y, 17, phase === 0 ? 0.9 : 0, 'accent', 2, 0.85),
-      circle(turret.x, turret.y, 39, shellOpacity, deployed ? 'accent' : 'safe', 2, 0.88),
-      circle(turret.x, turret.y, 18, shellOpacity, 'signal', 2, 0.83),
-      line(turret.x, turret.y + 24, turret.x, turret.y + 61, shellOpacity, 'accent', 13),
-      path(
-        `M ${turret.x - 15} ${turret.y - 21} L ${turret.x} ${turret.y - 38} L ${turret.x + 15} ${turret.y - 21} Z`,
-        shellOpacity,
-        'accent',
-        0,
+        `M ${capsule.x - 15} ${capsule.y - 7} L ${capsule.x - 4} ${capsule.y - 17} L ${capsule.x + 13} ${capsule.y - 8} L ${capsule.x + 17} ${capsule.y + 9} L ${capsule.x} ${capsule.y + 18} L ${capsule.x - 17} ${capsule.y + 8} Z`,
+        phase === 0 && !deployed ? 0.95 : 0,
+        'muted',
+        2,
         0.9,
+      ),
+      {
+        ...path(
+          `M ${turret.x - 37} ${turret.y - 11} L ${turret.x - 25} ${turret.y - 34} L ${turret.x + 4} ${turret.y - 39} L ${turret.x + 32} ${turret.y - 23} L ${turret.x + 39} ${turret.y + 12} L ${turret.x + 20} ${turret.y + 31} L ${turret.x - 17} ${turret.y + 38} L ${turret.x - 39} ${turret.y + 14} Z`,
+          shellOpacity,
+          'muted',
+          2,
+          0.88,
+        ),
+        x: turret.x,
+        y: turret.y,
+      },
+      path(
+        `M ${turret.x} ${turret.y - 21} L ${turret.x + 18} ${turret.y} L ${turret.x} ${turret.y + 22} L ${turret.x - 18} ${turret.y} Z`,
+        shellOpacity,
+        deployed ? 'signal' : 'accent',
+        2,
+        0.84,
+      ),
+      path(
+        `M ${turret.x - 13} ${turret.y + 22} L ${turret.x - 10} ${turret.y + 48} L ${turret.x - 17} ${turret.y + 61} L ${turret.x + 17} ${turret.y + 61} L ${turret.x + 10} ${turret.y + 48} L ${turret.x + 13} ${turret.y + 22} Z`,
+        shellOpacity,
+        'muted',
+        2,
+        0.9,
+      ),
+      path(
+        `M ${turret.x - 24} ${turret.y - 27} L ${turret.x - 6} ${turret.y - 31} M ${turret.x + 17} ${turret.y - 21} L ${turret.x + 28} ${turret.y - 4} M ${turret.x - 21} ${turret.y + 24} L ${turret.x - 6} ${turret.y + 30}`,
+        shellOpacity * 0.64,
+        'accent',
+        2,
       ),
       line(
         turret.x,
         turret.y + 61,
         end.x,
         end.y,
-        phase === 0 ? 0.3 + prepare * 0.3 : frame.dangerActive ? 0 : 0.1 * (1 - recover),
-        'signal',
+        phase === 0 ? 0.06 + prepare * 0.06 : 0,
+        'accent',
         spec.beamHalfWidth * 2,
         '15 11',
       ),
-      line(turret.x, turret.y + 61, end.x, end.y, shotOpacity, 'signal', spec.beamHalfWidth * 2),
+      line(
+        turret.x,
+        turret.y + 61,
+        end.x,
+        end.y,
+        shotOpacity * 0.6,
+        'signal',
+        spec.beamHalfWidth * 2,
+      ),
+      line(turret.x, turret.y + 61, end.x, end.y, shotOpacity, 'accent', 8),
+      ...[-1, 1].map((side) =>
+        line(
+          turret.x + side * spec.beamHalfWidth,
+          turret.y + 61,
+          end.x + side * spec.beamHalfWidth,
+          end.y,
+          phase === 0 ? 0.27 + prepare * 0.24 : 0,
+          'accent',
+          2,
+          '10 14',
+        ),
+      ),
+      ...Array.from({ length: 7 }, (_, index) => {
+        const flow = (action * 1.3 + index / 7) % 1;
+        const y = mix(turret.y + 78, end.y - 12, flow);
+        const x = turret.x + [-9, 11, -5, 8, -11, 5, 0][index];
+        return path(
+          `M ${x} ${y - 19} L ${x + 7} ${y - 3} L ${x + 1} ${y + 18} L ${x - 7} ${y + 2} Z`,
+          shotOpacity * 0.8,
+          'muted',
+          1,
+          0.82,
+        );
+      }),
     ];
   }
   if (mode === 'threat-generator') {
