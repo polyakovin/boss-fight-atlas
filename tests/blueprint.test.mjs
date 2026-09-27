@@ -2678,6 +2678,7 @@ test('wraparound projectile preserves one shot across linked boundaries before c
   assert.equal(first.playerSafe, true);
   assert.equal(blueprintPointSafe(id, 1.7, first.wraparoundProjectilePoint), false);
   assert.ok(first.primitives[11].opacity > 0.9, 'the original projectile is visible');
+  assert.ok(first.primitives[17].opacity > 0, 'the moving stone retains its glowing seam');
 
   const crossing = blueprintFrame(id, 2.3);
   assert.equal(crossing.wraparoundCrossing, true);
@@ -2686,6 +2687,7 @@ test('wraparound projectile preserves one shot across linked boundaries before c
   assert.ok(crossing.primitives[12].opacity > 0.7, 'the exit seam holds the same shot');
   assert.ok(crossing.primitives[13].opacity > 0.7, 'the linked entry announces re-entry');
   assert.equal(crossing.primitives[11].opacity, 0, 'no third projectile appears during crossing');
+  assert.equal(crossing.primitives[17].opacity, 0, 'the seam vanishes with the crossing stone');
 
   const second = blueprintFrame(id, 2.8);
   assert.equal(second.wraparoundSecondPass, true);
