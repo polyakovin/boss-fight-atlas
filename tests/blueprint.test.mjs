@@ -1274,7 +1274,9 @@ test('source tracking turns its emitter before lock and keeps the damaging beam 
   assert.equal(cue.sourceAngle, lock.sourceAngle);
   assert.equal(active.sourceAngle, lock.sourceAngle);
   assert.equal(cue.primitives[3].opacity, 0);
-  assert.ok(active.primitives[3].opacity > 0.9);
+  assert.ok(active.primitives[3].opacity > 0.5);
+  assert.ok(active.primitives[5].opacity > 0.8);
+  assert.ok(active.primitives.slice(6).every((shard) => shard.opacity > 0.7));
   assert.equal(end.primitives[3].opacity, 0);
   assert.equal(blueprintPointSafe(id, 1.3, blueprintFrame(id, 1.3).player), true);
   const beam = active.primitives[3];

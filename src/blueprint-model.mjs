@@ -176,7 +176,7 @@ const SPECS = {
     boss: [280, 295],
     player: [400, 655],
     target: [420, 655],
-    emitter: [282, 281],
+    emitter: [320, 303],
     lock: [255, 655],
     beamLength: 640,
     beamHalfWidth: 18,
@@ -12808,20 +12808,49 @@ function primitivesFor(spec, frame) {
     const source = point(spec.emitter);
     const end = polar(source, spec.beamLength, frame.sourceAngle);
     const tip = polar(source, 42, frame.sourceAngle);
-    const cue = phase === 0 ? 0.44 + prepare * 0.32 : frame.time < 2.4 ? 0.84 : 0;
-    const beam = frame.dangerActive ? 0.96 : 0;
+    const cue = phase === 0 ? 0.28 + prepare * 0.2 : frame.time < 2.4 ? 0.52 : 0;
+    const beam = frame.dangerActive ? 0.6 : 0;
+    const forward = { x: Math.cos(frame.sourceAngle), y: Math.sin(frame.sourceAngle) };
+    const side = { x: -forward.y, y: forward.x };
+    const at = (center, along, across) =>
+      `${center.x + forward.x * along + side.x * across} ${center.y + forward.y * along + side.y * across}`;
+    const stream = Array.from({ length: 6 }, (_, index) => {
+      const flow = ((frame.time - 2.4) * 1.3 + index / 6) % 1;
+      const center = polar(source, 65 + flow * 550, frame.sourceAngle);
+      return path(
+        `M ${at(center, 17, 0)} L ${at(center, 2, -8)} L ${at(center, -14, -5)} L ${at(center, -9, 8)} L ${at(center, 4, 7)} Z`,
+        frame.dangerActive ? 0.78 : 0,
+        'muted',
+        1.5,
+        0.84,
+      );
+    });
     return [
-      circle(source.x, source.y, 21, 0.95, 'accent', 2, 0.82),
-      line(source.x, source.y, tip.x, tip.y, 0.98, 'muted', 15),
+      path(
+        `M ${source.x - 20} ${source.y - 7} L ${source.x - 9} ${source.y - 21} L ${source.x + 11} ${source.y - 18} L ${source.x + 22} ${source.y + 3} L ${source.x + 8} ${source.y + 19} L ${source.x - 18} ${source.y + 11} Z`,
+        phase === 2 ? 0.65 * (1 - recover) : 0.9,
+        'muted',
+        2,
+        0.88,
+      ),
+      path(
+        `M ${at(source, 5, -9)} L ${at(tip, 2, -7)} L ${at(tip, 10, 0)} L ${at(tip, 2, 7)} L ${at(source, 5, 9)} Z`,
+        phase === 2 ? 0.65 * (1 - recover) : 0.94,
+        'muted',
+        2,
+        0.82,
+      ),
       line(source.x, source.y, end.x, end.y, cue, 'accent', 3),
       line(source.x, source.y, end.x, end.y, beam, 'signal', spec.beamHalfWidth * 2),
       path(
-        `M ${tip.x - 16} ${tip.y - 15} L ${tip.x + 13} ${tip.y} L ${tip.x - 16} ${tip.y + 15} Z`,
-        beam * 0.8,
-        'signal',
-        0,
-        0.82,
+        `M ${at(tip, 10, 0)} L ${at(tip, -2, -8)} L ${at(tip, -8, 0)} L ${at(tip, -2, 8)} Z`,
+        phase === 2 ? 0.5 * (1 - recover) : 0.75 + 0.18 * beam,
+        'accent',
+        2,
+        0.8,
       ),
+      line(source.x, source.y, end.x, end.y, frame.dangerActive ? 0.9 : 0, 'accent', 8),
+      ...stream,
     ];
   }
   if (mode === 'burst-fire') {
