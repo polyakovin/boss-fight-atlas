@@ -7524,6 +7524,8 @@ function primitivesFor(spec, frame) {
     const projectile = frame.wraparoundProjectilePoint;
     const projectileVisible = frame.wraparoundFirstPass || frame.wraparoundSecondPass;
     const strike = strikePulse(frame.time, spec.punishAt, 0.38);
+    const stoneShot = (x, y) =>
+      `M ${x - 22} ${y - 7} L ${x - 10} ${y - 19} L ${x + 8} ${y - 14} L ${x + 21} ${y - 2} L ${x + 11} ${y + 16} L ${x - 9} ${y + 18} L ${x - 21} ${y + 6} Z`;
     return [
       path('M 36 100 L 524 100 L 524 880 L 36 880 Z', 0.54, 'muted', 0, 0.32),
       path('M 40 112 L 83 106 L 88 863 L 40 877 Z', 0.76, 'muted', 0, 0.72),
@@ -7542,13 +7544,18 @@ function primitivesFor(spec, frame) {
         0,
         0.82,
       ),
-      path('M 88 550 L 472 550 L 472 630 L 88 630 Z', 0.54, 'muted', 0, 0.68),
       path(
-        'M 88 568 L 472 568 L 472 612 L 88 612 Z',
+        'M 88 568 L 139 561 L 189 569 L 237 557 L 288 566 L 337 560 L 391 570 L 443 558 L 472 567 L 472 617 L 426 624 L 371 611 L 320 627 L 271 616 L 220 628 L 170 616 L 121 627 L 88 618 Z',
+        0.54,
+        'muted',
+        2,
+        0.25,
+      ),
+      path(
+        'M 88 568 L 139 561 L 189 569 L 237 557 L 288 566 L 337 560 L 391 570 L 443 558 L 472 567 M 88 618 L 121 627 L 170 616 L 220 628 L 271 616 L 320 627 L 371 611 L 426 624 L 472 617',
         routeVisible ? 0.55 : 0.08,
         'accent',
-        0,
-        0.44,
+        3,
       ),
       path('M 167 415 L 190 424 L 205 547 L 183 566 L 176 535 Z', 0.58, 'muted', 0, 0.72),
       path(
@@ -7560,27 +7567,9 @@ function primitivesFor(spec, frame) {
       ),
       path('M 354 728 L 466 728 L 473 856 L 349 856 Z', 0.68, 'muted', 0, 0.78),
       path('M 410 745 L 434 790 L 410 834 L 386 790 Z', linked ? 0.42 : 0.18, 'safe', 0, 0.5),
-      path(
-        `M ${projectile.x - 22} ${projectile.y - 15} L ${projectile.x + 20} ${projectile.y} L ${projectile.x - 22} ${projectile.y + 15} L ${projectile.x - 10} ${projectile.y} Z`,
-        projectileVisible ? 0.96 : 0,
-        'signal',
-        0,
-        0.9,
-      ),
-      path(
-        `M ${spec.rightBoundary - 16} ${spec.laneY - 20} L ${spec.rightBoundary + 12} ${spec.laneY} L ${spec.rightBoundary - 16} ${spec.laneY + 20} Z`,
-        crossing ? 0.82 : 0,
-        'signal',
-        0,
-        0.8,
-      ),
-      path(
-        `M ${spec.leftBoundary - 12} ${spec.laneY - 20} L ${spec.leftBoundary + 16} ${spec.laneY} L ${spec.leftBoundary - 12} ${spec.laneY + 20} Z`,
-        crossing ? 0.82 : 0,
-        'signal',
-        0,
-        0.8,
-      ),
+      path(stoneShot(projectile.x, projectile.y), projectileVisible ? 0.96 : 0, 'muted', 2, 0.95),
+      path(stoneShot(spec.rightBoundary, spec.laneY), crossing ? 0.82 : 0, 'muted', 2, 0.9),
+      path(stoneShot(spec.leftBoundary, spec.laneY), crossing ? 0.82 : 0, 'muted', 2, 0.9),
       path(
         `M ${spec.leftBoundary + 7} ${spec.laneY - 45} L ${spec.leftBoundary + 22} ${spec.laneY - 24} L ${spec.leftBoundary + 5} ${spec.laneY - 18} Z M ${spec.rightBoundary - 7} ${spec.laneY + 45} L ${spec.rightBoundary - 22} ${spec.laneY + 24} L ${spec.rightBoundary - 5} ${spec.laneY + 18} Z`,
         crossing ? 0.9 : 0,
@@ -7590,6 +7579,12 @@ function primitivesFor(spec, frame) {
       ),
       line(frame.player.x, frame.player.y, frame.boss.x, frame.boss.y, strike, 'safe', 10),
       circle(frame.boss.x + 24, frame.boss.y - 18, 12 + strike * 24, strike, 'safe', 7, 0.14),
+      path(
+        `M ${projectile.x - 14} ${projectile.y - 3} L ${projectile.x - 1} ${projectile.y - 10} L ${projectile.x + 12} ${projectile.y - 2} M ${projectile.x - 5} ${projectile.y + 10} L ${projectile.x + 4} ${projectile.y + 2}`,
+        projectileVisible ? 0.88 : 0,
+        'signal',
+        3,
+      ),
     ];
   }
   if (mode === 'beat-synced-attack') {

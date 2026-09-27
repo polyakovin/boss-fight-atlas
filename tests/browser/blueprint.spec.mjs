@@ -2686,6 +2686,10 @@ test('wraparound projectile signals its linked seams, preserves one shot, and cl
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="17"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
 
   await seek(2300);
   await expect(widget).toHaveAttribute('data-blueprint-wraparound-projectile', 'boundary-crossing');
