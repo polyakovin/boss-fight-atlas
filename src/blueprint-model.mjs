@@ -69,9 +69,9 @@ const SPECS = {
   'pulse-beam': {
     mode: 'pulse-beam',
     boss: [150, 340],
-    player: [455, 590],
+    player: [500, 590],
     target: [270, 660],
-    beamStart: [150, 340],
+    beamStart: [188, 348],
     beamEnd: [500, 700],
   },
   'chain-explosions': {
@@ -12233,17 +12233,38 @@ function primitivesFor(spec, frame) {
     const activePulse = phase === 1 ? pulseBeamIndex(action) : -1;
     const beamOpacity = activePulse >= 0 ? 1 : 0;
     const guideOpacity =
-      phase === 0 ? 0.35 + prepare * 0.5 : phase === 1 ? 0.24 : 0.24 * (1 - recover);
+      phase === 0 ? 0.12 + prepare * 0.22 : phase === 1 ? 0.12 : 0.12 * (1 - recover);
+    const stream = Array.from({ length: 6 }, (_, index) => {
+      const flow = (action * 1.15 + index / 6) % 1;
+      const x = mix(beamStart.x + 22, beamEnd.x - 14, flow) + [-5, 5, -7, 8, -4, 4][index];
+      const y = mix(beamStart.y + 23, beamEnd.y - 12, flow);
+      return path(
+        `M ${x - 10} ${y - 14} L ${x + 7} ${y - 4} L ${x + 10} ${y + 12} L ${x - 7} ${y + 6} Z`,
+        beamOpacity * 0.78,
+        'muted',
+        1,
+        0.85,
+      );
+    });
     return [
-      line(beamStart.x, beamStart.y, beamEnd.x, beamEnd.y, guideOpacity, 'accent', 4),
-      line(beamStart.x, beamStart.y, beamEnd.x, beamEnd.y, beamOpacity, 'signal', 34),
+      line(beamStart.x, beamStart.y, beamEnd.x, beamEnd.y, guideOpacity, 'accent', 3),
+      line(beamStart.x, beamStart.y, beamEnd.x, beamEnd.y, beamOpacity * 0.6, 'signal', 34),
       path(
-        'M 128 322 L 150 309 L 172 322 L 180 340 L 172 358 L 150 371 L 128 358 L 120 340 Z',
+        `M ${beamStart.x - 21} ${beamStart.y - 14} L ${beamStart.x - 6} ${beamStart.y - 26} L ${beamStart.x + 13} ${beamStart.y - 19} L ${beamStart.x + 26} ${beamStart.y + 1} L ${beamStart.x + 10} ${beamStart.y + 23} L ${beamStart.x - 12} ${beamStart.y + 18} Z`,
         phase === 2 ? 1 - recover : 0.68 + beamOpacity * 0.3,
-        activePulse >= 0 ? 'signal' : 'accent',
-        0,
-        activePulse >= 0 ? 0.82 : 0.4,
+        'muted',
+        2,
+        0.82,
       ),
+      path(
+        `M ${beamStart.x - 10} ${beamStart.y - 2} L ${beamStart.x + 2} ${beamStart.y - 13} L ${beamStart.x + 16} ${beamStart.y + 2} L ${beamStart.x + 1} ${beamStart.y + 14} Z`,
+        phase === 2 ? 0.7 * (1 - recover) : 0.72 + beamOpacity * 0.23,
+        'accent',
+        2,
+        0.76,
+      ),
+      line(beamStart.x, beamStart.y, beamEnd.x, beamEnd.y, beamOpacity * 0.93, 'accent', 9),
+      ...stream,
     ];
   }
   if (mode === 'chain-explosions') {
