@@ -5368,28 +5368,43 @@ function primitivesFor(spec, frame) {
     const lit = frame.dangerActive;
     const visible = phase === 2 ? 1 - recover : phase === 0 ? 0.4 + 0.5 * prepare : 1;
     return [
-      line(boss.x + 38, boss.y + 40, x, y, phase === 0 ? 0.28 + 0.48 * prepare : 0, 'accent', 3),
-      circle(x, y, spec.radius, visible, lit ? 'signal' : 'accent', lit ? 7 : 2, lit ? 0.33 : 0.04),
+      path(
+        `M ${boss.x + 33} ${boss.y + 28} L ${boss.x + 46} ${boss.y + 34} L ${boss.x + 44} ${boss.y + 51} L ${boss.x + 36} ${boss.y + 42} Z`,
+        phase === 0 ? 0.5 + prepare * 0.45 : 0,
+        'accent',
+        2,
+        0.8,
+      ),
+      circle(x, y, spec.radius, visible, lit ? 'signal' : 'accent', lit ? 5 : 2, lit ? 0.13 : 0.02),
       circle(x, y, mix(118, spec.radius, countdown), phase === 1 && !lit ? 0.75 : 0, 'accent', 3),
       path(
-        `M ${x} ${y - 32} L ${x + 24} ${y} L ${x} ${y + 32} L ${x - 24} ${y} Z M ${x} ${y - 16} L ${x + 12} ${y} L ${x} ${y + 16} L ${x - 12} ${y} Z`,
+        `M ${x - 19} ${y + 20} L ${x - 15} ${y - 8} L ${x - 4} ${y - 29} L ${x + 6} ${y - 18} L ${x + 14} ${y - 25} L ${x + 21} ${y + 15} L ${x + 4} ${y + 27} Z`,
         visible,
-        lit ? 'signal' : 'accent',
-        0,
-        lit ? 0.8 : 0.47,
+        'muted',
+        2,
+        lit ? 0.96 : 0.7,
       ),
       ...Array.from({ length: 8 }, (_, index) => {
-        const angle = (index * Math.PI) / 4;
-        const markerX = x + Math.cos(angle) * 57;
-        const markerY = y + Math.sin(angle) * 57;
+        const angle =
+          (index * Math.PI) / 4 + [-0.08, 0.07, -0.04, 0.11, -0.06, 0.04, -0.09, 0.08][index];
+        const distance = [56, 59, 54, 57, 55, 60, 53, 58][index];
+        const markerX = x + Math.cos(angle) * distance;
+        const markerY = y + Math.sin(angle) * distance;
+        const rise = lit ? [22, 27, 19, 25, 21, 26, 18, 24][index] : 8;
         return path(
-          `M ${markerX} ${markerY - 8} L ${markerX + 6} ${markerY} L ${markerX} ${markerY + 8} L ${markerX - 6} ${markerY} Z`,
-          visible * (lit ? 1 : 0.36 + countdown * 0.5),
-          lit ? 'signal' : 'accent',
-          0,
-          lit ? 0.74 : 0.44,
+          `M ${markerX - 8} ${markerY + 7} L ${markerX - 5} ${markerY - rise + 6} L ${markerX + 1} ${markerY - rise} L ${markerX + 6} ${markerY - rise + 8} L ${markerX + 9} ${markerY + 7} Z`,
+          visible * (lit ? 0.98 : 0.46 + countdown * 0.35),
+          'muted',
+          2,
+          lit ? 0.95 : 0.59,
         );
       }),
+      path(
+        `M ${x - 4} ${y - 25} L ${x + 4} ${y - 6} L ${x + 18} ${y + 13} M ${x + 4} ${y - 6} L ${x - 13} ${y + 12}`,
+        visible * (lit ? 1 : 0.5 + countdown * 0.35),
+        lit ? 'signal' : 'accent',
+        2,
+      ),
     ];
   }
   if (mode === 'speed-change') {

@@ -1388,6 +1388,10 @@ test('delayed rune remains safe through its countdown, then activates at its fix
   assert.equal(blueprintPointSafe(id, 3, { x: 457, y: 630 }), true);
   assert.equal(blueprintFrame(id, 3.4).primitives[1].tone, 'signal');
   assert.equal(blueprintFrame(id, 2.7).primitives[1].tone, 'accent');
+  assert.notEqual(
+    blueprintFrame(id, 2.7).primitives[4].data,
+    blueprintFrame(id, 3.4).primitives[4].data,
+  );
   for (let time = 0; time < 6; time += 0.02)
     assert.equal(blueprintFrame(id, time).playerSafe, true, `full-body clearance at ${time}`);
   assert.deepEqual(blueprintFrame(id, 0).player, blueprintFrame(id, 6).player);
