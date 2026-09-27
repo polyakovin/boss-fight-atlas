@@ -581,7 +581,7 @@ test('limited spread keeps its previewed cone while distinct live shots remain i
   const timeline = widget.locator('[data-blueprint-timeline]');
   const cone = widget.locator('[data-blueprint-primitive="0"] path');
   const shots = [2, 3, 4].map((index) =>
-    widget.locator(`[data-blueprint-primitive="${index}"] circle`),
+    widget.locator(`[data-blueprint-primitive="${index}"] path`),
   );
   const seek = (milliseconds) =>
     timeline.evaluate((element, value) => {
@@ -603,9 +603,10 @@ test('limited spread keeps its previewed cone while distinct live shots remain i
   await expect(shots[2]).toHaveAttribute('opacity', '0.98');
   const slopes = await Promise.all(
     shots.map((shot) =>
-      shot.evaluate(
-        (node) => (Number(node.getAttribute('cx')) - 280) / (Number(node.getAttribute('cy')) - 332),
-      ),
+      shot.evaluate((node) => {
+        const bounds = node.getBBox();
+        return (bounds.x + bounds.width / 2 - 280) / (bounds.y + bounds.height / 2 - 332);
+      }),
     ),
   );
   expect(new Set(slopes.map((slope) => slope.toFixed(3))).size).toBe(3);
