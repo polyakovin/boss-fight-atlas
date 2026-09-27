@@ -1697,13 +1697,16 @@ test('counter stance ripostes only after a guarded sword hit and leaves an untri
   assert.equal(parry.parriedStrike, true);
   assert.ok(parry.primitives[6].opacity > 0.9);
   assert.equal(riposte.riposte, true);
-  assert.ok(riposte.primitives[8].opacity > 0.9, 'the counter is an independent attack');
+  assert.ok(riposte.primitives[8].opacity > 0, 'the counter keeps its fixed collision lane');
+  assert.ok(riposte.primitives[11].opacity > 0.9, 'a stone gauntlet delivers the counter');
+  assert.ok(riposte.primitives[12].opacity > 0, 'the extended fist has separate plates');
   assert.equal(blueprintPointSafe(id, 2.62, { x: 390, y: 421 }), false);
   assert.equal(riposte.playerSafe, true);
   assert.ok(riposte.player.y > spec.counterStart[1] + spec.counterHalfWidth + 24);
   assert.equal(withheld.dangerActive, false);
   assert.ok(withheld.primitives[3].opacity > 0.9, 'the second guard is visible');
   assert.equal(withheld.primitives[8].opacity, 0, 'waiting does not create a counter');
+  assert.equal(withheld.primitives[11].opacity, 0, 'the stone gauntlet stays retracted');
   assert.equal(open.openStrike, true);
   assert.ok(open.primitives[10].opacity > 0.9);
   assert.deepEqual(blueprintFrame(id, 0).player, blueprintFrame(id, 6).player);

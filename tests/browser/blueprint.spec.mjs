@@ -834,6 +834,10 @@ test('part break removes the actual beam until the visible launcher repair', asy
     'opacity',
     '0',
   );
+  await expect(widget.locator('[data-blueprint-primitive="11"] path')).not.toHaveAttribute(
+    'opacity',
+    '0',
+  );
   await seek(2880);
   await expect(widget).toHaveAttribute('data-blueprint-part', 'broken-now');
   await seek(3780);

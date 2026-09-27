@@ -5892,12 +5892,31 @@ function primitivesFor(spec, frame) {
         spec.counterStart[1],
         spec.counterEnd[0],
         spec.counterEnd[1],
-        counterLive ? 0.92 : 0,
+        counterLive ? 0.24 : 0,
         'signal',
         spec.counterHalfWidth * 2,
       ),
       line(player.x - 28, player.y - 32, 344, 416, openHit, 'accent', 8),
       circle(344, 416, 17 + openHit * 17, openHit, 'signal', 6),
+      path(
+        'M 344 408 L 365 401 L 387 406 L 407 399 L 430 407 L 447 406 L 455 418 L 451 431 L 432 439 L 411 433 L 388 439 L 366 434 L 345 428 Z',
+        counterLive ? 0.96 : 0,
+        'muted',
+        2,
+        0.94,
+      ),
+      path(
+        'M 373 404 L 379 419 L 367 434 M 405 402 L 414 418 L 401 435 M 432 408 L 440 420 L 430 435 M 445 414 L 458 410 L 461 422 L 451 431',
+        counterLive ? 0.88 : 0,
+        'accent',
+        3,
+      ),
+      path(
+        'M 361 414 L 379 414 L 388 422 M 396 424 L 410 415 L 423 422',
+        counterLive ? 0.82 : 0,
+        'signal',
+        3,
+      ),
     ];
   }
   if (mode === 'absorption-power-up') {
