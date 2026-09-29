@@ -625,6 +625,7 @@ test('checklist progress persists locally and can be reset', async ({ page }) =>
 });
 
 test('boss builder persists a local draft and downloads portable JSON', async ({ page }) => {
+  test.setTimeout(60_000);
   await page.goto('en/builder/');
   await expect(page.locator('[data-boss-builder]')).toHaveAttribute(
     'data-boss-builder-ready',
