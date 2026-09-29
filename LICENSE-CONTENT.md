@@ -22,6 +22,6 @@ External articles, referenced games, externally hosted screenshots shown on boss
 
 Credit Boss Fight Atlas and its contributors, link to the source and the license, retain supplied notices, and indicate modifications. Do not imply that the project endorses your use. For example:
 
-> Adapted from “Charge,” Boss Fight Atlas, by polyakovin and contributors. Source: https://github.com/polyakovin/gamedev-boss-fights. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/. Changes: shortened the explanation and adjusted diagram colors.
+> Adapted from “Charge,” Boss Fight Atlas, by polyakovin and contributors. Source: https://github.com/polyakovin/boss-fight-atlas. Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/. Changes: shortened the explanation and adjusted diagram colors.
 
-Change the modification statement to describe what you actually changed, or state that the material is unmodified. The [Git history](https://github.com/polyakovin/gamedev-boss-fights/commits/main/) records individual contributions. This example supports attribution; it does not replace the license terms.
+Change the modification statement to describe what you actually changed, or state that the material is unmodified. The [Git history](https://github.com/polyakovin/boss-fight-atlas/commits/main/) records individual contributions. This example supports attribution; it does not replace the license terms.

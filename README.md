@@ -2,7 +2,7 @@
 
 **Interactive pattern library for boss encounter designers.** Each lesson explains how to shape, communicate, tune, and test one part of a boss encounter.
 
-[Explore the atlas](https://polyakovin.github.io/gamedev-boss-fights/) · [Build a boss sketch](https://polyakovin.github.io/gamedev-boss-fights/en/builder/) · [Contribute](CONTRIBUTING.md)
+[Explore the atlas](https://polyakovin.github.io/boss-fight-atlas/) · [Build a boss sketch](https://polyakovin.github.io/boss-fight-atlas/en/builder/) · [Contribute](CONTRIBUTING.md)
 
 The atlas has **124 published mechanic lessons** from the research audit, each with an interactive animation, implementation guidance, design lenses, sources, and boss references. The **Boss builder** can combine any of the 124 mechanics, filter them by threat geometry, cue, player response, dimension, and design lens, and arrange them into phases and combinations. It suggests compatible mechanics and potential conflicts, can generate a random boss and name, and exports the sketch as JSON. Your draft stays in your browser.
 
@@ -16,8 +16,8 @@ A single wording correction, factual check, concept review, or translation impro
 - [Content guide](docs/content-guide.md): new mechanics, examples, animations, and sources.
 - [Translation guide](docs/translation-guide.md): language files, terminology, and review status.
 - [Audit of 124 boss mechanics](docs/research/boss-mechanics-audit.md): normalized terms, examples, and sources.
-- [Report a content problem or suggest a mechanic](https://github.com/polyakovin/gamedev-boss-fights/issues/new?template=content.yml).
-- [Report or review a translation](https://github.com/polyakovin/gamedev-boss-fights/issues/new?template=translation.yml).
+- [Report a content problem or suggest a mechanic](https://github.com/polyakovin/boss-fight-atlas/issues/new?template=content.yml).
+- [Report or review a translation](https://github.com/polyakovin/boss-fight-atlas/issues/new?template=translation.yml).
 
 ## Run locally
 
@@ -28,7 +28,7 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:4173/gamedev-boss-fights/](http://localhost:4173/gamedev-boss-fights/).
+Open [localhost:4173/boss-fight-atlas/](http://localhost:4173/boss-fight-atlas/).
 
 The development command builds once and serves `dist/`. After editing source files, run `npm run build` in another terminal and refresh the page. There is no automatic rebuild watcher.
 
@@ -69,11 +69,11 @@ The index is generated from the audit with `npm run sync:mechanics-index`; publi
 
 After changing the mechanics audit and index generator, run `npm run sync:mechanics-index` to rebuild the inventory and its localized copy.
 
-The default URL prefix is `/gamedev-boss-fights/`. `lib/config.mjs` defines the repository, site origin, and base path. Forks that publish their own site should update those values for their destination; normal contribution forks do not need deployment credentials.
+The default URL prefix is `/boss-fight-atlas/`. `lib/config.mjs` defines the repository, site origin, and base path. Forks that publish their own site should update those values for their destination; normal contribution forks do not need deployment credentials.
 
 ## Visitor analytics
 
-The GitHub Pages workflow includes Cloudflare Web Analytics for this repository. The public beacon token is used only in the final production build; local builds and forks omit the beacon unless `CLOUDFLARE_WEB_ANALYTICS_TOKEN` is explicitly set. The redirect at `/gamedev-boss-fights/` is excluded so it does not add a second page view before `/en/` loads.
+The GitHub Pages workflow includes Cloudflare Web Analytics for this repository. The public beacon token is used only in the final production build; local builds and forks omit the beacon unless `CLOUDFLARE_WEB_ANALYTICS_TOKEN` is explicitly set. The redirect at `/boss-fight-atlas/` is excluded so it does not add a second page view before `/en/` loads.
 
 ## License
 

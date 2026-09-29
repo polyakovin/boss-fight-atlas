@@ -4,7 +4,7 @@
 
 - Resolve this repository’s Git root and inspect `git status` before editing. Preserve unrelated work and stage explicit task-owned paths only.
 - Read `README.md`, `package.json`, `.node-version`, and the relevant content and schemas. Runtime: Node.js 24; static generator with plain browser modules and SVG.
-- Setup: `npm ci`. Preview: `npm run dev` at `http://localhost:4173/gamedev-boss-fights/`. Rebuild after edits with `npm run build`; no watcher is configured.
+- Setup: `npm ci`. Preview: `npm run dev` at `http://localhost:4173/boss-fight-atlas/`. Rebuild after edits with `npm run build`; no watcher is configured.
 - Canonical gate: `npm run check`. Browser gate: `npx playwright install chromium`, then `npm run test:browser`. Report checks actually run and remaining blockers.
 - Formatting: `npm run format` applies the pinned Prettier version; `npm run format:check` checks without rewriting. Inspect the diff after formatting.
 

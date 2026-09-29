@@ -13,17 +13,17 @@ You do not need to run a local development environment for a wording-only PR. St
 
 ## Work locally
 
-Fork [the repository](https://github.com/polyakovin/gamedev-boss-fights), clone your fork, then use Node.js 24:
+Fork [the repository](https://github.com/polyakovin/boss-fight-atlas), clone your fork, then use Node.js 24:
 
 ```sh
-git clone https://github.com/YOUR-USERNAME/gamedev-boss-fights.git
-cd gamedev-boss-fights
+git clone https://github.com/YOUR-USERNAME/boss-fight-atlas.git
+cd boss-fight-atlas
 git switch -c feature/your-change
 npm ci
 npm run dev
 ```
 
-Browse [the local atlas](http://localhost:4173/gamedev-boss-fights/). Run `npm run build` after source edits and refresh; `dev` does not watch files.
+Browse [the local atlas](http://localhost:4173/boss-fight-atlas/). Run `npm run build` after source edits and refresh; `dev` does not watch files.
 
 Before a PR, run:
 
@@ -38,7 +38,7 @@ Use `npm run format` to apply the pinned Prettier formatting, then inspect your 
 
 `check` verifies repository hygiene, runs schema/content validation and Node tests, and builds the static site. The Chromium install is a one-time setup. Browser tests are separate from `check`; report their result separately. If a command cannot run in your environment, include the exact blocker instead of marking it passed.
 
-Commit only your source changes, push your branch to your fork, and open a PR against `polyakovin/gamedev-boss-fights`. Do not commit `dist/`, `node_modules/`, test reports, secrets, or editor-specific files.
+Commit only your source changes, push your branch to your fork, and open a PR against `polyakovin/boss-fight-atlas`. Do not commit `dist/`, `node_modules/`, test reports, secrets, or editor-specific files.
 
 Keep documentation, code, tests, filenames, and metadata in English. Non-English text belongs only in JSON localization files under `locales/`, `content/mechanics-index-locales/`, and locale-specific lesson and lens paths. Do not add translated copies of repository documentation or byte-for-byte duplicate files; reuse or reference the English source instead.
 
@@ -61,7 +61,7 @@ Keep labels and explanations available in text; color or animation alone must no
 
 Pull requests, including those from forks, run checks without deployment credentials or repository secrets. Do not change the contribution workflow to execute untrusted PR code with privileged credentials. Publishing is a maintainer action through the default-branch GitHub Pages workflow; opening a PR does not deploy a contributor’s branch.
 
-The public site uses `/gamedev-boss-fights/` as its URL prefix. Keep generated links, assets, and browser tests compatible with that subdirectory.
+The public site uses `/boss-fight-atlas/` as its URL prefix. Keep generated links, assets, and browser tests compatible with that subdirectory.
 
 ## Sources and licenses
 

@@ -120,7 +120,7 @@ for (const locale of registry) {
     await expect(page.locator('.charge-demo input')).toHaveAttribute('type', 'range');
     await expect(page.locator('.lesson-category')).toHaveAttribute(
       'href',
-      `/gamedev-boss-fights/${locale.code}/#catalog-part-1`,
+      `/boss-fight-atlas/${locale.code}/#catalog-part-1`,
     );
     await expect(page.locator('.lesson-title-line > .lesson-category')).toHaveCount(1);
     expect(
@@ -132,22 +132,22 @@ for (const locale of registry) {
     await expect(page.locator('.lesson-title-line [role="tooltip"]')).toHaveCount(6);
     await expect(page.locator('.header-nav .lenses-link')).toHaveAttribute(
       'href',
-      `/gamedev-boss-fights/${locale.code}/lenses/`,
+      `/boss-fight-atlas/${locale.code}/lenses/`,
     );
     await expect(page.locator('.header-nav .catalog-link')).toHaveAttribute(
       'href',
-      `/gamedev-boss-fights/${locale.code}/#mechanics`,
+      `/boss-fight-atlas/${locale.code}/#mechanics`,
     );
     await expect(page.locator('.mechanic-overview')).toHaveCount(1);
     await expect(page.locator('#combat-feel .combat-feel__card')).toHaveCount(2);
     await expect(page.locator('#combat-feel .combat-feel__tag')).toHaveCount(2);
     await expect(page.locator('#combat-feel .combat-feel__connection a').first()).toHaveAttribute(
       'href',
-      `/gamedev-boss-fights/${locale.code}/mechanics/attack-combination/`,
+      `/boss-fight-atlas/${locale.code}/mechanics/attack-combination/`,
     );
     await expect(page.locator('#combat-feel .combat-feel__connection a').last()).toHaveAttribute(
       'href',
-      `/gamedev-boss-fights/${locale.code}/mechanics/wind-up/`,
+      `/boss-fight-atlas/${locale.code}/mechanics/wind-up/`,
     );
     await expect(
       page.locator('.hero-subtitle, .lesson-hero > .variant, .lesson-hero > .summary'),
@@ -303,7 +303,7 @@ test('the lesson category opens its matching catalog section', async ({ page }) 
   await page.goto('ru/mechanics/ground-slam/');
   const category = page.locator('.lesson-category');
   await expect(category).toHaveText(groundSlamCategoryRu);
-  await expect(category).toHaveAttribute('href', '/gamedev-boss-fights/ru/#catalog-part-1');
+  await expect(category).toHaveAttribute('href', '/boss-fight-atlas/ru/#catalog-part-1');
   await category.click();
   await expect(page).toHaveURL(/\/ru\/#catalog-part-1$/);
   await expect(page.locator('#catalog-part-1-title')).toHaveText(groundSlamCategoryRu);
@@ -318,7 +318,7 @@ test('every mechanic page links its localized category to the matching catalog s
         new URL(`../../dist/${code}/mechanics/${mechanic.id}/index.html`, import.meta.url),
         'utf8',
       );
-      expect(html).toContain(`href="/gamedev-boss-fights/${code}/#catalog-part-${sectionNumber}"`);
+      expect(html).toContain(`href="/boss-fight-atlas/${code}/#catalog-part-${sectionNumber}"`);
       expect(html).toContain(`>${categories[categoryKey]}</a`);
     }
   }
@@ -1190,12 +1190,12 @@ test('the root defaults to English and localized catalogs point to real pages', 
   await expect(page.locator('.catalog-lenses')).toHaveCount(0);
   await expect(page.locator('.header-nav .lenses-link')).toHaveAttribute(
     'href',
-    '/gamedev-boss-fights/en/lenses/',
+    '/boss-fight-atlas/en/lenses/',
   );
   await expect(page.locator('.catalog-meta, .small-dot')).toHaveCount(0);
   await expect(page.locator('.catalog-guides__art img')).toHaveAttribute(
     'src',
-    /\/gamedev-boss-fights\/assets\/welcome-boss-and-player\.webp\?v=[a-f0-9]{10}$/,
+    /\/boss-fight-atlas\/assets\/welcome-boss-and-player\.webp\?v=[a-f0-9]{10}$/,
   );
   await expect(page.locator('.catalog-guides__art img')).toBeVisible();
   await expect(page.locator('.catalog-guides__art img')).toHaveAttribute('loading', 'lazy');

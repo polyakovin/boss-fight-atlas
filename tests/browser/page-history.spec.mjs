@@ -18,7 +18,7 @@ test('mechanic and design lens pages link their last update date to a commit', a
     await expect(update.locator('time')).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}$/);
     await expect(update.locator('a')).toHaveAttribute(
       'href',
-      /^https:\/\/github\.com\/polyakovin\/gamedev-boss-fights\/commit\/[0-9a-f]{40}$/,
+      /^https:\/\/github\.com\/polyakovin\/boss-fight-atlas\/commit\/[0-9a-f]{40}$/,
     );
   }
 });

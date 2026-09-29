@@ -13,7 +13,7 @@ For a factual or conceptual correction, cite supporting evidence and explain whe
 ## Checklist
 
 - [ ] This PR has a focused scope and excludes generated output and secrets.
-- [ ] Content and translations follow the relevant [content](https://github.com/polyakovin/gamedev-boss-fights/blob/main/docs/content-guide.md) and [translation](https://github.com/polyakovin/gamedev-boss-fights/blob/main/docs/translation-guide.md) guides, or are not affected.
+- [ ] Content and translations follow the relevant [content](https://github.com/polyakovin/boss-fight-atlas/blob/main/docs/content-guide.md) and [translation](https://github.com/polyakovin/boss-fight-atlas/blob/main/docs/translation-guide.md) guides, or are not affected.
 - [ ] Drafts remain unpublished; any newly published mechanic has all eight translations with current `sourceVersion` values, a registered animation, and no unresolved placeholders.
 - [ ] Review status reflects actual independent review; validation or generated text is not described as native review.
-- [ ] I can contribute this material under the project’s [content](https://github.com/polyakovin/gamedev-boss-fights/blob/main/LICENSE-CONTENT.md) and [code](https://github.com/polyakovin/gamedev-boss-fights/blob/main/LICENSE-CODE) licenses.
+- [ ] I can contribute this material under the project’s [content](https://github.com/polyakovin/boss-fight-atlas/blob/main/LICENSE-CONTENT.md) and [code](https://github.com/polyakovin/boss-fight-atlas/blob/main/LICENSE-CODE) licenses.

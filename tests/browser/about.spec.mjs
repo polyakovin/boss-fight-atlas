@@ -31,7 +31,7 @@ for (const locale of registry) {
       motivation.getByRole('link', { name: copy.aboutStory.feedbackLabel }),
     ).toHaveAttribute(
       'href',
-      'https://github.com/polyakovin/gamedev-boss-fights/issues/new?template=content.yml',
+      'https://github.com/polyakovin/boss-fight-atlas/issues/new?template=content.yml',
     );
 
     const prototype = page.locator('.about-prototype');
@@ -41,7 +41,7 @@ for (const locale of registry) {
     await expect(prototype.locator('code')).toContainText('"gap-volley"');
     await expect(prototype.getByRole('link', { name: copy.builder })).toHaveAttribute(
       'href',
-      `/gamedev-boss-fights/${locale.code}/builder/`,
+      `/boss-fight-atlas/${locale.code}/builder/`,
     );
 
     const resourceLinks = page.locator('.about-resources nav a');
@@ -75,7 +75,7 @@ for (const locale of registry) {
     for (let index = 0; index < registry.length; index += 1) {
       await expect(languageLinks.nth(index)).toHaveAttribute(
         'href',
-        `/gamedev-boss-fights/${registry[index].code}/about/`,
+        `/boss-fight-atlas/${registry[index].code}/about/`,
       );
     }
   });

@@ -27,7 +27,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - name: Build site with analytics
-        if: github.repository == 'polyakovin/gamedev-boss-fights'
+        if: github.repository == 'polyakovin/boss-fight-atlas'
         env:
           CLOUDFLARE_WEB_ANALYTICS_TOKEN: b37b07bb3a8f48c6b5f1c0b29adac199
         run: npm run build

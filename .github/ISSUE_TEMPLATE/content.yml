@@ -25,7 +25,7 @@ body:
     attributes:
       label: Lesson or page
       description: Paste a page URL or name the proposed mechanic.
-      placeholder: 'https://polyakovin.github.io/gamedev-boss-fights/en/mechanics/charge/'
+      placeholder: 'https://polyakovin.github.io/boss-fight-atlas/en/mechanics/charge/'
     validations:
       required: true
   - type: textarea

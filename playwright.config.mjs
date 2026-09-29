@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 const testPort = Number(process.env.ATLAS_TEST_PORT ?? 4173);
 if (!Number.isInteger(testPort) || testPort < 1024 || testPort > 65535)
   throw new Error('ATLAS_TEST_PORT must be a valid non-privileged TCP port');
-const baseURL = `http://127.0.0.1:${testPort}/gamedev-boss-fights/`;
+const baseURL = `http://127.0.0.1:${testPort}/boss-fight-atlas/`;
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: true,
