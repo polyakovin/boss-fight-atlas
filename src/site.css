@@ -1312,8 +1312,8 @@ section[id] {
   grid-template-columns: minmax(0, 1.05fr) minmax(410px, 0.95fr);
   align-items: center;
   gap: clamp(36px, 6vw, 76px);
-  min-height: min(620px, calc(100vh - 88px));
-  padding: clamp(28px, 4vh, 52px) 0;
+  min-height: calc(100svh - 77px);
+  padding: 20px 0;
 }
 .catalog-hero__copy {
   min-width: 0;
@@ -1388,23 +1388,14 @@ section[id] {
   height: 16px;
 }
 .catalog-hero__lesson {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  height: clamp(440px, calc(100svh - 117px), 760px);
   padding: 21px;
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow: 0 24px 70px var(--shadow);
-  transition:
-    border-color 0.18s,
-    transform 0.18s,
-    box-shadow 0.18s;
-}
-.catalog-hero__lesson:hover,
-.catalog-hero__lesson:focus-visible {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 30px 80px var(--shadow);
-  text-decoration: none;
 }
 .catalog-hero__lesson-heading {
   display: grid;
@@ -1431,15 +1422,53 @@ section[id] {
   color: var(--accent);
   background: var(--accent-soft);
 }
+.catalog-hero__lesson-arrow:hover,
+.catalog-hero__lesson-arrow:focus-visible {
+  color: var(--paper);
+  background: var(--accent);
+}
 .catalog-hero__preview {
-  height: 168px;
-  overflow: hidden;
-  border: 1px solid var(--line);
+  flex: 1;
+  min-height: 0;
+}
+.catalog-hero__preview .charge-demo {
+  height: 100%;
   background: var(--preview);
 }
-.catalog-hero__preview svg {
+.catalog-hero__preview .charge-demo__svg {
   width: 100%;
   height: 100%;
+}
+.catalog-hero__preview .charge-demo__playbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.catalog-hero__preview .charge-demo__playbar button {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  color: var(--paper);
+  background: var(--accent);
+  font: 700 11px/1.2 var(--font-label);
+}
+.catalog-hero__preview .charge-demo__playbar button:hover {
+  background: color-mix(in srgb, var(--accent) 84%, var(--ink));
+}
+.catalog-hero__preview .charge-demo__playbar button[hidden] {
+  display: none;
+}
+.catalog-hero__preview .charge-demo__keys {
+  color: var(--muted);
+  font: 500 11px/1.35 var(--font-body);
+  text-align: end;
+}
+.catalog-hero__preview .charge-demo__motion-note {
+  margin: 0;
 }
 .catalog-hero__questions {
   display: grid;
@@ -3397,13 +3426,14 @@ section[id] {
   }
   .catalog-hero {
     grid-template-columns: 1fr;
-    min-height: 0;
+    min-height: calc(100svh - 82px);
   }
   .catalog-hero__copy {
     max-width: 680px;
   }
   .catalog-hero__lesson {
     width: min(100%, 620px);
+    height: min(680px, 80svh);
   }
   .catalog-hero__questions {
     display: grid;
@@ -3695,10 +3725,9 @@ section[id] {
     width: 100%;
   }
   .catalog-hero__lesson {
+    order: -1;
+    height: min(610px, 76svh);
     padding: 16px;
-  }
-  .catalog-hero__preview {
-    height: 145px;
   }
   .catalog-hero__questions {
     grid-template-columns: 1fr;

@@ -936,27 +936,26 @@ for (const locale of locales) {
           >
         </div>
       </div>
-      <a
-        class="catalog-hero__lesson"
-        href="${link(`${locale.code}/mechanics/charge/`)}"
-        aria-label="${e(`${t.readLesson}: ${featuredLesson.title}`)}"
-      >
+      <article class="catalog-hero__lesson" aria-labelledby="featured-charge-title">
         <div class="catalog-hero__lesson-heading">
           <div>
-            <h2>${e(featuredLesson.title)}</h2>
+            <h2 id="featured-charge-title">${e(featuredLesson.title)}</h2>
             <p>${e(featuredLesson.summary)}</p>
           </div>
-          <span class="catalog-hero__lesson-arrow"
-            >${icon('arrow-right', { className: 'icon--directional' })}</span
+          <a
+            class="catalog-hero__lesson-arrow"
+            href="${link(`${locale.code}/mechanics/charge/`)}"
+            aria-label="${e(`${t.readLesson}: ${featuredLesson.title}`)}"
+            >${icon('arrow-right', { className: 'icon--directional' })}</a
           >
         </div>
-        <div class="catalog-hero__preview" aria-hidden="true">
-          ${animations[featuredMechanic.mechanic.meta.animation].thumbnail('catalog-featured-charge')}
+        <div class="catalog-hero__preview">
+          ${animations[featuredMechanic.mechanic.meta.animation].render(featuredLesson.demo, { controls: { exitLabel: t.back, hint: t.featuredControls } })}
         </div>
         <ol class="catalog-hero__questions">
           ${featuredLesson.steps.map((step) => `<li>${e(step.title)}</li>`).join('')}
         </ol>
-      </a>
+      </article>
     </section>
     <section class="catalog-workflow" aria-labelledby="catalog-workflow-title">
       <header class="catalog-workflow__heading">
@@ -1003,7 +1002,12 @@ for (const locale of locales) {
   </main>`;
   await write(
     locale.code + '/',
-    shell(locale, t.catalog, t.indexSubtitle, body, { catalog: true }),
+    shell(locale, t.catalog, t.indexSubtitle, body, {
+      catalog: true,
+      assets: animations[featuredMechanic.mechanic.meta.animation].styles.concat(
+        animations[featuredMechanic.mechanic.meta.animation].scripts,
+      ),
+    }),
   );
   const builderMechanics = catalogEntries.map((entry) => ({
     id: entry.id,

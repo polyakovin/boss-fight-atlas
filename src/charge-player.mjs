@@ -50,6 +50,8 @@ export function initializeCharge(widget) {
   const bossHeartIcons = [...bossHearts.querySelectorAll('[data-charge-heart]')];
   const playerHeartIcons = [...playerHearts.querySelectorAll('[data-charge-heart]')];
   const joystick = find('[data-charge-joystick]');
+  const startButton = find('[data-charge-start]');
+  const exitButton = find('[data-charge-exit]');
   const motionNote = find('[data-charge-motion-note]');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const number = new Intl.NumberFormat(document.documentElement.lang || undefined, {
@@ -126,6 +128,8 @@ export function initializeCharge(widget) {
     const frame = mode === 'demo' ? chargeFrame(time) : chargeGameFrame(game);
     const angle = frame.rotation ?? (Math.atan2(frame.heading.y, frame.heading.x) * 180) / Math.PI;
     widget.dataset.chargeMode = mode;
+    if (startButton) startButton.hidden = mode !== 'demo';
+    if (exitButton) exitButton.hidden = mode === 'demo';
     widget.dataset.chargePhase = String(frame.phase);
     widget.dataset.chargeAttack = String(mode === 'demo' ? frame.attackIndex : game.round);
     widget.dataset.chargeOutcome = mode === 'demo' ? (frame.clear ? 'safe' : 'pending') : mode;
@@ -294,6 +298,7 @@ export function initializeCharge(widget) {
 
   function onKeyDown(event) {
     if (event.altKey || event.ctrlKey || event.metaKey) return;
+    if (widget.dataset.chargeActivation === 'explicit' && !widget.contains(event.target)) return;
     if (
       event.target.closest('input, textarea, select, [contenteditable="true"]') ||
       (mode === 'demo' &&
@@ -345,6 +350,11 @@ export function initializeCharge(widget) {
     updatePlayback();
   });
   canvas.addEventListener('pointerdown', onTouchStart);
+  startButton?.addEventListener('click', startGame);
+  exitButton?.addEventListener('click', () => {
+    leaveGame();
+    startButton.focus({ preventScroll: true });
+  });
   canvas.addEventListener('pointermove', onTouchMove);
   canvas.addEventListener('pointerup', onTouchEnd);
   canvas.addEventListener('pointercancel', onTouchEnd);

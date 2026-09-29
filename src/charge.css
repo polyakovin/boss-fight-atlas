@@ -283,3 +283,6 @@
 .charge-demo:not([data-charge-ready]) .charge-demo__scene-timeline {
   display: none;
 }
+.charge-demo:not([data-charge-ready]) .charge-demo__playbar {
+  display: none;
+}

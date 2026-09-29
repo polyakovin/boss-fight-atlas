@@ -48,6 +48,7 @@
     "lastUpdated",
     "indexTitle",
     "indexSubtitle",
+    "featuredControls",
     "indexGuidesTitle",
     "indexGuidesBody",
     "siteMapTitle",
@@ -325,6 +326,10 @@
       "minLength": 1
     },
     "indexSubtitle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "featuredControls": {
       "type": "string",
       "minLength": 1
     },

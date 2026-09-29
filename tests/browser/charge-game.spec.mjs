@@ -1,5 +1,35 @@
 import { test, expect } from '@playwright/test';
 
+test('home hero shows the full charge simulation and starts play explicitly', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto('en/');
+  const hero = page.locator('.catalog-hero');
+  const demo = hero.locator('[data-charge-demo]');
+  await expect(demo).toHaveAttribute('data-charge-ready', 'true');
+  await expect(demo.locator('[data-charge-boss]')).toHaveCount(1);
+  await expect(demo.locator('[data-charge-player]')).toHaveCount(1);
+  await expect(demo.locator('[data-charge-timeline]')).toBeVisible();
+  await expect(demo.locator('.charge-demo__keys')).toContainText('Move: WASD');
+  const box = await hero.boundingBox();
+  expect(box.y + box.height).toBeCloseTo(720, 0);
+
+  await page.locator('.catalog-hero__copy').click();
+  await page.keyboard.press('ArrowRight');
+  await expect(demo).toHaveAttribute('data-charge-mode', 'demo');
+  await demo.locator('[data-charge-timeline]').evaluate((input) => {
+    input.value = '5000';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await expect(demo).toHaveAttribute('data-charge-phase', '1');
+
+  await demo.locator('[data-charge-start]').click();
+  await expect(demo).toHaveAttribute('data-charge-mode', 'game');
+  await expect(demo.locator('[data-charge-player-hearts]')).toHaveAttribute('opacity', '1');
+  await demo.locator('[data-charge-exit]').click();
+  await expect(demo).toHaveAttribute('data-charge-mode', 'demo');
+  await expect(demo.locator('[data-charge-timeline]')).toBeVisible();
+});
+
 test('movement keys switch the charge demo into a playable battle', async ({ page }) => {
   await page.goto('ru/mechanics/charge/');
   const demo = page.locator('[data-charge-demo]');
@@ -55,6 +85,15 @@ test('an idle player loses after three charges and the demo resumes', async ({ p
 
 test.describe('phone controls', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+
+  test('home feature starts and leaves touch play without opening the lesson', async ({ page }) => {
+    await page.goto('en/');
+    const demo = page.locator('.catalog-hero [data-charge-demo]');
+    await demo.locator('[data-charge-start]').tap();
+    await expect(demo).toHaveAttribute('data-charge-mode', 'game');
+    await demo.locator('[data-charge-exit]').tap();
+    await expect(demo).toHaveAttribute('data-charge-mode', 'demo');
+  });
 
   test('first arena touch starts the game and a second finger does not steal the joystick', async ({
     page,
