@@ -13,8 +13,6 @@ import {
   PHASE_ENDS,
   PLAYER_RADIUS,
   TRANSITION_DURATION,
-  WIDE_ATTACK_PLANS,
-  WIDE_CHARGE_ARENA,
 } from '../src/charge-model.mjs';
 import { CHARACTER_ART } from '../lib/character-art.mjs';
 import { renderCharge, renderChargeThumbnail } from '../lib/charge-view.mjs';
@@ -59,17 +57,6 @@ test('the sideways dodge clears the entire body before both charges', () => {
     );
     for (let localTime = PHASE_ENDS[1]; localTime < ATTACK_DURATION; localTime += 0.025)
       assert.equal(chargeFrame(attackOffset + localTime).clear, true);
-  }
-});
-
-test('the wide home loop keeps both characters and the dodge within the arena', () => {
-  for (let time = 0; time < DURATION; time += 0.025) {
-    const frame = chargeFrame(time, undefined, WIDE_ATTACK_PLANS);
-    for (const actor of [frame.boss, frame.player]) {
-      assert.ok(actor.x > 80 && actor.x < WIDE_CHARGE_ARENA.width - 80);
-      assert.ok(actor.y > 80 && actor.y < WIDE_CHARGE_ARENA.height - 80);
-    }
-    if (frame.chargeActive) assert.equal(frame.clear, true);
   }
 });
 

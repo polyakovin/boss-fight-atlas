@@ -936,26 +936,9 @@ for (const locale of locales) {
           >
         </div>
       </div>
-      <article class="catalog-hero__lesson" aria-labelledby="featured-charge-title">
-        <div class="catalog-hero__lesson-heading">
-          <div>
-            <h2 id="featured-charge-title">${e(featuredLesson.title)}</h2>
-            <p>${e(featuredLesson.summary)}</p>
-          </div>
-          <a
-            class="catalog-hero__lesson-arrow"
-            href="${link(`${locale.code}/mechanics/charge/`)}"
-            aria-label="${e(`${t.readLesson}: ${featuredLesson.title}`)}"
-            >${icon('arrow-right', { className: 'icon--directional' })}</a
-          >
-        </div>
-        <div class="catalog-hero__preview">
-          ${animations[featuredMechanic.mechanic.meta.animation].render(featuredLesson.demo, { controls: { exitLabel: t.back, hint: t.featuredControls }, wide: true })}
-        </div>
-        <ol class="catalog-hero__questions">
-          ${featuredLesson.steps.map((step) => `<li>${e(step.title)}</li>`).join('')}
-        </ol>
-      </article>
+      <div class="catalog-hero__animation">
+        ${animations[featuredMechanic.mechanic.meta.animation].render(featuredLesson.demo, { wide: true })}
+      </div>
     </section>
     <section class="catalog-workflow" aria-labelledby="catalog-workflow-title">
       <header class="catalog-workflow__heading">

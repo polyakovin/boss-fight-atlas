@@ -1387,124 +1387,17 @@ section[id] {
   width: 16px;
   height: 16px;
 }
-.catalog-hero__lesson {
-  display: flex;
-  flex-direction: column;
+.catalog-hero__animation {
   min-width: 0;
-  height: clamp(440px, calc(100svh - 117px), 760px);
-  padding: 21px;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  box-shadow: 0 24px 70px var(--shadow);
+  height: max(440px, calc(100svh - 117px));
 }
-.catalog-hero__lesson-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px;
-  gap: 18px;
-  align-items: start;
-  margin: 0 0 17px;
-}
-.catalog-hero__lesson-heading h2 {
-  font-size: clamp(25px, 2.7vw, 34px);
-}
-.catalog-hero__lesson-heading p {
-  max-width: 520px;
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
-}
-.catalog-hero__lesson-arrow {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-.catalog-hero__lesson-arrow:hover,
-.catalog-hero__lesson-arrow:focus-visible {
-  color: var(--paper);
-  background: var(--accent);
-}
-.catalog-hero__preview {
-  flex: 1;
-  min-height: 0;
-}
-.catalog-hero__preview .charge-demo {
+.catalog-hero__animation .charge-demo {
   height: 100%;
+  border: 0;
 }
-.catalog-hero__preview .charge-demo__floor {
-  position: absolute;
-  inset: 0;
+.catalog-hero__animation .charge-demo__svg {
   width: 100%;
   height: 100%;
-  pointer-events: none;
-}
-.catalog-hero__preview .charge-demo__svg {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.catalog-hero__preview .charge-demo__playbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 9px 12px;
-  border-top: 1px solid var(--line);
-  background: var(--surface);
-}
-.catalog-hero__preview .charge-demo__playbar button {
-  min-height: 34px;
-  padding: 6px 12px;
-  border: 1px solid var(--accent);
-  color: var(--paper);
-  background: var(--accent);
-  font: 700 11px/1.2 var(--font-label);
-}
-.catalog-hero__preview .charge-demo__playbar button:hover {
-  background: color-mix(in srgb, var(--accent) 84%, var(--ink));
-}
-.catalog-hero__preview .charge-demo__playbar button[hidden] {
-  display: none;
-}
-.catalog-hero__preview .charge-demo__keys {
-  color: var(--muted);
-  font: 500 11px/1.35 var(--font-body);
-  text-align: end;
-}
-.catalog-hero__preview .charge-demo__motion-note {
-  margin: 0;
-}
-.catalog-hero__questions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  padding: 0;
-  margin: 14px 0 0;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--line);
-  list-style: none;
-  counter-reset: question;
-}
-.catalog-hero__questions li {
-  min-width: 0;
-  padding: 11px 10px;
-  color: var(--soft-ink);
-  background: var(--surface);
-  font-size: 10px;
-  font-weight: 650;
-  line-height: 1.35;
-  counter-increment: question;
-}
-.catalog-hero__questions li::before {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--accent);
-  font: 700 9px/1 var(--font-label);
-  content: counter(question, decimal-leading-zero);
 }
 .catalog-workflow {
   padding: clamp(68px, 9vw, 112px) 0;
@@ -3341,9 +3234,6 @@ section[id] {
   .catalog-hero h1 {
     font-size: 40px;
   }
-  .catalog-hero__questions {
-    display: none;
-  }
   .catalog-workflow__steps {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3438,12 +3328,16 @@ section[id] {
   .catalog-hero__copy {
     max-width: 680px;
   }
-  .catalog-hero__lesson {
-    width: min(100%, 620px);
-    height: min(680px, 80svh);
+  .catalog-hero__animation {
+    height: calc(100svh - 122px);
   }
-  .catalog-hero__questions {
-    display: grid;
+  .catalog-hero__animation .charge-demo__svg {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: max(100%, 58.333svh);
+    max-width: none;
+    transform: translateX(-50%);
   }
   .catalog-workflow__heading {
     grid-template-columns: 1fr;
@@ -3731,15 +3625,8 @@ section[id] {
   .catalog-hero__secondary {
     width: 100%;
   }
-  .catalog-hero__lesson {
-    height: min(610px, 76svh);
-    padding: 16px;
-  }
-  .catalog-hero__questions {
-    grid-template-columns: 1fr;
-  }
-  .catalog-hero__questions li + li {
-    border-top: 1px solid var(--line);
+  .catalog-hero__animation {
+    height: calc(100svh - 102px);
   }
   .catalog-workflow {
     padding: 58px 0;

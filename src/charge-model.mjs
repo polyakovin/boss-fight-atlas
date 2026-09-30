@@ -70,20 +70,6 @@ export const ATTACK_PLANS = Object.freeze([
   createChargePlan({ origin: { x: 280, y: 805 }, target: { x: 280, y: 480 } }),
 ]);
 export const DEFAULT_PLAN = ATTACK_PLANS[0];
-export const WIDE_CHARGE_ARENA = Object.freeze({
-  width: 1300,
-  height: 780,
-  player: point(650, 390),
-  origins: Object.freeze([point(650, 145), point(650, 635)]),
-  playerBounds: Object.freeze({ left: 125, right: 1175, top: 250, bottom: 530 }),
-  chargeBounds: Object.freeze({ left: 76, right: 1224, top: 76, bottom: 704 }),
-  maxChargeDistance: 800,
-});
-export const WIDE_ATTACK_PLANS = Object.freeze(
-  WIDE_CHARGE_ARENA.origins.map((origin) =>
-    createChargePlan({ origin, target: WIDE_CHARGE_ARENA.player, distance: 470 }),
-  ),
-);
 
 function sequenceAt(time) {
   const t = clamp(Number.isFinite(time) ? time : 0, 0, DURATION);
@@ -128,10 +114,12 @@ export function playerPosition(localTime, plan = DEFAULT_PLAN) {
   };
 }
 
-export function chargeFrame(time, explicitPlan, plans = ATTACK_PLANS) {
+export function chargeFrame(time, explicitPlan) {
   const sequence = sequenceAt(time);
-  const plan = explicitPlan ?? plans[sequence.attackIndex];
-  const nextPlan = explicitPlan ? plan : plans[(sequence.attackIndex + 1) % plans.length];
+  const plan = explicitPlan ?? ATTACK_PLANS[sequence.attackIndex];
+  const nextPlan = explicitPlan
+    ? plan
+    : ATTACK_PLANS[(sequence.attackIndex + 1) % ATTACK_PLANS.length];
   const localTime = explicitPlan
     ? sequence.time === DURATION
       ? 0

@@ -1,4 +1,4 @@
-import { chargeFrame, DURATION, WIDE_ATTACK_PLANS, WIDE_CHARGE_ARENA } from './charge-model.mjs';
+import { chargeFrame, DURATION } from './charge-model.mjs';
 import { advanceChargeGame, chargeGameFrame, createChargeGame } from './charge-game.mjs';
 import { moveFloatingJoystick } from './charge-joystick.mjs';
 import { createCharacterAnimator } from './character-motion.mjs';
@@ -32,9 +32,7 @@ export function initializeCharge(widget) {
   const player = find('[data-charge-player]');
   const animateBoss = createCharacterAnimator(boss, 'kern');
   const animatePlayer = createCharacterAnimator(player, 'tavi');
-  const wide = widget.hasAttribute('data-charge-wide');
-  const frameAt = (at) => chargeFrame(at, undefined, wide ? WIDE_ATTACK_PLANS : undefined);
-  const animateEffects = createEncounterEffects(widget, frameAt);
+  const animateEffects = createEncounterEffects(widget, chargeFrame);
   const dust = [...widget.querySelectorAll('[data-encounter-dust] ellipse')];
   const impact = find('[data-encounter-impact]');
   const contact = find('[data-charge-contact]');
@@ -52,8 +50,6 @@ export function initializeCharge(widget) {
   const bossHeartIcons = [...bossHearts.querySelectorAll('[data-charge-heart]')];
   const playerHeartIcons = [...playerHearts.querySelectorAll('[data-charge-heart]')];
   const joystick = find('[data-charge-joystick]');
-  const startButton = find('[data-charge-start]');
-  const exitButton = find('[data-charge-exit]');
   const motionNote = find('[data-charge-motion-note]');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const number = new Intl.NumberFormat(document.documentElement.lang || undefined, {
@@ -127,11 +123,9 @@ export function initializeCharge(widget) {
   }
 
   function render() {
-    const frame = mode === 'demo' ? frameAt(time) : chargeGameFrame(game);
+    const frame = mode === 'demo' ? chargeFrame(time) : chargeGameFrame(game);
     const angle = frame.rotation ?? (Math.atan2(frame.heading.y, frame.heading.x) * 180) / Math.PI;
     widget.dataset.chargeMode = mode;
-    if (startButton) startButton.hidden = mode !== 'demo';
-    if (exitButton) exitButton.hidden = mode === 'demo';
     widget.dataset.chargePhase = String(frame.phase);
     widget.dataset.chargeAttack = String(mode === 'demo' ? frame.attackIndex : game.round);
     widget.dataset.chargeOutcome = mode === 'demo' ? (frame.clear ? 'safe' : 'pending') : mode;
@@ -278,7 +272,7 @@ export function initializeCharge(widget) {
 
   function startGame() {
     clearTouch();
-    game = createChargeGame(wide ? WIDE_CHARGE_ARENA : undefined);
+    game = createChargeGame();
     mode = 'game';
     announcedState = '';
     status.textContent = `${text.gamePlaying} ${healthAnnouncement()}`;
@@ -352,11 +346,6 @@ export function initializeCharge(widget) {
     updatePlayback();
   });
   canvas.addEventListener('pointerdown', onTouchStart);
-  startButton?.addEventListener('click', startGame);
-  exitButton?.addEventListener('click', () => {
-    leaveGame();
-    startButton.focus({ preventScroll: true });
-  });
   canvas.addEventListener('pointermove', onTouchMove);
   canvas.addEventListener('pointerup', onTouchEnd);
   canvas.addEventListener('pointercancel', onTouchEnd);

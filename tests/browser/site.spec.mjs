@@ -1183,8 +1183,8 @@ test('the root defaults to English and localized catalogs point to real pages', 
     'Turn a boss idea into a fight players can read and master',
   );
   await expect(page.locator('.catalog-hero')).not.toContainText('Game Mechanics');
-  await expect(page.locator('.catalog-hero__lesson h2')).toHaveText('Charge');
-  await expect(page.locator('.catalog-hero__questions li')).toHaveCount(3);
+  await expect(page.locator('.catalog-hero__animation [data-charge-svg]')).toBeVisible();
+  await expect(page.locator('.catalog-hero__questions')).toHaveCount(0);
   await expect(page.locator('.catalog-workflow__steps li')).toHaveCount(5);
   await expect(page.locator('.catalog-guides h2')).toHaveText('Meet Tavi and Kern');
   await expect(page.locator('.catalog-guides')).not.toContainText('Game Mechanics');
@@ -1552,7 +1552,7 @@ test('homepages fit their hero on a laptop and reflow on mobile', async ({ page 
     await expect(page.locator('.atlas-map')).toHaveCount(0);
     await page.setViewportSize({ width: 375, height: 812 });
     const copyBox = await page.locator('.catalog-hero__copy').boundingBox();
-    const lessonBox = await page.locator('.catalog-hero__lesson').boundingBox();
+    const lessonBox = await page.locator('.catalog-hero__animation').boundingBox();
     expect(
       lessonBox.y,
       `${locale.code}: the animation follows the hero copy`,
