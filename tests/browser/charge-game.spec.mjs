@@ -10,9 +10,6 @@ test('home hero shows the full charge simulation and starts play explicitly', as
   await expect(demo.locator('[data-charge-player]')).toHaveCount(1);
   await expect(demo.locator('[data-charge-timeline]')).toBeVisible();
   await expect(demo.locator('[data-charge-svg]')).toHaveAttribute('viewBox', '0 0 1300 780');
-  const canvasBox = await demo.locator('.charge-demo__canvas').boundingBox();
-  const floorBox = await demo.locator('[data-charge-svg] > g[clip-path]').boundingBox();
-  expect(floorBox.width).toBeGreaterThan(canvasBox.width - 2);
   await expect(demo.locator('.charge-demo__keys')).toContainText('Move: WASD');
   const box = await hero.boundingBox();
   expect(box.y + box.height).toBeCloseTo(720, 0);
@@ -32,6 +29,35 @@ test('home hero shows the full charge simulation and starts play explicitly', as
   await demo.locator('[data-charge-exit]').click();
   await expect(demo).toHaveAttribute('data-charge-mode', 'demo');
   await expect(demo.locator('[data-charge-timeline]')).toBeVisible();
+});
+
+test('the home arena fills its canvas at desktop and phone proportions', async ({ page }) => {
+  await page.goto('en/');
+  const demo = page.locator('.catalog-hero [data-charge-demo]');
+  for (const [width, height] of [
+    [1280, 720],
+    [1440, 1000],
+    [375, 812],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width, height });
+    const canvas = await demo.locator('.charge-demo__canvas').boundingBox();
+    const floor = await demo
+      .locator('.charge-demo__floor g[clip-path] > rect')
+      .first()
+      .boundingBox();
+    expect(floor.x).toBeLessThanOrEqual(canvas.x + 1);
+    expect(floor.y).toBeLessThanOrEqual(canvas.y + 1);
+    expect(floor.x + floor.width).toBeGreaterThanOrEqual(canvas.x + canvas.width - 1);
+    expect(floor.y + floor.height).toBeGreaterThanOrEqual(canvas.y + canvas.height - 1);
+    for (const role of ['boss', 'player']) {
+      const actor = await demo.locator(`[data-charge-${role}]`).boundingBox();
+      expect(actor.x).toBeGreaterThanOrEqual(canvas.x);
+      expect(actor.y).toBeGreaterThanOrEqual(canvas.y);
+      expect(actor.x + actor.width).toBeLessThanOrEqual(canvas.x + canvas.width);
+      expect(actor.y + actor.height).toBeLessThanOrEqual(canvas.y + canvas.height);
+    }
+  }
 });
 
 test('movement keys switch the charge demo into a playable battle', async ({ page }) => {

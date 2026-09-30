@@ -1433,9 +1433,16 @@ section[id] {
 }
 .catalog-hero__preview .charge-demo {
   height: 100%;
-  background: #263434;
+}
+.catalog-hero__preview .charge-demo__floor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 .catalog-hero__preview .charge-demo__svg {
+  position: relative;
   width: 100%;
   height: 100%;
 }
@@ -3725,7 +3732,6 @@ section[id] {
     width: 100%;
   }
   .catalog-hero__lesson {
-    order: -1;
     height: min(610px, 76svh);
     padding: 16px;
   }

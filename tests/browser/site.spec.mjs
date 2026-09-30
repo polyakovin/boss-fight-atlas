@@ -1551,6 +1551,12 @@ test('homepages fit their hero on a laptop and reflow on mobile', async ({ page 
     }
     await expect(page.locator('.atlas-map')).toHaveCount(0);
     await page.setViewportSize({ width: 375, height: 812 });
+    const copyBox = await page.locator('.catalog-hero__copy').boundingBox();
+    const lessonBox = await page.locator('.catalog-hero__lesson').boundingBox();
+    expect(
+      lessonBox.y,
+      `${locale.code}: the animation follows the hero copy`,
+    ).toBeGreaterThanOrEqual(copyBox.y + copyBox.height);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
