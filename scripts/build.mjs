@@ -950,7 +950,7 @@ for (const locale of locales) {
           >
         </div>
         <div class="catalog-hero__preview">
-          ${animations[featuredMechanic.mechanic.meta.animation].render(featuredLesson.demo, { controls: { exitLabel: t.back, hint: t.featuredControls } })}
+          ${animations[featuredMechanic.mechanic.meta.animation].render(featuredLesson.demo, { controls: { exitLabel: t.back, hint: t.featuredControls }, wide: true })}
         </div>
         <ol class="catalog-hero__questions">
           ${featuredLesson.steps.map((step) => `<li>${e(step.title)}</li>`).join('')}

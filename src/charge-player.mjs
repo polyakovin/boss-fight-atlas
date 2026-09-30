@@ -1,4 +1,4 @@
-import { chargeFrame, DURATION } from './charge-model.mjs';
+import { chargeFrame, DURATION, WIDE_ATTACK_PLANS, WIDE_CHARGE_ARENA } from './charge-model.mjs';
 import { advanceChargeGame, chargeGameFrame, createChargeGame } from './charge-game.mjs';
 import { moveFloatingJoystick } from './charge-joystick.mjs';
 import { createCharacterAnimator } from './character-motion.mjs';
@@ -32,7 +32,9 @@ export function initializeCharge(widget) {
   const player = find('[data-charge-player]');
   const animateBoss = createCharacterAnimator(boss, 'kern');
   const animatePlayer = createCharacterAnimator(player, 'tavi');
-  const animateEffects = createEncounterEffects(widget, chargeFrame);
+  const wide = widget.hasAttribute('data-charge-wide');
+  const frameAt = (at) => chargeFrame(at, undefined, wide ? WIDE_ATTACK_PLANS : undefined);
+  const animateEffects = createEncounterEffects(widget, frameAt);
   const dust = [...widget.querySelectorAll('[data-encounter-dust] ellipse')];
   const impact = find('[data-encounter-impact]');
   const contact = find('[data-charge-contact]');
@@ -125,7 +127,7 @@ export function initializeCharge(widget) {
   }
 
   function render() {
-    const frame = mode === 'demo' ? chargeFrame(time) : chargeGameFrame(game);
+    const frame = mode === 'demo' ? frameAt(time) : chargeGameFrame(game);
     const angle = frame.rotation ?? (Math.atan2(frame.heading.y, frame.heading.x) * 180) / Math.PI;
     widget.dataset.chargeMode = mode;
     if (startButton) startButton.hidden = mode !== 'demo';
@@ -276,7 +278,7 @@ export function initializeCharge(widget) {
 
   function startGame() {
     clearTouch();
-    game = createChargeGame();
+    game = createChargeGame(wide ? WIDE_CHARGE_ARENA : undefined);
     mode = 'game';
     announcedState = '';
     status.textContent = `${text.gamePlaying} ${healthAnnouncement()}`;

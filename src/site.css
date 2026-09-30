@@ -1433,7 +1433,7 @@ section[id] {
 }
 .catalog-hero__preview .charge-demo {
   height: 100%;
-  background: var(--preview);
+  background: #263434;
 }
 .catalog-hero__preview .charge-demo__svg {
   width: 100%;

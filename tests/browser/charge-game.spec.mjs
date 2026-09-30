@@ -9,6 +9,10 @@ test('home hero shows the full charge simulation and starts play explicitly', as
   await expect(demo.locator('[data-charge-boss]')).toHaveCount(1);
   await expect(demo.locator('[data-charge-player]')).toHaveCount(1);
   await expect(demo.locator('[data-charge-timeline]')).toBeVisible();
+  await expect(demo.locator('[data-charge-svg]')).toHaveAttribute('viewBox', '0 0 1300 780');
+  const canvasBox = await demo.locator('.charge-demo__canvas').boundingBox();
+  const floorBox = await demo.locator('[data-charge-svg] > g[clip-path]').boundingBox();
+  expect(floorBox.width).toBeGreaterThan(canvasBox.width - 2);
   await expect(demo.locator('.charge-demo__keys')).toContainText('Move: WASD');
   const box = await hero.boundingBox();
   expect(box.y + box.height).toBeCloseTo(720, 0);

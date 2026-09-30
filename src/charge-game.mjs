@@ -11,35 +11,46 @@ import {
 const PLAYER_SPEED = 340;
 const HIT_RADIUS = PLAYER_RADIUS + 48;
 const ATTACK_RANGE = 135;
+const DEFAULT_ARENA = {
+  player: { x: 280, y: 480 },
+  origins: [
+    { x: 280, y: 205 },
+    { x: 280, y: 805 },
+  ],
+  playerBounds: { left: 120, right: 440, top: 305, bottom: 655 },
+  chargeBounds: { left: 76, right: 484, top: 76, bottom: 884 },
+};
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 const smooth = (value) => {
   const t = clamp(value, 0, 1);
   return t * t * (3 - 2 * t);
 };
-const originFor = (round) => ({ x: 280, y: round % 2 ? 805 : 205 });
+const originFor = (round, arena) => arena.origins[round % arena.origins.length];
 
-function planFor(origin, player) {
+function planFor(origin, player, arena) {
   const dx = player.x - origin.x;
   const dy = player.y - origin.y;
   const length = Math.hypot(dx, dy);
   const hx = dx / length;
   const hy = dy / length;
-  const horizontal = hx < 0 ? (origin.x - 76) / -hx : (484 - origin.x) / hx;
-  const vertical = hy < 0 ? (origin.y - 76) / -hy : (884 - origin.y) / hy;
+  const { left, right, top, bottom } = arena.chargeBounds;
+  const horizontal = hx < 0 ? (origin.x - left) / -hx : (right - origin.x) / hx;
+  const vertical = hy < 0 ? (origin.y - top) / -hy : (bottom - origin.y) / hy;
   return createChargePlan({
     origin,
     target: player,
-    distance: Math.min(485, horizontal, vertical),
+    distance: Math.min(arena.maxChargeDistance ?? 485, horizontal, vertical),
   });
 }
 
-export function createChargeGame() {
-  const player = { x: 280, y: 480 };
+export function createChargeGame(arena = DEFAULT_ARENA) {
+  const player = { ...arena.player };
   return {
+    arena,
     time: 0,
     round: 0,
     player,
-    plan: planFor(originFor(0), player),
+    plan: planFor(originFor(0, arena), player, arena),
     playerHealth: 3,
     bossHealth: 3,
     hitThisRound: false,
@@ -56,7 +67,7 @@ export function createChargeGame() {
 
 export function chargeGameFrame(game) {
   const frame = chargeFrame(game.time, game.plan);
-  const nextOrigin = originFor(game.round + 1);
+  const nextOrigin = originFor(game.round + 1, game.arena);
   const boss = frame.transitioning
     ? {
         x: game.plan.end.x + (nextOrigin.x - game.plan.end.x) * smooth(frame.transitionProgress),
@@ -104,8 +115,16 @@ export function advanceChargeGame(game, input, elapsed) {
     game.moving = intensity > 0;
     if (game.moving) {
       game.player = {
-        x: clamp(game.player.x + dx * scale * PLAYER_SPEED * dt, 120, 440),
-        y: clamp(game.player.y + dy * scale * PLAYER_SPEED * dt, 305, 655),
+        x: clamp(
+          game.player.x + dx * scale * PLAYER_SPEED * dt,
+          game.arena.playerBounds.left,
+          game.arena.playerBounds.right,
+        ),
+        y: clamp(
+          game.player.y + dy * scale * PLAYER_SPEED * dt,
+          game.arena.playerBounds.top,
+          game.arena.playerBounds.bottom,
+        ),
       };
       game.gait += (PLAYER_SPEED * intensity * dt) / 20;
       game.facing = (Math.atan2(dy, dx) * 180) / Math.PI;
@@ -115,9 +134,9 @@ export function advanceChargeGame(game, input, elapsed) {
     game.attackFlash = Math.max(0, game.attackFlash - dt);
     game.hitFlash = Math.max(0, game.hitFlash - dt);
     if (oldTime < PHASE_ENDS[0] && game.time >= PHASE_ENDS[0]) {
-      game.plan = planFor(originFor(game.round), game.player);
+      game.plan = planFor(originFor(game.round, game.arena), game.player, game.arena);
     } else if (game.time < PHASE_ENDS[0]) {
-      game.plan = planFor(originFor(game.round), game.player);
+      game.plan = planFor(originFor(game.round, game.arena), game.player, game.arena);
     }
     const frame = chargeGameFrame(game);
     if (
@@ -146,7 +165,7 @@ export function advanceChargeGame(game, input, elapsed) {
     if (game.time >= ATTACK_DURATION) {
       game.time -= ATTACK_DURATION;
       game.round++;
-      game.plan = planFor(originFor(game.round), game.player);
+      game.plan = planFor(originFor(game.round, game.arena), game.player, game.arena);
       game.hitThisRound = false;
       game.struckThisRound = false;
     }

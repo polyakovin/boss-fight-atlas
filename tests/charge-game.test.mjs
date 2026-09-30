@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { advanceChargeGame, chargeGameFrame, createChargeGame } from '../src/charge-game.mjs';
-import { PHASE_ENDS } from '../src/charge-model.mjs';
+import { PHASE_ENDS, WIDE_CHARGE_ARENA } from '../src/charge-model.mjs';
 
 function advance(game, input, seconds) {
   for (let elapsed = 0; elapsed < seconds; elapsed += 1 / 60) {
@@ -20,6 +20,23 @@ test('movement tracks during aim, then the charge direction stays locked', () =>
   assert.ok(game.player.x < lockedTarget.x);
   assert.deepEqual(game.plan.target, lockedTarget);
   assert.deepEqual(chargeGameFrame(game).heading, game.plan.heading);
+});
+
+test('the wide home arena allows movement across its visible floor', () => {
+  const game = createChargeGame(WIDE_CHARGE_ARENA);
+  advance(game, { right: true }, 0.9);
+  assert.ok(game.player.x > 900);
+  assert.equal(game.plan.target.x, game.player.x);
+  assert.ok(game.plan.end.x < WIDE_CHARGE_ARENA.width);
+  advance(game, { right: true }, 1);
+  assert.equal(game.player.x, WIDE_CHARGE_ARENA.playerBounds.right);
+  assert.ok(game.plan.end.x < WIDE_CHARGE_ARENA.width);
+
+  const edgeGame = createChargeGame(WIDE_CHARGE_ARENA);
+  edgeGame.player = { x: WIDE_CHARGE_ARENA.playerBounds.right, y: WIDE_CHARGE_ARENA.player.y };
+  advanceChargeGame(edgeGame, {}, 1 / 60);
+  assert.ok(edgeGame.plan.end.x > edgeGame.player.x);
+  assert.ok(edgeGame.plan.end.x < WIDE_CHARGE_ARENA.width);
 });
 
 test('idle player is hit once per charge and the round can end in defeat', () => {
