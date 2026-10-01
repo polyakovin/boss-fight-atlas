@@ -1,0 +1,3 @@
+.lock
+.state-*
+pending-*.json
